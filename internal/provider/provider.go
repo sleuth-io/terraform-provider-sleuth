@@ -2,9 +2,9 @@ package provider
 
 import (
 	"context"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 )
 
 func init() {
@@ -26,11 +26,28 @@ func init() {
 func New(version string) func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
-			DataSourcesMap: map[string]*schema.Resource{
-				"scaffolding_data_source": dataSourceScaffolding(),
-			},
+            Schema: map[string]*schema.Schema{
+                "baseurl": &schema.Schema{
+                    Type:        schema.TypeString,
+                    Optional:    true,
+                    DefaultFunc: schema.EnvDefaultFunc("SLEUTH_BASEURL", "https://app.sleuth.io"),
+                },
+                "api_key": &schema.Schema{
+                    Type:        schema.TypeString,
+                    Required:    true,
+                    DefaultFunc: schema.EnvDefaultFunc("SLEUTH_API_KEY", nil),
+                },
+                "org_slug": &schema.Schema{
+                    Type:        schema.TypeString,
+                    Required:    true,
+                    DefaultFunc: schema.EnvDefaultFunc("SLEUTH_ORG_SLUG", nil),
+                },
+            },
+			//DataSourcesMap: map[string]*schema.Resource{
+			//	"scaffolding_data_source": dataSourceScaffolding(),
+			//},
 			ResourcesMap: map[string]*schema.Resource{
-				"scaffolding_resource": resourceScaffolding(),
+				"sleuth_project": resourceProject(),
 			},
 		}
 
@@ -40,18 +57,33 @@ func New(version string) func() *schema.Provider {
 	}
 }
 
-type apiClient struct {
-	// Add whatever fields, client or connection info, etc. here
-	// you would need to setup to communicate with the upstream
-	// API.
-}
-
 func configure(version string, p *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
-	return func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
-		// Setup a User-Agent for your API client (replace the provider name for yours):
-		// userAgent := p.UserAgent("terraform-provider-scaffolding", version)
-		// TODO: myClient.UserAgent = userAgent
+    return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+        apiKey := d.Get("api_key").(string)
+        orgSlug := d.Get("org_slug").(string)
 
-		return &apiClient{}, nil
-	}
+        var baseurl *string
+
+        hVal, ok := d.GetOk("baseurl")
+        if ok {
+            tempBaseurl := hVal.(string)
+            baseurl = &tempBaseurl
+        }
+
+        // Warning or errors can be collected in a slice type
+        var diags diag.Diagnostics
+
+        c, err := gqlclient.NewClient(baseurl, &apiKey, &orgSlug)
+        if err != nil {
+            diags = append(diags, diag.Diagnostic{
+                Severity: diag.Error,
+                Summary:  "Unable to create Sleuth client",
+                Detail:   "Unable to authenticate api key for authenticated Sleuth client",
+            })
+
+            return nil, diags
+        }
+
+        return c, diags
+    }
 }

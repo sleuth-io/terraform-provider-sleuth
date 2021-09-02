@@ -1,3 +1,3 @@
-provider "scaffolding" {
+provider "sleuth" {
   # example configuration here
 }
