@@ -8,6 +8,7 @@ import (
 )
 
 func TestAccResourceSleuth(t *testing.T) {
+	t.Skip("requires env vars against a running sleuth")
 
 	resource.UnitTest(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
