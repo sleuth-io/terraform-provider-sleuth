@@ -1,4 +1,5 @@
 package gqlclient
+
 //
 // // Order -
 // type Order struct {
@@ -17,7 +18,8 @@ type Project struct {
 	Name        string       `json:"name"`
 	Slug      string       `json:"slug"`
 	Description string       `json:"description"`
-	ChangeSource  []ChangeSource `json:"changeSources"`
+	FailureSensitivity int `json:"failureSensitivity"`
+	//ChangeSource  []ChangeSource `json:"changeSources"`
 }
 
 // Ingredient -
@@ -25,3 +27,21 @@ type ChangeSource struct {
 	Name     string `json:"name"`
 	Slug     string `json:"slug"`
 }
+
+type ProjectCreationMutationInput struct {
+	Name string `json:"name"`
+	FailureSensitivity string `json:"failureSensitivity,omitempty"`
+}
+
+
+type ProjectUpdateMutationInput struct {
+	Name string `json:"name,omitempty"`
+	FailureSensitivity int `json:"failureSensitivity,omitempty"`
+}
+
+
+type ErrorsType []struct {
+	Field string `json:"field"`
+	Messages []string `json:"messages"`
+}
+

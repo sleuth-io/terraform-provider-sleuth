@@ -25,6 +25,12 @@ func resourceProject() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 			},
+			"failure_sensitivity": {
+				// This description is used by the documentation generator and the language server.
+				Description: "Failure sensitivity",
+				Type:        schema.TypeInt,
+				Optional:    true,
+			},
 		},
 	}
 }
@@ -36,7 +42,15 @@ func resourceProjectCreate(ctx context.Context, d *schema.ResourceData, meta int
 	var diags diag.Diagnostics
 
 	name := d.Get("name").(string)
-	proj, err := c.CreateProject( &name)
+
+	input := gqlclient.ProjectCreationMutationInput{Name: name}
+
+	val, ok := d.GetOk("failureSensitivity")
+	if ok {
+		input.FailureSensitivity = val.(string)
+	}
+
+	proj, err := c.CreateProject( input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -73,10 +87,24 @@ func resourceProjectUpdate(ctx context.Context, d *schema.ResourceData, meta int
 
 	projectSlug := d.Id()
 
+	input := gqlclient.ProjectUpdateMutationInput{}
+	changed := false
+
+	val, ok := d.GetOk("failure_sensitivity")
+	if ok {
+		input.FailureSensitivity = val.(int)
+		changed = true
+
+	}
+
 	if d.HasChange("name") {
 		name := d.Get("name").(string)
+		input.Name = name
+		changed = true
+	}
 
-		_, err := c.UpdateProject(&projectSlug, &name)
+	if changed {
+		_, err := c.UpdateProject(&projectSlug, input)
 		if err != nil {
 			return diag.FromErr(err)
 		}

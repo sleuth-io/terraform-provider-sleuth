@@ -2,7 +2,7 @@
 terraform {	
 	required_providers {	
 		sleuth = {		
-			version = "1.0-dev"
+			version = "0.1-dev"
 			source	= "sleuth.io/core/sleuth"	
 		}	
 	}
@@ -14,6 +14,7 @@ provider "sleuth" {
 }
 
 resource "sleuth_project" "myproject" {
-	name = "My Project fixed 2"
+	name = "My Project is cool right mate friend"
+    failure_sensitivity = 423
 }
 

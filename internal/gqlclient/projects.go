@@ -36,10 +36,7 @@ func (c *Client) GetProjects() ([]Project, error) {
 // GetProject - Returns project
 func (c *Client) GetProject(slug *string) (*Project, error) {
 	var query struct {
-		Project struct {
-			Name graphql.String
-			Slug graphql.String
-		} `graphql:"project(orgSlug: $orgSlug, projectSlug: $projectSlug)"`
+		Project Project `graphql:"project(orgSlug: $orgSlug, projectSlug: $projectSlug)"`
 	}
 	variables := map[string]interface{}{
 		"orgSlug":   graphql.ID(c.OrgSlug),
@@ -58,7 +55,7 @@ func (c *Client) GetProject(slug *string) (*Project, error) {
 }
 
 // CreateProject - Creates a project
-func (c *Client) CreateProject(name *string) (*Project, error) {
+func (c *Client) CreateProject(input ProjectCreationMutationInput) (*Project, error) {
 
 	var m struct {
 		CreateProject struct {
@@ -66,11 +63,12 @@ func (c *Client) CreateProject(name *string) (*Project, error) {
 				Name graphql.String
 				Slug graphql.String
 			}
-		} `graphql:"createProject(name: $name, orgSlug: $orgSlug)"`
+			Errors ErrorsType
+		} `graphql:"createProject(orgSlug: $orgSlug, input: $input)"`
 	}
 	variables := map[string]interface{}{
-		"orgSlug":   graphql.ID(c.OrgSlug),
-		"name":   graphql.String(*name),
+		"orgSlug": graphql.ID(c.OrgSlug),
+		"input":   input,
 	}
 
 	err := c.doMutate(&m, variables)
@@ -79,6 +77,9 @@ func (c *Client) CreateProject(name *string) (*Project, error) {
 		return nil, err
 	}
 
+	if len(m.CreateProject.Errors) > 0 {
+		return nil, errors.New("Errors creating project")
+	}
 	project := Project{Name: string(m.CreateProject.Project.Name), Slug: string(m.CreateProject.Project.Slug)}
 
 	return &project, nil
@@ -112,7 +113,7 @@ func (c *Client) DeleteProject(slug *string) error {
 
 
 // UpdateProject - Updates a project
-func (c *Client) UpdateProject(slug *string, name *string) (*Project, error) {
+func (c *Client) UpdateProject(slug *string, input ProjectUpdateMutationInput) (*Project, error) {
 
 	var m struct {
 		UpdateProject struct {
@@ -120,11 +121,12 @@ func (c *Client) UpdateProject(slug *string, name *string) (*Project, error) {
 				Name graphql.String
 				Slug graphql.String
 			}
-		} `graphql:"updateProject(name: $name, orgSlug: $orgSlug, slug: $slug)"`
+			Errors ErrorsType
+		} `graphql:"updateProject(orgSlug: $orgSlug, slug: $slug, input: $input)"`
 	}
 	variables := map[string]interface{}{
 		"orgSlug":   graphql.ID(c.OrgSlug),
-		"name":   graphql.String(*name),
+		"input":   input,
 		"slug": graphql.String(*slug),
 	}
 
@@ -132,6 +134,10 @@ func (c *Client) UpdateProject(slug *string, name *string) (*Project, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	if len(m.UpdateProject.Errors) > 0 {
+		return nil, errors.New("Errors updating project")
 	}
 
 	project := Project{Name: string(m.UpdateProject.Project.Name), Slug: string(m.UpdateProject.Project.Slug)}
