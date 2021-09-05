@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccResourceProject(t *testing.T) {
+func TestAccResourceEnvironment(t *testing.T) {
 	if err := testAccCheckOrganization(); err != nil {
 		t.Skipf("Skipping because %s.", err.Error())
 	}
@@ -16,14 +16,14 @@ func TestAccResourceProject(t *testing.T) {
 		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccResourceProject,
+				Config: testAccResourceSleuth,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestMatchResourceAttr(
-						"sleuth_project.myproject", "name", regexp.MustCompile("^My project blah")),
+						"sleuth_environment.myenvironment", "name", regexp.MustCompile("^My environment blah")),
 				),
 			},
 			{
-				ResourceName:      "sleuth_project.myproject",
+				ResourceName:      "sleuth_environment.myenvironment",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -31,23 +31,15 @@ func TestAccResourceProject(t *testing.T) {
 	})
 }
 
-const testAccResourceProject = `
+const testAccResourceSleuth = `
 resource "sleuth_project" "myproject" {
 	name = "My project blah"
+}
+
+resource "sleuth_environment" "myenvironment" {
+	project_slug = "${sleuth_project.myproject.id}"
+	name = "My environment blah"
 	description = "blah"
-	impact_sensitivity = "FINE"
-	failure_sensitivity = 500
-	environments [
-		{
-			name = "Prod"
-			description = "Important stuff"
-			color = "#cafe42"
-		}
-		{
-			name = "Stage"
-			description = "Testing"
-			color = "#cafe89"
-		}
-	]
+	color = "#ffffff"
 }
 `

@@ -23,13 +23,13 @@ type Project struct {
 	ChangeFailureRateBoundary string `json:"changeFailureRateBoundary"`
 	ImpactSensitivity	string	`json:"impactSensitivity"`
 	FailureSensitivity int `json:"failureSensitivity"`
-	//ChangeSource  []ChangeSource `json:"changeSources"`
 }
 
-// Ingredient -
-type ChangeSource struct {
+type Environment struct {
 	Name     string `json:"name"`
 	Slug     string `json:"slug"`
+	Description string       `json:"description"`
+	Color     string `json:"color"`
 }
 
 type ProjectOptionalFields struct {
@@ -50,6 +50,22 @@ type CreateProjectMutationInput struct {
 type UpdateProjectMutationInput struct {
 	Name string `json:"name,omitempty"`
 	*ProjectOptionalFields
+}
+
+type EnvironmentOptionalFields struct {
+	Description               string `json:"description,omitempty"`
+	Color				      string `json:"color,omitempty"`
+}
+
+type CreateEnvironmentMutationInput struct {
+	Name string `json:"name"`
+	*EnvironmentOptionalFields
+}
+
+
+type UpdateEnvironmentMutationInput struct {
+	Name string `json:"name,omitempty"`
+	*EnvironmentOptionalFields
 }
 
 

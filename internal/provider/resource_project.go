@@ -24,6 +24,11 @@ func resourceProject() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 			},
+			"slug": {
+				Description: "Project slug",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
 			"description": {
 				Description: "Project description",
 				Type:        schema.TypeString,
@@ -78,7 +83,7 @@ func resourceProjectCreate(ctx context.Context, d *schema.ResourceData, meta int
 	inputFields := gqlclient.ProjectOptionalFields{}
 	input := gqlclient.CreateProjectMutationInput{Name: name, ProjectOptionalFields: &inputFields}
 
-	populateInput(d, &inputFields)
+	populateProjectInput(d, &inputFields)
 
 	proj, err := c.CreateProject( input)
 	if err != nil {
@@ -109,7 +114,7 @@ func resourceProjectUpdate(ctx context.Context, d *schema.ResourceData, meta int
 		changed = true
 	}
 
-	changed = changed || populateInput(d, &inputFields)
+	changed = changed || populateProjectInput(d, &inputFields)
 
 	if changed {
 		proj, err := c.UpdateProject(&projectSlug, input)
@@ -145,6 +150,7 @@ func resourceProjectRead(ctx context.Context, d *schema.ResourceData, meta inter
 func setProjectFields(d *schema.ResourceData, proj *gqlclient.Project) {
 
 	d.Set("name", proj.Name)
+	d.Set("slug", proj.Slug)
 	d.Set("description", proj.Description)
 	d.Set("issue_tracker_provider", proj.IssueTrackerProvider)
 	d.Set("build_provider", proj.BuildProvider)
@@ -153,7 +159,7 @@ func setProjectFields(d *schema.ResourceData, proj *gqlclient.Project) {
 	d.Set("failure_sensitivity", proj.FailureSensitivity)
 }
 
-func populateInput(d *schema.ResourceData, input *gqlclient.ProjectOptionalFields)  bool {
+func populateProjectInput(d *schema.ResourceData, input *gqlclient.ProjectOptionalFields)  bool {
 	input.Description =  d.Get("description").(string)
 	input.IssueTrackerProvider = d.Get("issue_tracker_provider").(string)
 	input.BuildProvider = d.Get("build_provider").(string)

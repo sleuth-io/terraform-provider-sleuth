@@ -48,6 +48,7 @@ func New(version string) func() *schema.Provider {
 			//},
 			ResourcesMap: map[string]*schema.Resource{
 				"sleuth_project": resourceProject(),
+				"sleuth_environment": resourceEnvironment(),
 			},
 		}
 

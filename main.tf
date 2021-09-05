@@ -14,9 +14,19 @@ provider "sleuth" {
 }
 
 resource "sleuth_project" "myproject" {
-	name = "My Project 2"
-    impact_sensitivity = "FINE"
-    change_failure_rate_boundary = "HEALTHY"
-    description = "blah"
+	name = "My project as"
 }
 
+resource "sleuth_environment" "myenvironment" {
+	project_slug = "${sleuth_project.myproject.slug}"
+	name = "Production"
+	description = "blah"
+	color = "#aa33ff"
+}
+
+resource "sleuth_environment" "myenvironmentstg" {
+	project_slug = "${sleuth_project.myproject.slug}"
+	name = "Staging"
+	description = "blah 2"
+	color = "#3333ff"
+}

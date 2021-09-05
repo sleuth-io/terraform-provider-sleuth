@@ -117,7 +117,7 @@ func (c *Client) DeleteProject(slug *string) error {
 	}
 	variables := map[string]interface{}{
 		"orgSlug":   graphql.ID(c.OrgSlug),
-		"slug":   graphql.String(*slug),
+		"slug":   graphql.ID(*slug),
 	}
 
 	err := c.doMutate(&m, variables)
@@ -132,6 +132,7 @@ func (c *Client) DeleteProject(slug *string) error {
 		return nil
 	}
 }
+
 
 //// GetProjectChangeSources - Returns list of project changeSources
 //func (c *Client) GetProjectChangeSources(projectID string) ([]ChangeSource, error) {
