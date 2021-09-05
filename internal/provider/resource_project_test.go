@@ -8,8 +8,9 @@ import (
 )
 
 func TestAccResourceSleuth(t *testing.T) {
-	t.Skip("requires env vars against a running sleuth")
-
+	if err := testAccCheckOrganization(); err != nil {
+		t.Skipf("Skipping because %s.", err.Error())
+	}
 	resource.UnitTest(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: providerFactories,
@@ -18,8 +19,13 @@ func TestAccResourceSleuth(t *testing.T) {
 				Config: testAccResourceSleuth,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestMatchResourceAttr(
-						"sleuth_project.myproject", "name", regexp.MustCompile("^myproj")),
+						"sleuth_project.myproject", "name", regexp.MustCompile("^My project blah")),
 				),
+			},
+			{
+				ResourceName:      "sleuth_project.myproject",
+				ImportState:       true,
+				ImportStateVerify: true,
 			},
 		},
 	})
@@ -27,6 +33,9 @@ func TestAccResourceSleuth(t *testing.T) {
 
 const testAccResourceSleuth = `
 resource "sleuth_project" "myproject" {
-	name = "myproject"
+	name = "My project blah"
+	description = "blah"
+	impact_sensitivity = "FINE"
+	failure_sensitivity = 500
 }
 `

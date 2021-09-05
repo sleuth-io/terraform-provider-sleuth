@@ -1,10 +1,10 @@
 package provider
 
 import (
+	"errors"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"os"
 	"testing"
-
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // providerFactories are used to instantiate a provider during acceptance testing.
@@ -32,4 +32,15 @@ func testAccPreCheck(t *testing.T) {
 	if err := os.Getenv("SLEUTH_ORG_SLUG"); err == "" {
 		t.Fatal("SLEUTH_ORG_SLUG must be set for acceptance tests")
 	}
+}
+
+func testAccCheckOrganization() error {
+	baseUrl := os.Getenv("SLEUTH_BASEURL")
+	apiKey := os.Getenv("SLEUTH_API_KEY")
+	orgSlug := os.Getenv("SLEUTH_ORG_SLUG")
+
+	if baseUrl == "" || apiKey == "" || orgSlug == "" {
+		return errors.New("SLEUTH_BASEURL, SLEUTH_API_KEY, and SLEUTH_ORG_SLUG must be set for acceptance tests")
+	}
+	return nil
 }

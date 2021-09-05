@@ -18,6 +18,10 @@ type Project struct {
 	Name        string       `json:"name"`
 	Slug      string       `json:"slug"`
 	Description string       `json:"description"`
+	IssueTrackerProvider string	`json:"issueTrackerProvider"`
+	BuildProvider string `json:"buildProvider"`
+	ChangeFailureRateBoundary string `json:"changeFailureRateBoundary"`
+	ImpactSensitivity	string	`json:"impactSensitivity"`
 	FailureSensitivity int `json:"failureSensitivity"`
 	//ChangeSource  []ChangeSource `json:"changeSources"`
 }
@@ -28,15 +32,24 @@ type ChangeSource struct {
 	Slug     string `json:"slug"`
 }
 
-type ProjectCreationMutationInput struct {
+type ProjectOptionalFields struct {
+	Description               string `json:"description,omitempty"`
+	IssueTrackerProvider      string `json:"issueTrackerProvider,omitempty"`
+	BuildProvider             string `json:"buildProvider,omitempty"`
+	ChangeFailureRateBoundary string `json:"changeFailureRateBoundary,omitempty"`
+	ImpactSensitivity         string `json:"impactSensitivity,omitempty"`
+	FailureSensitivity        int    `json:"failureSensitivity,omitempty"`
+}
+
+type CreateProjectMutationInput struct {
 	Name string `json:"name"`
-	FailureSensitivity string `json:"failureSensitivity,omitempty"`
+	*ProjectOptionalFields
 }
 
 
-type ProjectUpdateMutationInput struct {
+type UpdateProjectMutationInput struct {
 	Name string `json:"name,omitempty"`
-	FailureSensitivity int `json:"failureSensitivity,omitempty"`
+	*ProjectOptionalFields
 }
 
 

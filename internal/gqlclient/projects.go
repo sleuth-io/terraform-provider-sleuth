@@ -5,32 +5,32 @@ import (
 	"github.com/shurcooL/graphql"
 )
 
-// GetProjects - Returns list of projects
-func (c *Client) GetProjects() ([]Project, error) {
-	var query struct {
-		Projects []struct {
-			Name graphql.String
-			Slug graphql.String
-		} `graphql:"projects(orgSlug: $orgSlug)"`
-	}
-	variables := map[string]interface{}{
-		"orgSlug":   graphql.ID(c.OrgSlug),
-	}
-
-	err := c.doQuery(&query, variables)
-
-	if err != nil {
-		return nil, err
-	}
-
-	projects := []Project{}
-	for _, element  := range query.Projects{
-		project := Project{Name: string(element.Slug)}
-		projects = append(projects, project)
-	}
-
-	return projects, nil
-}
+//// GetProjects - Returns list of projects
+//func (c *Client) GetProjects() ([]Project, error) {
+//	var query struct {
+//		Projects []struct {
+//			Name graphql.String
+//			Slug graphql.String
+//		} `graphql:"projects(orgSlug: $orgSlug)"`
+//	}
+//	variables := map[string]interface{}{
+//		"orgSlug":   graphql.ID(c.OrgSlug),
+//	}
+//
+//	err := c.doQuery(&query, variables)
+//
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	projects := []Project{}
+//	for _, element  := range query.Projects{
+//		project := Project{Name: string(element.Slug)}
+//		projects = append(projects, project)
+//	}
+//
+//	return projects, nil
+//}
 
 
 // GetProject - Returns project
@@ -49,20 +49,15 @@ func (c *Client) GetProject(slug *string) (*Project, error) {
 		return nil, err
 	}
 
-	project := Project{Name: string(query.Project.Name), Slug: string(query.Project.Slug)}
-
-	return &project, nil
+	return &query.Project, nil
 }
 
 // CreateProject - Creates a project
-func (c *Client) CreateProject(input ProjectCreationMutationInput) (*Project, error) {
+func (c *Client) CreateProject(input CreateProjectMutationInput) (*Project, error) {
 
 	var m struct {
 		CreateProject struct {
-			Project struct {
-				Name graphql.String
-				Slug graphql.String
-			}
+			Project Project
 			Errors ErrorsType
 		} `graphql:"createProject(orgSlug: $orgSlug, input: $input)"`
 	}
@@ -80,10 +75,37 @@ func (c *Client) CreateProject(input ProjectCreationMutationInput) (*Project, er
 	if len(m.CreateProject.Errors) > 0 {
 		return nil, errors.New("Errors creating project")
 	}
-	project := Project{Name: string(m.CreateProject.Project.Name), Slug: string(m.CreateProject.Project.Slug)}
-
-	return &project, nil
+	return &m.CreateProject.Project, nil
 }
+
+// UpdateProject - Updates a project
+func (c *Client) UpdateProject(slug *string, input UpdateProjectMutationInput) (*Project, error) {
+
+	var m struct {
+		UpdateProject struct {
+			Project Project
+			Errors ErrorsType
+		} `graphql:"updateProject(orgSlug: $orgSlug, slug: $slug, input: $input)"`
+	}
+	variables := map[string]interface{}{
+		"orgSlug":   graphql.ID(c.OrgSlug),
+		"input":   input,
+		"slug": graphql.String(*slug),
+	}
+
+	err := c.doMutate(&m, variables)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(m.UpdateProject.Errors) > 0 {
+		return nil, errors.New("Errors updating project")
+	}
+
+	return &m.UpdateProject.Project, nil
+}
+
 
 // DeleteProject - Deletes a project
 func (c *Client) DeleteProject(slug *string) error {
@@ -109,40 +131,6 @@ func (c *Client) DeleteProject(slug *string) error {
 	} else {
 		return nil
 	}
-}
-
-
-// UpdateProject - Updates a project
-func (c *Client) UpdateProject(slug *string, input ProjectUpdateMutationInput) (*Project, error) {
-
-	var m struct {
-		UpdateProject struct {
-			Project struct {
-				Name graphql.String
-				Slug graphql.String
-			}
-			Errors ErrorsType
-		} `graphql:"updateProject(orgSlug: $orgSlug, slug: $slug, input: $input)"`
-	}
-	variables := map[string]interface{}{
-		"orgSlug":   graphql.ID(c.OrgSlug),
-		"input":   input,
-		"slug": graphql.String(*slug),
-	}
-
-	err := c.doMutate(&m, variables)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if len(m.UpdateProject.Errors) > 0 {
-		return nil, errors.New("Errors updating project")
-	}
-
-	project := Project{Name: string(m.UpdateProject.Project.Name), Slug: string(m.UpdateProject.Project.Slug)}
-
-	return &project, nil
 }
 
 //// GetProjectChangeSources - Returns list of project changeSources

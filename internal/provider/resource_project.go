@@ -11,7 +11,7 @@ import (
 func resourceProject() *schema.Resource {
 	return &schema.Resource{
 		// This description is used by the documentation generator and the language server.
-		Description: "Sample resource in the Terraform provider scaffolding.",
+		Description: "Sleuth project.",
 
 		CreateContext: resourceProjectCreate,
 		ReadContext:   resourceProjectRead,
@@ -20,17 +20,49 @@ func resourceProject() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": {
-				// This description is used by the documentation generator and the language server.
 				Description: "Project name",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
+			"description": {
+				Description: "Project description",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default: 	"",
+			},
+			"issue_tracker_provider": {
+				Description: "Where to find issues linked to by changes",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default: 	"SOURCE_PROVIDER",
+			},
+			"build_provider": {
+				Description: "Where to find builds related to changes",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default: 	"NONE",
+			},
+			"change_failure_rate_boundary": {
+				Description: "The health rating at which point it will be considered a failure",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default: 	 "UNHEALTHY",
+			},
+			"impact_sensitivity": {
+				Description: "How many impact measures Sleuth takes into account when auto-determining a deploys health.",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default: 	"NORMAL",
+			},
 			"failure_sensitivity": {
-				// This description is used by the documentation generator and the language server.
-				Description: "Failure sensitivity",
+				Description: "The amount of time (in seconds) a deploy must spend in a failure status (Unhealthy, Incident, etc.) before it is determined a failure. Setting this value to a longer time means that less deploys will be classified.",
 				Type:        schema.TypeInt,
 				Optional:    true,
+				Default: 	420,
 			},
+		},
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 	}
 }
@@ -43,12 +75,10 @@ func resourceProjectCreate(ctx context.Context, d *schema.ResourceData, meta int
 
 	name := d.Get("name").(string)
 
-	input := gqlclient.ProjectCreationMutationInput{Name: name}
+	inputFields := gqlclient.ProjectOptionalFields{}
+	input := gqlclient.CreateProjectMutationInput{Name: name, ProjectOptionalFields: &inputFields}
 
-	val, ok := d.GetOk("failureSensitivity")
-	if ok {
-		input.FailureSensitivity = val.(string)
-	}
+	populateInput(d, &inputFields)
 
 	proj, err := c.CreateProject( input)
 	if err != nil {
@@ -56,8 +86,39 @@ func resourceProjectCreate(ctx context.Context, d *schema.ResourceData, meta int
 	}
 
 	d.SetId(proj.Slug)
+	setProjectFields(d, proj)
 
-	resourceProjectRead(ctx, d, meta)
+	return diags
+}
+
+func resourceProjectUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	c := meta.(*gqlclient.Client)
+
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
+	projectSlug := d.Id()
+
+	inputFields := gqlclient.ProjectOptionalFields{}
+	input := gqlclient.UpdateProjectMutationInput{ProjectOptionalFields: &inputFields}
+	changed := false
+
+	if d.HasChange("name") {
+		name := d.Get("name").(string)
+		input.Name = name
+		changed = true
+	}
+
+	changed = changed || populateInput(d, &inputFields)
+
+	if changed {
+		proj, err := c.UpdateProject(&projectSlug, input)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		d.Set("last_updated", time.Now().Format(time.RFC850))
+		setProjectFields(d, proj)
+	}
 
 	return diags
 }
@@ -70,48 +131,36 @@ func resourceProjectRead(ctx context.Context, d *schema.ResourceData, meta inter
 
 	projectSlug := d.Id()
 
-	_, err := c.GetProject(&projectSlug)
+	proj, err := c.GetProject(&projectSlug)
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	setProjectFields(d, proj)
 
 	return diags
 
 }
 
-func resourceProjectUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	c := meta.(*gqlclient.Client)
+func setProjectFields(d *schema.ResourceData, proj *gqlclient.Project) {
 
-	// Warning or errors can be collected in a slice type
-	var diags diag.Diagnostics
+	d.Set("name", proj.Name)
+	d.Set("description", proj.Description)
+	d.Set("issue_tracker_provider", proj.IssueTrackerProvider)
+	d.Set("build_provider", proj.BuildProvider)
+	d.Set("change_failure_rate_boundary", proj.ChangeFailureRateBoundary)
+	d.Set("impact_sensitivity", proj.ImpactSensitivity)
+	d.Set("failure_sensitivity", proj.FailureSensitivity)
+}
 
-	projectSlug := d.Id()
-
-	input := gqlclient.ProjectUpdateMutationInput{}
-	changed := false
-
-	val, ok := d.GetOk("failure_sensitivity")
-	if ok {
-		input.FailureSensitivity = val.(int)
-		changed = true
-
-	}
-
-	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		input.Name = name
-		changed = true
-	}
-
-	if changed {
-		_, err := c.UpdateProject(&projectSlug, input)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		d.Set("last_updated", time.Now().Format(time.RFC850))
-	}
-
-	return diags
+func populateInput(d *schema.ResourceData, input *gqlclient.ProjectOptionalFields)  bool {
+	input.Description =  d.Get("description").(string)
+	input.IssueTrackerProvider = d.Get("issue_tracker_provider").(string)
+	input.BuildProvider = d.Get("build_provider").(string)
+	input.ChangeFailureRateBoundary = d.Get("change_failure_rate_boundary").(string)
+	input.ImpactSensitivity = d.Get("impact_sensitivity").(string)
+	input.FailureSensitivity = d.Get("failure_sensitivity").(int)
+	return true
 }
 
 func resourceProjectDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
