@@ -26,28 +26,23 @@ func init() {
 func New(version string) func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
-            Schema: map[string]*schema.Schema{
-                "baseurl": &schema.Schema{
-                    Type:        schema.TypeString,
-                    Optional:    true,
-                    DefaultFunc: schema.EnvDefaultFunc("SLEUTH_BASEURL", "https://app.sleuth.io"),
-                },
-                "api_key": &schema.Schema{
-                    Type:        schema.TypeString,
-                    Required:    true,
-                    DefaultFunc: schema.EnvDefaultFunc("SLEUTH_API_KEY", nil),
-                },
-                "org_slug": &schema.Schema{
-                    Type:        schema.TypeString,
-                    Required:    true,
-                    DefaultFunc: schema.EnvDefaultFunc("SLEUTH_ORG_SLUG", nil),
-                },
-            },
+			Schema: map[string]*schema.Schema{
+				"baseurl": &schema.Schema{
+					Type:        schema.TypeString,
+					Optional:    true,
+					DefaultFunc: schema.EnvDefaultFunc("SLEUTH_BASEURL", "https://app.sleuth.io"),
+				},
+				"api_key": &schema.Schema{
+					Type:        schema.TypeString,
+					Required:    true,
+					DefaultFunc: schema.EnvDefaultFunc("SLEUTH_API_KEY", nil),
+				},
+			},
 			//DataSourcesMap: map[string]*schema.Resource{
 			//	"scaffolding_data_source": dataSourceScaffolding(),
 			//},
 			ResourcesMap: map[string]*schema.Resource{
-				"sleuth_project": resourceProject(),
+				"sleuth_project":     resourceProject(),
 				"sleuth_environment": resourceEnvironment(),
 			},
 		}
@@ -59,32 +54,31 @@ func New(version string) func() *schema.Provider {
 }
 
 func configure(version string, p *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
-    return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
-        apiKey := d.Get("api_key").(string)
-        orgSlug := d.Get("org_slug").(string)
+	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+		apiKey := d.Get("api_key").(string)
 
-        var baseurl *string
+		var baseurl *string
 
-        hVal, ok := d.GetOk("baseurl")
-        if ok {
-            tempBaseurl := hVal.(string)
-            baseurl = &tempBaseurl
-        }
+		hVal, ok := d.GetOk("baseurl")
+		if ok {
+			tempBaseurl := hVal.(string)
+			baseurl = &tempBaseurl
+		}
 
-        // Warning or errors can be collected in a slice type
-        var diags diag.Diagnostics
+		// Warning or errors can be collected in a slice type
+		var diags diag.Diagnostics
 
-        c, err := gqlclient.NewClient(baseurl, &apiKey, &orgSlug)
-        if err != nil {
-            diags = append(diags, diag.Diagnostic{
-                Severity: diag.Error,
-                Summary:  "Unable to create Sleuth client",
-                Detail:   "Unable to authenticate api key for authenticated Sleuth client",
-            })
+		c, err := gqlclient.NewClient(baseurl, &apiKey)
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Unable to create Sleuth client",
+				Detail:   "Unable to authenticate api key for authenticated Sleuth client",
+			})
 
-            return nil, diags
-        }
+			return nil, diags
+		}
 
-        return c, diags
-    }
+		return c, diags
+	}
 }

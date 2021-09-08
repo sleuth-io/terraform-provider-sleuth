@@ -16,32 +16,31 @@ import (
 type Client struct {
 	Baseurl    string
 	HTTPClient *http.Client
-	GQLClient *graphql.Client
-	ApiKey      string
-	OrgSlug     string
+	GQLClient  *graphql.Client
+	ApiKey     string
+	OrgSlug    string
 }
 
-type AuthenticatedTransport struct{
-	T http.RoundTripper
+type AuthenticatedTransport struct {
+	T      http.RoundTripper
 	ApiKey string
 }
 
-func (transport *AuthenticatedTransport) RoundTrip(req *http.Request) (*http.Response,error) {
+func (transport *AuthenticatedTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	req.Header.Add("User-Agent", "sleuth-terraform")
 	req.Header.Add("Authorization", fmt.Sprintf("apikey %s", transport.ApiKey))
 	return transport.T.RoundTrip(req)
 }
 
 // NewClient -
-func NewClient(baseurl, apiKey, orgSlug *string) (*Client, error) {
+func NewClient(baseurl, apiKey *string) (*Client, error) {
 	httpClient := http.Client{Timeout: 10 * time.Second,
 		Transport: &AuthenticatedTransport{http.DefaultTransport, *apiKey}}
 	c := Client{
-		GQLClient: graphql.NewClient(*baseurl + "/graphql", &httpClient),
+		GQLClient:  graphql.NewClient(*baseurl+"/graphql", &httpClient),
 		HTTPClient: &httpClient,
-		Baseurl: *baseurl,
-		ApiKey: *apiKey,
-		OrgSlug: *orgSlug,
+		Baseurl:    *baseurl,
+		ApiKey:     *apiKey,
 	}
 
 	return &c, nil
@@ -83,4 +82,3 @@ func (c *Client) doMutate(query interface{}, variables map[string]interface{}) e
 	}
 	return nil
 }
-

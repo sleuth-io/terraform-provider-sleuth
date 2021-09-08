@@ -10,22 +10,21 @@ terraform {
 provider "sleuth" {
     baseurl = "http://dev.sleuth.io"
     api_key = "2089d3139678bd250d33d4d8e5ef8c749e3ee588"
-	org_slug = "myorg"
 }
 
 resource "sleuth_project" "myproject" {
-	name = "My project as"
+	name = "My project good"
 }
 
 resource "sleuth_environment" "myenvironment" {
-	project_slug = "${sleuth_project.myproject.slug}"
-	name = "Production"
+	project_slug = "${sleuth_project.myproject.id}"
+	name = "Prod"
 	description = "blah"
 	color = "#aa33ff"
 }
 
 resource "sleuth_environment" "myenvironmentstg" {
-	project_slug = "${sleuth_project.myproject.slug}"
+	project_slug = "${sleuth_project.myproject.id}"
 	name = "Staging"
 	description = "blah 2"
 	color = "#3333ff"

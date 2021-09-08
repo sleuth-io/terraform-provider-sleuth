@@ -5,15 +5,13 @@ import (
 	"github.com/shurcooL/graphql"
 )
 
-
 func (c *Client) GetEnvironmentByName(projectSlug *string, name *string) (*Environment, error) {
 	var query struct {
 		Project struct {
 			Environments []Environment
-		}`graphql:"project(orgSlug: $orgSlug, projectSlug: $projectSlug)"`
+		} `graphql:"project(projectSlug: $projectSlug)"`
 	}
 	variables := map[string]interface{}{
-		"orgSlug":   graphql.ID(c.OrgSlug),
 		"projectSlug": graphql.ID(*projectSlug),
 	}
 
@@ -31,16 +29,14 @@ func (c *Client) GetEnvironmentByName(projectSlug *string, name *string) (*Envir
 	return nil, errors.New("Not found")
 }
 
-
 // GetEnvironment - Returns environment
 func (c *Client) GetEnvironment(projectSlug *string, slug *string) (*Environment, error) {
 	var query struct {
 		Project struct {
 			Environments []Environment
-		}`graphql:"project(orgSlug: $orgSlug, projectSlug: $projectSlug)"`
+		} `graphql:"project(projectSlug: $projectSlug)"`
 	}
 	variables := map[string]interface{}{
-		"orgSlug":   graphql.ID(c.OrgSlug),
 		"projectSlug": graphql.ID(*projectSlug),
 	}
 
@@ -59,18 +55,16 @@ func (c *Client) GetEnvironment(projectSlug *string, slug *string) (*Environment
 }
 
 // CreateEnvironment - Creates a environment
-func (c *Client) CreateEnvironment(projectSlug *string, input CreateEnvironmentMutationInput) (*Environment, error) {
+func (c *Client) CreateEnvironment(input CreateEnvironmentMutationInput) (*Environment, error) {
 
 	var m struct {
 		CreateEnvironment struct {
 			Environment Environment
-			Errors ErrorsType
-		} `graphql:"createEnvironment(orgSlug: $orgSlug, projectSlug: $projectSlug, input: $input)"`
+			Errors      ErrorsType
+		} `graphql:"createEnvironment(input: $input)"`
 	}
 	variables := map[string]interface{}{
-		"orgSlug": graphql.ID(c.OrgSlug),
-		"projectSlug": graphql.ID(*projectSlug),
-		"input":   input,
+		"input": input,
 	}
 
 	err := c.doMutate(&m, variables)
@@ -86,19 +80,16 @@ func (c *Client) CreateEnvironment(projectSlug *string, input CreateEnvironmentM
 }
 
 // UpdateEnvironment - Updates a environment
-func (c *Client) UpdateEnvironment(projectSlug *string, slug *string, input UpdateEnvironmentMutationInput) (*Environment, error) {
+func (c *Client) UpdateEnvironment(input UpdateEnvironmentMutationInput) (*Environment, error) {
 
 	var m struct {
 		UpdateEnvironment struct {
 			Environment Environment
-			Errors ErrorsType
-		} `graphql:"updateEnvironment(orgSlug: $orgSlug, projectSlug: $projectSlug, slug: $slug, input: $input)"`
+			Errors      ErrorsType
+		} `graphql:"updateEnvironment(input: $input)"`
 	}
 	variables := map[string]interface{}{
-		"orgSlug":   graphql.ID(c.OrgSlug),
-		"input":   input,
-		"projectSlug": graphql.ID(*projectSlug),
-		"slug": graphql.ID(*slug),
+		"input": input,
 	}
 
 	err := c.doMutate(&m, variables)
@@ -114,19 +105,16 @@ func (c *Client) UpdateEnvironment(projectSlug *string, slug *string, input Upda
 	return &m.UpdateEnvironment.Environment, nil
 }
 
-
 // DeleteEnvironment - Deletes a environment
 func (c *Client) DeleteEnvironment(projectSlug *string, slug *string) error {
 
 	var m struct {
 		DeleteEnvironment struct {
 			Success graphql.Boolean
-		} `graphql:"deleteEnvironment(slug: $slug, projectSlug: $projectSlug, orgSlug: $orgSlug)"`
+		} `graphql:"deleteEnvironment(input: $input)"`
 	}
 	variables := map[string]interface{}{
-		"orgSlug":   graphql.ID(c.OrgSlug),
-		"projectSlug": 	graphql.ID(*projectSlug),
-		"slug":   graphql.ID(*slug),
+		"input": DeleteEnvironmentMutationInput{ProjectSlug: *projectSlug, Slug: *slug},
 	}
 
 	err := c.doMutate(&m, variables)

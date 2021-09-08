@@ -33,37 +33,37 @@ func resourceProject() *schema.Resource {
 				Description: "Project description",
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default: 	"",
+				Default:     "",
 			},
 			"issue_tracker_provider": {
 				Description: "Where to find issues linked to by changes",
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default: 	"SOURCE_PROVIDER",
+				Default:     "SOURCE_PROVIDER",
 			},
 			"build_provider": {
 				Description: "Where to find builds related to changes",
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default: 	"NONE",
+				Default:     "NONE",
 			},
 			"change_failure_rate_boundary": {
 				Description: "The health rating at which point it will be considered a failure",
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default: 	 "UNHEALTHY",
+				Default:     "UNHEALTHY",
 			},
 			"impact_sensitivity": {
 				Description: "How many impact measures Sleuth takes into account when auto-determining a deploys health.",
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default: 	"NORMAL",
+				Default:     "NORMAL",
 			},
 			"failure_sensitivity": {
 				Description: "The amount of time (in seconds) a deploy must spend in a failure status (Unhealthy, Incident, etc.) before it is determined a failure. Setting this value to a longer time means that less deploys will be classified.",
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Default: 	420,
+				Default:     420,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -78,14 +78,12 @@ func resourceProjectCreate(ctx context.Context, d *schema.ResourceData, meta int
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	name := d.Get("name").(string)
-
-	inputFields := gqlclient.ProjectOptionalFields{}
-	input := gqlclient.CreateProjectMutationInput{Name: name, ProjectOptionalFields: &inputFields}
+	inputFields := gqlclient.MutableProject{}
+	input := gqlclient.CreateProjectMutationInput{MutableProject: &inputFields}
 
 	populateProjectInput(d, &inputFields)
 
-	proj, err := c.CreateProject( input)
+	proj, err := c.CreateProject(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -104,26 +102,18 @@ func resourceProjectUpdate(ctx context.Context, d *schema.ResourceData, meta int
 
 	projectSlug := d.Id()
 
-	inputFields := gqlclient.ProjectOptionalFields{}
-	input := gqlclient.UpdateProjectMutationInput{ProjectOptionalFields: &inputFields}
-	changed := false
+	slug := d.Get("slug").(string)
+	inputFields := gqlclient.MutableProject{}
+	input := gqlclient.UpdateProjectMutationInput{Slug: slug, MutableProject: &inputFields}
 
-	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		input.Name = name
-		changed = true
+	populateProjectInput(d, &inputFields)
+
+	proj, err := c.UpdateProject(&projectSlug, input)
+	if err != nil {
+		return diag.FromErr(err)
 	}
-
-	changed = changed || populateProjectInput(d, &inputFields)
-
-	if changed {
-		proj, err := c.UpdateProject(&projectSlug, input)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		d.Set("last_updated", time.Now().Format(time.RFC850))
-		setProjectFields(d, proj)
-	}
+	d.Set("last_updated", time.Now().Format(time.RFC850))
+	setProjectFields(d, proj)
 
 	return diags
 }
@@ -159,8 +149,9 @@ func setProjectFields(d *schema.ResourceData, proj *gqlclient.Project) {
 	d.Set("failure_sensitivity", proj.FailureSensitivity)
 }
 
-func populateProjectInput(d *schema.ResourceData, input *gqlclient.ProjectOptionalFields)  bool {
-	input.Description =  d.Get("description").(string)
+func populateProjectInput(d *schema.ResourceData, input *gqlclient.MutableProject) bool {
+	input.Name = d.Get("name").(string)
+	input.Description = d.Get("description").(string)
 	input.IssueTrackerProvider = d.Get("issue_tracker_provider").(string)
 	input.BuildProvider = d.Get("build_provider").(string)
 	input.ChangeFailureRateBoundary = d.Get("change_failure_rate_boundary").(string)
@@ -177,7 +168,7 @@ func resourceProjectDelete(ctx context.Context, d *schema.ResourceData, meta int
 
 	projectSlug := d.Id()
 
-	err := c.DeleteProject( &projectSlug)
+	err := c.DeleteProject(&projectSlug)
 	if err != nil {
 		return diag.FromErr(err)
 	}

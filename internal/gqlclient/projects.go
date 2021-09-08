@@ -32,15 +32,13 @@ import (
 //	return projects, nil
 //}
 
-
 // GetProject - Returns project
 func (c *Client) GetProject(slug *string) (*Project, error) {
 	var query struct {
-		Project Project `graphql:"project(orgSlug: $orgSlug, projectSlug: $projectSlug)"`
+		Project Project `graphql:"project(projectSlug: $projectSlug)"`
 	}
 	variables := map[string]interface{}{
-		"orgSlug":   graphql.ID(c.OrgSlug),
-		"projectSlug":   graphql.ID(*slug),
+		"projectSlug": graphql.ID(*slug),
 	}
 
 	err := c.doQuery(&query, variables)
@@ -58,12 +56,11 @@ func (c *Client) CreateProject(input CreateProjectMutationInput) (*Project, erro
 	var m struct {
 		CreateProject struct {
 			Project Project
-			Errors ErrorsType
-		} `graphql:"createProject(orgSlug: $orgSlug, input: $input)"`
+			Errors  ErrorsType
+		} `graphql:"createProject(input: $input)"`
 	}
 	variables := map[string]interface{}{
-		"orgSlug": graphql.ID(c.OrgSlug),
-		"input":   input,
+		"input": input,
 	}
 
 	err := c.doMutate(&m, variables)
@@ -84,13 +81,11 @@ func (c *Client) UpdateProject(slug *string, input UpdateProjectMutationInput) (
 	var m struct {
 		UpdateProject struct {
 			Project Project
-			Errors ErrorsType
-		} `graphql:"updateProject(orgSlug: $orgSlug, slug: $slug, input: $input)"`
+			Errors  ErrorsType
+		} `graphql:"updateProject(input: $input)"`
 	}
 	variables := map[string]interface{}{
-		"orgSlug":   graphql.ID(c.OrgSlug),
-		"input":   input,
-		"slug": graphql.String(*slug),
+		"input": input,
 	}
 
 	err := c.doMutate(&m, variables)
@@ -106,18 +101,16 @@ func (c *Client) UpdateProject(slug *string, input UpdateProjectMutationInput) (
 	return &m.UpdateProject.Project, nil
 }
 
-
 // DeleteProject - Deletes a project
 func (c *Client) DeleteProject(slug *string) error {
 
 	var m struct {
 		DeleteProject struct {
 			Success graphql.Boolean
-		} `graphql:"deleteProject(slug: $slug, orgSlug: $orgSlug)"`
+		} `graphql:"deleteProject(input: $input)"`
 	}
 	variables := map[string]interface{}{
-		"orgSlug":   graphql.ID(c.OrgSlug),
-		"slug":   graphql.ID(*slug),
+		"input": DeleteProjectMutationInput{Slug: *slug},
 	}
 
 	err := c.doMutate(&m, variables)
@@ -132,25 +125,3 @@ func (c *Client) DeleteProject(slug *string) error {
 		return nil
 	}
 }
-
-
-//// GetProjectChangeSources - Returns list of project changeSources
-//func (c *Client) GetProjectChangeSources(projectID string) ([]ChangeSource, error) {
-//	req, err := http.NewRequest("GET", fmt.Sprintf("%s/projects/%s/changeSources", c.Baseurl, projectID), nil)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	body, err := c.doRequest(req)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	changeSources := []ChangeSource{}
-//	err = json.Unmarshal(body, &changeSources)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return changeSources, nil
-//}

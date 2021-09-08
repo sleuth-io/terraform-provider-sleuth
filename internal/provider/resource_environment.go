@@ -23,7 +23,7 @@ func resourceEnvironment() *schema.Resource {
 				Description: "The project for this environment",
 				Type:        schema.TypeString,
 				Required:    true,
-				ForceNew: 		true,
+				ForceNew:    true,
 			},
 			"name": {
 				Description: "Environment name",
@@ -34,13 +34,13 @@ func resourceEnvironment() *schema.Resource {
 				Description: "Environment description",
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default: 	"",
+				Default:     "",
 			},
 			"color": {
 				Description: "The color for the UI",
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default: 	"#cecece",
+				Default:     "#cecece",
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -63,12 +63,12 @@ func resourceEnvironmentCreate(ctx context.Context, d *schema.ResourceData, meta
 		d.SetId(existingEnv.Slug)
 		resourceEnvironmentUpdate(ctx, d, meta)
 	} else {
-		inputFields := gqlclient.EnvironmentOptionalFields{}
-		input := gqlclient.CreateEnvironmentMutationInput{Name: name, EnvironmentOptionalFields: &inputFields}
+		inputFields := gqlclient.MutableEnvironment{}
+		input := gqlclient.CreateEnvironmentMutationInput{ProjectSlug: projectSlug, MutableEnvironment: &inputFields}
 
 		populateInput(d, &inputFields)
 
-		env, err := c.CreateEnvironment(&projectSlug, input)
+		env, err := c.CreateEnvironment(input)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -88,26 +88,16 @@ func resourceEnvironmentUpdate(ctx context.Context, d *schema.ResourceData, meta
 	environmentSlug := d.Id()
 	projectSlug := d.Get("project_slug").(string)
 
-	inputFields := gqlclient.EnvironmentOptionalFields{}
-	input := gqlclient.UpdateEnvironmentMutationInput{EnvironmentOptionalFields: &inputFields}
-	changed := false
+	inputFields := gqlclient.MutableEnvironment{}
+	input := gqlclient.UpdateEnvironmentMutationInput{ProjectSlug: projectSlug, Slug: environmentSlug, MutableEnvironment: &inputFields}
+	populateInput(d, &inputFields)
 
-	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		input.Name = name
-		changed = true
+	proj, err := c.UpdateEnvironment(input)
+	if err != nil {
+		return diag.FromErr(err)
 	}
-
-	changed = changed || populateInput(d, &inputFields)
-
-	if changed {
-		proj, err := c.UpdateEnvironment(&projectSlug, &environmentSlug, input)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		d.Set("last_updated", time.Now().Format(time.RFC850))
-		setEnvironmentFields(d, proj)
-	}
+	d.Set("last_updated", time.Now().Format(time.RFC850))
+	setEnvironmentFields(d, proj)
 
 	return diags
 }
@@ -139,8 +129,9 @@ func setEnvironmentFields(d *schema.ResourceData, env *gqlclient.Environment) {
 	d.Set("color", env.Color)
 }
 
-func populateInput(d *schema.ResourceData, input *gqlclient.EnvironmentOptionalFields)  bool {
-	input.Description =  d.Get("description").(string)
+func populateInput(d *schema.ResourceData, input *gqlclient.MutableEnvironment) bool {
+	input.Name = d.Get("name").(string)
+	input.Description = d.Get("description").(string)
 	input.Color = d.Get("color").(string)
 	return true
 }
