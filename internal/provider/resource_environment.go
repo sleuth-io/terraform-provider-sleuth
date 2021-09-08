@@ -2,9 +2,11 @@ package provider
 
 import (
 	"context"
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
+	"strings"
 	"time"
 )
 
@@ -60,7 +62,7 @@ func resourceEnvironmentCreate(ctx context.Context, d *schema.ResourceData, meta
 
 	existingEnv, _ := c.GetEnvironmentByName(&projectSlug, &name)
 	if existingEnv != nil {
-		d.SetId(existingEnv.Slug)
+		d.SetId(fmt.Sprintf("%s/%s", projectSlug, existingEnv.Slug))
 		resourceEnvironmentUpdate(ctx, d, meta)
 	} else {
 		inputFields := gqlclient.MutableEnvironment{}
@@ -72,7 +74,7 @@ func resourceEnvironmentCreate(ctx context.Context, d *schema.ResourceData, meta
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		d.SetId(env.Slug)
+		d.SetId(fmt.Sprintf("%s/%s", projectSlug, env.Slug))
 		setEnvironmentFields(d, env)
 	}
 
@@ -85,8 +87,9 @@ func resourceEnvironmentUpdate(ctx context.Context, d *schema.ResourceData, meta
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	environmentSlug := d.Id()
-	projectSlug := d.Get("project_slug").(string)
+	parsed := strings.Split(d.Id(), "/")
+	projectSlug := parsed[0]
+	environmentSlug := parsed[1]
 
 	inputFields := gqlclient.MutableEnvironment{}
 	input := gqlclient.UpdateEnvironmentMutationInput{ProjectSlug: projectSlug, Slug: environmentSlug, MutableEnvironment: &inputFields}
@@ -108,15 +111,16 @@ func resourceEnvironmentRead(ctx context.Context, d *schema.ResourceData, meta i
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	projectSlug := d.Get("project_slug").(string)
-	environmentSlug := d.Id()
+	parsed := strings.Split(d.Id(), "/")
+	projectSlug := parsed[0]
+	environmentSlug := parsed[1]
 
-	proj, err := c.GetEnvironment(&projectSlug, &environmentSlug)
+	env, err := c.GetEnvironment(&projectSlug, &environmentSlug)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	setEnvironmentFields(d, proj)
+	setEnvironmentFields(d, env)
 
 	return diags
 
@@ -142,8 +146,9 @@ func resourceEnvironmentDelete(ctx context.Context, d *schema.ResourceData, meta
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	environmentSlug := d.Id()
-	projectSlug := d.Get("project_slug").(string)
+	parsed := strings.Split(d.Id(), "/")
+	projectSlug := parsed[0]
+	environmentSlug := parsed[1]
 
 	err := c.DeleteEnvironment(&projectSlug, &environmentSlug)
 	if err != nil {

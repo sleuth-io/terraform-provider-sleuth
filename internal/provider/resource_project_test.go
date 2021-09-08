@@ -37,17 +37,5 @@ resource "sleuth_project" "myproject" {
 	description = "blah"
 	impact_sensitivity = "FINE"
 	failure_sensitivity = 500
-	environments [
-		{
-			name = "Prod"
-			description = "Important stuff"
-			color = "#cafe42"
-		}
-		{
-			name = "Stage"
-			description = "Testing"
-			color = "#cafe89"
-		}
-	]
 }
 `

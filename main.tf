@@ -18,7 +18,7 @@ resource "sleuth_project" "myproject" {
 
 resource "sleuth_environment" "myenvironment" {
 	project_slug = "${sleuth_project.myproject.id}"
-	name = "Prod"
+	name = "Production"
 	description = "blah"
 	color = "#aa33ff"
 }
