@@ -2,6 +2,8 @@
 
 This repository is a Terraform provider for [Sleuth](https://sleuth.io), allowing a team to manage Sleuth configuration via Terraform instead of having to click around in the UI.
 
+This provider is in the very early stages and shouldn't be used for production...yet.
+
 ## Requirements
 
 -	[Terraform](https://www.terraform.io/downloads.html) >= 0.13.x
