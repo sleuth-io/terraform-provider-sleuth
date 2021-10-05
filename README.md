@@ -4,6 +4,9 @@ This repository is a Terraform provider for [Sleuth](https://sleuth.io), allowin
 
 This provider is in the very early stages and shouldn't be used for production...yet.
 
+* [Documentation](/docs/index.md)
+* [Examples](/examples/README.md)
+
 ## Requirements
 
 -	[Terraform](https://www.terraform.io/downloads.html) >= 0.13.x
