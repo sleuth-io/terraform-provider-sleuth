@@ -13,7 +13,7 @@ provider "sleuth" {
 }
 
 resource "sleuth_project" "myproject" {
-	name = "My project good"
+	name = "My project good just ok"
 }
 
 resource "sleuth_environment" "myenvironment" {
