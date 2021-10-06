@@ -3,7 +3,7 @@ HOSTNAME=sleuth.io
 NAMESPACE=core
 NAME=sleuth
 BINARY=terraform-provider-${NAME}
-VERSION=0.1-dev
+VERSION=0.1.0-dev
 OS_ARCH=linux_amd64
 
 # go source files, ignore vendor directory

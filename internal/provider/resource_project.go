@@ -35,7 +35,7 @@ func resourceProject() *schema.Resource {
 				Optional:    true,
 				Default:     "",
 			},
-			"issue_tracker_provider": {
+			"issue_tracker_provider_type": {
 				Description: "Where to find issues linked to by changes",
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -142,7 +142,7 @@ func setProjectFields(d *schema.ResourceData, proj *gqlclient.Project) {
 	d.Set("name", proj.Name)
 	d.Set("slug", proj.Slug)
 	d.Set("description", proj.Description)
-	d.Set("issue_tracker_provider", proj.IssueTrackerProvider)
+	d.Set("issue_tracker_provider_type", proj.IssueTrackerProvider)
 	d.Set("build_provider", proj.BuildProvider)
 	d.Set("change_failure_rate_boundary", proj.ChangeFailureRateBoundary)
 	d.Set("impact_sensitivity", proj.ImpactSensitivity)
@@ -152,7 +152,7 @@ func setProjectFields(d *schema.ResourceData, proj *gqlclient.Project) {
 func populateProjectInput(d *schema.ResourceData, input *gqlclient.MutableProject) bool {
 	input.Name = d.Get("name").(string)
 	input.Description = d.Get("description").(string)
-	input.IssueTrackerProvider = d.Get("issue_tracker_provider").(string)
+	input.IssueTrackerProvider = d.Get("issue_tracker_provider_type").(string)
 	input.BuildProvider = d.Get("build_provider").(string)
 	input.ChangeFailureRateBoundary = d.Get("change_failure_rate_boundary").(string)
 	input.ImpactSensitivity = d.Get("impact_sensitivity").(string)

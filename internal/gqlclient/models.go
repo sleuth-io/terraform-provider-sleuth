@@ -19,6 +19,27 @@ type Environment struct {
 	Color       string `json:"color,omitempty"`
 }
 
+type ErrorImpactSource struct {
+	Slug        string `json:"slug"`
+	Environment Environment `json:"environment"`
+	Name        string `json:"name"`
+	Provider        string `json:"provider"`
+	ErrorOrgKey     string `json:"errorOrgKey"`
+	ErrorProjectKey         string `json:"errorProjectKey"`
+	ErrorEnvironment        string `json:"errorEnvironment"`
+	ManuallySetHealthThreshold float64 `json:"manuallySetHealthThreshold,omitempty"`
+}
+
+type MetricImpactSource struct {
+	Slug        string `json:"slug"`
+	Environment Environment `json:"environment"`
+	Name        string `json:"name"`
+	Provider string `json:"provider,omitempty"`
+	Query    string `json:"query,omitempty"`
+	LessIsBetter        bool `json:"lessIsBetter,omitempty"`
+	ManuallySetHealthThreshold float64 `json:"manuallySetHealthThreshold,omitempty"`
+}
+
 type MutableProject struct {
 	Name                      string `json:"name"`
 	Description               string `json:"description,omitempty"`
@@ -60,6 +81,52 @@ type UpdateEnvironmentMutationInput struct {
 }
 
 type DeleteEnvironmentMutationInput struct {
+	ProjectSlug string `json:"projectSlug"`
+	Slug        string `json:"slug"`
+}
+
+type MutableErrorImpactSource struct {
+	EnvironmentSlug string `json:"environment"`
+	Name        string `json:"name"`
+	Provider        string `json:"provider"`
+	ErrorOrgKey     string `json:"errorOrgKey"`
+	ErrorProjectKey         string `json:"errorProjectKey"`
+	ErrorEnvironment        string `json:"errorEnvironment"`
+	ManuallySetHealthThreshold float64 `json:"manuallySetHealthThreshold,omitempty"`
+}
+
+type CreateErrorImpactSourceMutationInput struct {
+	ProjectSlug string `json:"projectSlug"`
+	*MutableErrorImpactSource
+}
+
+type UpdateErrorImpactSourceMutationInput struct {
+	ProjectSlug string `json:"projectSlug"`
+	Slug        string `json:"slug"`
+	*MutableErrorImpactSource
+}
+
+type MutableMetricImpactSource struct {
+	EnvironmentSlug string `json:"environment"`
+	Name        string `json:"name"`
+	Provider        string `json:"provider"`
+	Query         string `json:"query,omitempty"`
+	LessIsBetter        bool `json:"lessIsBetter,omitempty"`
+	ManuallySetHealthThreshold float64 `json:"manuallySetHealthThreshold,omitempty"`
+}
+
+type CreateMetricImpactSourceMutationInput struct {
+	ProjectSlug string `json:"projectSlug"`
+	*MutableMetricImpactSource
+}
+
+type UpdateMetricImpactSourceMutationInput struct {
+	ProjectSlug string `json:"projectSlug"`
+	Slug        string `json:"slug"`
+	*MutableMetricImpactSource
+}
+
+type DeleteImpactSourceMutationInput struct {
 	ProjectSlug string `json:"projectSlug"`
 	Slug        string `json:"slug"`
 }

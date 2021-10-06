@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccResourceEnvironment(t *testing.T) {
+func TestAccResourceMetricImpactSource(t *testing.T) {
 	if err := testAccCheckOrganization(); err != nil {
 		t.Skipf("Skipping because %s.", err.Error())
 	}
@@ -16,14 +16,14 @@ func TestAccResourceEnvironment(t *testing.T) {
 		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccResourceEnvironment,
+				Config: testAccResourceMetricImpactSource,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestMatchResourceAttr(
-						"sleuth_environment.myenvironment", "name", regexp.MustCompile("^My environment blah")),
+						"sleuth_metric_impact_source.mysource", "name", regexp.MustCompile("^My dd source blah")),
 				),
 			},
 			{
-				ResourceName:      "sleuth_environment.myenvironment",
+				ResourceName:      "sleuth_metric_impact_source.mysource",
 				ImportState:       true,
 				ImportStateVerify: false,
 			},
@@ -31,15 +31,22 @@ func TestAccResourceEnvironment(t *testing.T) {
 	})
 }
 
-const testAccResourceEnvironment = `
+const testAccResourceMetricImpactSource = `
 resource "sleuth_project" "myproject" {
 	name = "My project blah"
 }
 
-resource "sleuth_environment" "myenvironment" {
+resource "sleuth_environment" "myenv" {
 	project_slug = "${sleuth_project.myproject.id}"
-	name = "My environment blah"
-	description = "blah"
-	color = "#ffffff"
+	name = "Production"
+}
+
+resource "sleuth_metric_impact_source" "mysource" {
+	project_slug = "${sleuth_project.myproject.id}"
+	environment_slug = "${sleuth_environment.myenv.id}"
+	name = "My dd source blah"
+	provider_type = "datadog"
+	query = "aws.ecs.memory_utilization"
+	manually_set_health_threshold = 50
 }
 `
