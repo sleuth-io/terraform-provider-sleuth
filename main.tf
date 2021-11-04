@@ -9,7 +9,7 @@ terraform {
 }
 provider "sleuth" {
     baseurl = "http://dev.sleuth.io"
-    api_key = "60d77096f7bc7917c14e42dd4046faf3ff4257da"
+    api_key = "c42c814de680181ef3db3aacbe21a6b6652e61b8"
 }
 
 resource "sleuth_project" "myproject" {

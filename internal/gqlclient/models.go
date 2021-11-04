@@ -40,6 +40,31 @@ type MetricImpactSource struct {
 	ManuallySetHealthThreshold float64 `json:"manuallySetHealthThreshold,omitempty"`
 }
 
+type Repository struct {
+	Owner       string `json:"owner"`
+	Name        string `json:"name"`
+	Provider 	string `json:"provider"`
+	Url 		string `json:"url,omitempty"`
+}
+
+type BranchMapping struct {
+	EnvironmentSlug string `json:"environmentSlug"`
+	Branch 	string `json:"branch"`
+}
+
+type CodeChangeSource struct {
+	Slug        string `json:"slug"`
+	Name        string `json:"name"`
+	Repository        Repository `json:"repository"`
+	DeployTrackingType        string `json:"deployTrackingType"`
+	CollectImpact	bool `json:"collectImpact"`
+	PathPrefix	string `json:"pathPrefix"`
+	NotifyInSlack bool `json:"notifyInSlack"`
+	IncludeInDashboard bool `json:"includeInDashboard"`
+	AutoTrackingDelay   int             `json:"autoTrackingDelay"`
+	EnvironmentMappings []BranchMapping `json:"environmentMappings"`
+}
+
 type MutableProject struct {
 	Name                      string `json:"name"`
 	Description               string `json:"description,omitempty"`
@@ -127,6 +152,36 @@ type UpdateMetricImpactSourceMutationInput struct {
 }
 
 type DeleteImpactSourceMutationInput struct {
+	ProjectSlug string `json:"projectSlug"`
+	Slug        string `json:"slug"`
+}
+
+
+type MutableCodeChangeSource struct {
+	Name        string `json:"name"`
+	Repository        Repository `json:"repository"`
+	DeployTrackingType        string `json:"deployTrackingType"`
+	CollectImpact	bool `json:"collectImpact"`
+	PathPrefix	string `json:"pathPrefix"`
+	NotifyInSlack bool `json:"notifyInSlack"`
+	IncludeInDashboard bool `json:"includeInDashboard"`
+	AutoTrackingDelay int `json:"autoTrackingDelay"`
+	EnvironmentMappings	[]BranchMapping `json:"environmentMappings"`
+}
+
+
+type CreateCodeChangeSourceMutationInput struct {
+	ProjectSlug string `json:"projectSlug"`
+	*MutableCodeChangeSource
+}
+
+type UpdateCodeChangeSourceMutationInput struct {
+	ProjectSlug string `json:"projectSlug"`
+	Slug        string `json:"slug"`
+	*MutableCodeChangeSource
+}
+
+type DeleteChangeSourceMutationInput struct {
 	ProjectSlug string `json:"projectSlug"`
 	Slug        string `json:"slug"`
 }

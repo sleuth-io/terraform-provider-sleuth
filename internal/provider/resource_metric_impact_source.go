@@ -28,12 +28,12 @@ func resourceMetricImpactSource() *schema.Resource {
 				ForceNew:    true,
 			},
 			"environment_slug": {
-				Description: "The color for the UI",
+				Description: "The environment slug",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"name": {
-				Description: "Environment name",
+				Description: "Impact source name",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
@@ -53,7 +53,7 @@ func resourceMetricImpactSource() *schema.Resource {
 				Optional:    true,
 			},
 			"manually_set_health_threshold": {
-				Description: "The environment of the integration provider",
+				Description: "The manually set threshold to start marking failed values",
 				Type:        schema.TypeFloat,
 				Optional:    true,
 			},

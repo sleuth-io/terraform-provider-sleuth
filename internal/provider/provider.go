@@ -46,6 +46,7 @@ func New(version string) func() *schema.Provider {
 				"sleuth_environment": resourceEnvironment(),
 				"sleuth_error_impact_source": resourceErrorImpactSource(),
 				"sleuth_metric_impact_source": resourceMetricImpactSource(),
+				"sleuth_code_change_source": resourceCodeChangeSource(),
 			},
 		}
 

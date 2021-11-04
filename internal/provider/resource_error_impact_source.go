@@ -22,18 +22,18 @@ func resourceErrorImpactSource() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"project_slug": {
-				Description: "The project for this environment",
+				Description: "The project for this impact source",
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
 			},
 			"environment_slug": {
-				Description: "The color for the UI",
+				Description: "The environment slug",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"name": {
-				Description: "Environment name",
+				Description: "Impact source name",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
@@ -58,7 +58,7 @@ func resourceErrorImpactSource() *schema.Resource {
 				Required:    true,
 			},
 			"manually_set_health_threshold": {
-				Description: "The environment of the integration provider",
+				Description: "The manually set threshold to start marking failed values",
 				Type:        schema.TypeFloat,
 				Optional:    true,
 			},
