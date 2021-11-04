@@ -9,7 +9,7 @@ terraform {
 }
 provider "sleuth" {
     baseurl = "http://dev.sleuth.io"
-    api_key = "60d77096f7bc7917c14e42dd4046faf3ff4257da"
+    api_key = "59fa0e670979ce20c0aab38a3414d9f3ced62c52"
 }
 
 resource "sleuth_project" "myproject" {
@@ -39,4 +39,24 @@ resource "sleuth_error_impact_source" "mysentry" {
 	error_project_key = "sleuth-dev"
 	error_environment = "Production"
 	manually_set_health_threshold = 42
+}
+
+resource "sleuth_code_change_source" "mysource" {
+	project_slug = "${sleuth_project.myproject.id}"
+	name = "Sleuth Is Better"
+	repository {
+		name = "sleuth-test"
+		owner = "mrdon"
+		provider = "GITHUB"
+		url = "https://github.com/mrdon/sleuth-test"
+	}
+	environment_mappings {
+		environment_slug = "${sleuth_environment.myenvironment.id}"
+		branch = "master"
+	}
+	environment_mappings {
+		environment_slug = "${sleuth_environment.myenvironmentstg.id}"
+		branch = "master"
+	}
+	deploy_tracking_type = "manual"
 }

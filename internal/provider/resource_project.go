@@ -170,7 +170,10 @@ func resourceProjectDelete(ctx context.Context, d *schema.ResourceData, meta int
 
 	err := c.DeleteProject(&projectSlug)
 	if err != nil {
-		return diag.FromErr(err)
+		// Ignore missing as the project gets deleted when the last env gets deleted
+		if err.Error() != "Missing" {
+			return diag.FromErr(err)
+		}
 	}
 
 	d.SetId("")

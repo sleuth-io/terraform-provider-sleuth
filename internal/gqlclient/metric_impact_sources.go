@@ -11,7 +11,7 @@ func (c *Client) GetMetricImpactSource(projectSlug *string, slug *string) (*Metr
 	var query struct {
 		Project struct {
 			ImpactSources []struct {
-				Type graphql.String
+				Type         graphql.String
 				ImpactSource MetricImpactSource `graphql:"... on MetricImpactSource"`
 			}
 		} `graphql:"project(projectSlug: $projectSlug)"`
@@ -42,7 +42,7 @@ func (c *Client) CreateMetricImpactSource(input CreateMetricImpactSourceMutation
 	var m struct {
 		CreateMetricImpactSource struct {
 			ImpactSource MetricImpactSource
-			Errors      ErrorsType
+			Errors       ErrorsType
 		} `graphql:"createMetricImpactSource(input: $input)"`
 	}
 	variables := map[string]interface{}{
@@ -67,7 +67,7 @@ func (c *Client) UpdateMetricImpactSource(input UpdateMetricImpactSourceMutation
 	var m struct {
 		UpdateMetricImpactSource struct {
 			ImpactSource MetricImpactSource
-			Errors      ErrorsType
+			Errors       ErrorsType
 		} `graphql:"updateMetricImpactSource(input: $input)"`
 	}
 	variables := map[string]interface{}{
@@ -86,4 +86,3 @@ func (c *Client) UpdateMetricImpactSource(input UpdateMetricImpactSourceMutation
 
 	return &m.UpdateMetricImpactSource.ImpactSource, nil
 }
-

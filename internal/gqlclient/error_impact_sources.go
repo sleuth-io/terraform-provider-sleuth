@@ -11,7 +11,7 @@ func (c *Client) GetErrorImpactSource(projectSlug *string, slug *string) (*Error
 	var query struct {
 		Project struct {
 			ImpactSources []struct {
-				Type graphql.String
+				Type         graphql.String
 				ImpactSource ErrorImpactSource `graphql:"... on ErrorImpactSource"`
 			}
 		} `graphql:"project(projectSlug: $projectSlug)"`
@@ -42,7 +42,7 @@ func (c *Client) CreateErrorImpactSource(input CreateErrorImpactSourceMutationIn
 	var m struct {
 		CreateErrorImpactSource struct {
 			ImpactSource ErrorImpactSource
-			Errors      ErrorsType
+			Errors       ErrorsType
 		} `graphql:"createErrorImpactSource(input: $input)"`
 	}
 	variables := map[string]interface{}{
@@ -67,7 +67,7 @@ func (c *Client) UpdateErrorImpactSource(input UpdateErrorImpactSourceMutationIn
 	var m struct {
 		UpdateErrorImpactSource struct {
 			ImpactSource ErrorImpactSource
-			Errors      ErrorsType
+			Errors       ErrorsType
 		} `graphql:"updateErrorImpactSource(input: $input)"`
 	}
 	variables := map[string]interface{}{
@@ -86,4 +86,3 @@ func (c *Client) UpdateErrorImpactSource(input UpdateErrorImpactSourceMutationIn
 
 	return &m.UpdateErrorImpactSource.ImpactSource, nil
 }
-
