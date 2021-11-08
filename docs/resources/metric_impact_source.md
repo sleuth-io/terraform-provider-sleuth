@@ -17,8 +17,8 @@ Sleuth error impact source.
 
 ### Required
 
-- **environment_slug** (String) The color for the UI
-- **name** (String) Environment name
+- **environment_slug** (String) The environment slug
+- **name** (String) Impact source name
 - **project_slug** (String) The project for this environment
 - **provider_type** (String) Integration provider type
 - **query** (String) The metric query
@@ -27,6 +27,6 @@ Sleuth error impact source.
 
 - **id** (String) The ID of this resource.
 - **less_is_better** (Boolean) Whether smaller values are better or not
-- **manually_set_health_threshold** (Number) The environment of the integration provider
+- **manually_set_health_threshold** (Number) The manually set threshold to start marking failed values
 
 
