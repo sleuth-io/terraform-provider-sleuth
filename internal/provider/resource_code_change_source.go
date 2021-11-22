@@ -137,7 +137,7 @@ func resourceCodeChangeSourceCreate(ctx context.Context, d *schema.ResourceData,
 		return diag.FromErr(err)
 	}
 	d.SetId(fmt.Sprintf("%s/%s", projectSlug, src.Slug))
-	setCodeChangeSourceFields(d, src)
+	setCodeChangeSourceFields(d, projectSlug, src)
 
 	return diags
 }
@@ -156,12 +156,12 @@ func resourceCodeChangeSourceUpdate(ctx context.Context, d *schema.ResourceData,
 	input := gqlclient.UpdateCodeChangeSourceMutationInput{ProjectSlug: projectSlug, Slug: changeSourceSlug, MutableCodeChangeSource: &inputFields}
 	populateCodeChangeSource(d, &inputFields)
 
-	proj, err := c.UpdateCodeChangeSource(input)
+	source, err := c.UpdateCodeChangeSource(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	d.Set("last_updated", time.Now().Format(time.RFC850))
-	setCodeChangeSourceFields(d, proj)
+	setCodeChangeSourceFields(d, projectSlug, source)
 
 	return diags
 }
@@ -181,13 +181,13 @@ func resourceCodeChangeSourceRead(ctx context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 
-	setCodeChangeSourceFields(d, source)
+	setCodeChangeSourceFields(d, projectSlug, source)
 
 	return diags
 
 }
 
-func setCodeChangeSourceFields(d *schema.ResourceData, source *gqlclient.CodeChangeSource) {
+func setCodeChangeSourceFields(d *schema.ResourceData, projectSlug string, source *gqlclient.CodeChangeSource) {
 
 	repository := make(map[string]interface{})
 	repository["owner"] = source.Repository.Owner
@@ -205,6 +205,7 @@ func setCodeChangeSourceFields(d *schema.ResourceData, source *gqlclient.CodeCha
 		environmentMappings[idx] = m
 	}
 
+	d.Set("project_slug", projectSlug)
 	d.Set("name", source.Name)
 	d.Set("repository", repositoryList)
 	d.Set("environment_mappings", environmentMappings)
@@ -230,9 +231,7 @@ func populateCodeChangeSource(d *schema.ResourceData, input *gqlclient.MutableCo
 	for idx, v := range environmentMappingsData {
 		m := v.(map[string]interface{})
 		var envRaw = m["environment_slug"].(string)
-		var envSlug = strings.Split(envRaw, "/")[1]
-
-		mapping := gqlclient.BranchMapping{EnvironmentSlug: envSlug, Branch: m["branch"].(string)}
+		mapping := gqlclient.BranchMapping{EnvironmentSlug: envRaw, Branch: m["branch"].(string)}
 		environmentMappings[idx] = mapping
 	}
 

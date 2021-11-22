@@ -86,7 +86,7 @@ func resourceErrorImpactSourceCreate(ctx context.Context, d *schema.ResourceData
 		return diag.FromErr(err)
 	}
 	d.SetId(fmt.Sprintf("%s/%s", projectSlug, src.Slug))
-	setErrorImpactSourceFields(d, src)
+	setErrorImpactSourceFields(d, projectSlug, src)
 
 	return diags
 }
@@ -110,7 +110,7 @@ func resourceErrorImpactSourceUpdate(ctx context.Context, d *schema.ResourceData
 		return diag.FromErr(err)
 	}
 	d.Set("last_updated", time.Now().Format(time.RFC850))
-	setErrorImpactSourceFields(d, proj)
+	setErrorImpactSourceFields(d, projectSlug, proj)
 
 	return diags
 }
@@ -130,16 +130,17 @@ func resourceErrorImpactSourceRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.FromErr(err)
 	}
 
-	setErrorImpactSourceFields(d, env)
+	setErrorImpactSourceFields(d, projectSlug, env)
 
 	return diags
 
 }
 
-func setErrorImpactSourceFields(d *schema.ResourceData, env *gqlclient.ErrorImpactSource) {
+func setErrorImpactSourceFields(d *schema.ResourceData, projectSlug string, env *gqlclient.ErrorImpactSource) {
 
+	d.Set("project_slug", projectSlug)
 	d.Set("name", env.Name)
-	d.Set("environment_slug", env.Environment)
+	d.Set("environment_slug", fmt.Sprintf("%s/%s", projectSlug, env.Environment.Slug))
 	d.Set("provider_type", env.Provider)
 	d.Set("error_org_key", env.ErrorOrgKey)
 	d.Set("error_project_key", env.ErrorProjectKey)

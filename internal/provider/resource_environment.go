@@ -75,7 +75,7 @@ func resourceEnvironmentCreate(ctx context.Context, d *schema.ResourceData, meta
 			return diag.FromErr(err)
 		}
 		d.SetId(fmt.Sprintf("%s/%s", projectSlug, env.Slug))
-		setEnvironmentFields(d, env)
+		setEnvironmentFields(d, projectSlug, env)
 	}
 
 	return diags
@@ -100,7 +100,7 @@ func resourceEnvironmentUpdate(ctx context.Context, d *schema.ResourceData, meta
 		return diag.FromErr(err)
 	}
 	d.Set("last_updated", time.Now().Format(time.RFC850))
-	setEnvironmentFields(d, proj)
+	setEnvironmentFields(d, projectSlug, proj)
 
 	return diags
 }
@@ -120,14 +120,15 @@ func resourceEnvironmentRead(ctx context.Context, d *schema.ResourceData, meta i
 		return diag.FromErr(err)
 	}
 
-	setEnvironmentFields(d, env)
+	setEnvironmentFields(d, projectSlug, env)
 
 	return diags
 
 }
 
-func setEnvironmentFields(d *schema.ResourceData, env *gqlclient.Environment) {
+func setEnvironmentFields(d *schema.ResourceData, projectSlug string, env *gqlclient.Environment) {
 
+	d.Set("project_slug", projectSlug)
 	d.Set("name", env.Name)
 	d.Set("description", env.Description)
 	d.Set("color", env.Color)

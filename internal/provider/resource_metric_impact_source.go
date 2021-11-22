@@ -81,7 +81,7 @@ func resourceMetricImpactSourceCreate(ctx context.Context, d *schema.ResourceDat
 		return diag.FromErr(err)
 	}
 	d.SetId(fmt.Sprintf("%s/%s", projectSlug, src.Slug))
-	setMetricImpactSourceFields(d, src)
+	setMetricImpactSourceFields(d, projectSlug, src)
 
 	return diags
 }
@@ -105,7 +105,7 @@ func resourceMetricImpactSourceUpdate(ctx context.Context, d *schema.ResourceDat
 		return diag.FromErr(err)
 	}
 	d.Set("last_updated", time.Now().Format(time.RFC850))
-	setMetricImpactSourceFields(d, proj)
+	setMetricImpactSourceFields(d, projectSlug, proj)
 
 	return diags
 }
@@ -125,16 +125,17 @@ func resourceMetricImpactSourceRead(ctx context.Context, d *schema.ResourceData,
 		return diag.FromErr(err)
 	}
 
-	setMetricImpactSourceFields(d, env)
+	setMetricImpactSourceFields(d, projectSlug, env)
 
 	return diags
 
 }
 
-func setMetricImpactSourceFields(d *schema.ResourceData, env *gqlclient.MetricImpactSource) {
+func setMetricImpactSourceFields(d *schema.ResourceData, projectSlug string,  env *gqlclient.MetricImpactSource) {
 
+	d.Set("project_slug", projectSlug)
 	d.Set("name", env.Name)
-	d.Set("environment_slug", env.Environment)
+	d.Set("environment_slug", fmt.Sprintf("%s/%s", projectSlug, env.Environment.Slug))
 	d.Set("provider_type", env.Provider)
 	d.Set("query", env.Query)
 	d.Set("less_is_better", env.LessIsBetter)
