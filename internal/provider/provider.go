@@ -29,11 +29,14 @@ func New(version string) func() *schema.Provider {
 			Schema: map[string]*schema.Schema{
 				"baseurl": &schema.Schema{
 					Type:        schema.TypeString,
+					Description: "Ignore this, as it is only used by Sleuth developers",
 					Optional:    true,
+
 					DefaultFunc: schema.EnvDefaultFunc("SLEUTH_BASEURL", "https://app.sleuth.io"),
 				},
 				"api_key": &schema.Schema{
 					Type:        schema.TypeString,
+					Description: "The Sleuth organization's Api key",
 					Required:    true,
 					DefaultFunc: schema.EnvDefaultFunc("SLEUTH_API_KEY", nil),
 				},
