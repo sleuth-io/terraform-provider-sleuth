@@ -4,7 +4,6 @@ package gqlclient
 type Project struct {
 	Slug                      string `json:"slug"`
 	Name                      string `json:"name"`
-	Description               string `json:"description,omitempty"`
 	IssueTrackerProvider      string `json:"issueTrackerProvider,omitempty"`
 	BuildProvider             string `json:"buildProvider,omitempty"`
 	ChangeFailureRateBoundary string `json:"changeFailureRateBoundary,omitempty"`
@@ -67,7 +66,6 @@ type CodeChangeSource struct {
 
 type MutableProject struct {
 	Name                      string `json:"name"`
-	Description               string `json:"description,omitempty"`
 	IssueTrackerProvider      string `json:"issueTrackerProvider,omitempty"`
 	BuildProvider             string `json:"buildProvider,omitempty"`
 	ChangeFailureRateBoundary string `json:"changeFailureRateBoundary,omitempty"`

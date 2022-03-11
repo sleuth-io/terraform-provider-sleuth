@@ -34,7 +34,6 @@ func TestAccResourceProject(t *testing.T) {
 const testAccResourceProject = `
 resource "sleuth_project" "myproject" {
 	name = "My project blah"
-	description = "blah"
 	impact_sensitivity = "FINE"
 	failure_sensitivity = 500
 }
