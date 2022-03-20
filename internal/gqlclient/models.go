@@ -1,6 +1,5 @@
 package gqlclient
 
-// Project -
 type Project struct {
 	Slug                      string `json:"slug"`
 	Name                      string `json:"name"`

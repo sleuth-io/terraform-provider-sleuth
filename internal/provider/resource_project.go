@@ -34,6 +34,7 @@ func resourceProject() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Default:     "",
+				Deprecated: "Project description will be removed",
 			},
 			"issue_tracker_provider_type": {
 				Description: "Where to find issues linked to by changes",
