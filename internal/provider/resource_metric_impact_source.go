@@ -131,7 +131,7 @@ func resourceMetricImpactSourceRead(ctx context.Context, d *schema.ResourceData,
 
 }
 
-func setMetricImpactSourceFields(d *schema.ResourceData, projectSlug string,  env *gqlclient.MetricImpactSource) {
+func setMetricImpactSourceFields(d *schema.ResourceData, projectSlug string, env *gqlclient.MetricImpactSource) {
 
 	d.Set("project_slug", projectSlug)
 	d.Set("name", env.Name)

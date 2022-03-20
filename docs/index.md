@@ -1,7 +1,7 @@
 # Sleuth Provider
 The Sleuth provider is used to interact with [Sleuth](https://sleuth.io) resources.
 
-The provider allows you to manage your Sleuth organization's projects, change sources, and impact sources easily.
+The provider allows you to manage your Sleuth organization's projects, environments, change sources, and impact sources easily.
 It needs to be configured with the proper credentials before it can be used.
 
 ## Example Usage
@@ -20,12 +20,6 @@ terraform {
 
 provider "sleuth" {
   api_key = "API_KEY_FROM_SLEUTH_ORGANIZATION_SETTINGS"
-}
-
-
-# Add a project
-resource "sleuth_project" "myproject" {
-  name = "Greatest project"
 }
 ```
 
