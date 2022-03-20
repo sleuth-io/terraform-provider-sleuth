@@ -17,13 +17,13 @@ Sleuth environment.
 
 ### Required
 
-- **name** (String) Environment name
-- **project_slug** (String) The project for this environment
+- `name` (String) Environment name
+- `project_slug` (String) The project for this environment
 
 ### Optional
 
-- **color** (String) The color for the UI
-- **description** (String) Environment description
-- **id** (String) The ID of this resource.
+- `color` (String) The color for the UI
+- `description` (String) Environment description
+- `id` (String) The ID of this resource.
 
 

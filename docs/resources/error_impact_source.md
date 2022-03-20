@@ -17,17 +17,17 @@ Sleuth error impact source.
 
 ### Required
 
-- **environment_slug** (String) The environment slug
-- **error_environment** (String) The environment of the integration provider
-- **error_org_key** (String) The organization key of the integration provider
-- **error_project_key** (String) The project key of the integration provider
-- **name** (String) Impact source name
-- **project_slug** (String) The project for this impact source
-- **provider_type** (String) Integration provider type
+- `environment_slug` (String) The environment slug
+- `error_environment` (String) The environment of the integration provider
+- `error_org_key` (String) The organization key of the integration provider
+- `error_project_key` (String) The project key of the integration provider
+- `name` (String) Impact source name
+- `project_slug` (String) The project for this impact source
+- `provider_type` (String) Integration provider type
 
 ### Optional
 
-- **id** (String) The ID of this resource.
-- **manually_set_health_threshold** (Number) The manually set threshold to start marking failed values
+- `id` (String) The ID of this resource.
+- `manually_set_health_threshold` (Number) The manually set threshold to start marking failed values
 
 
