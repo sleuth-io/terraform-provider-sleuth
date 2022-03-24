@@ -1,4 +1,8 @@
-## 0.1.0 (Unreleased)
+## 0.2.2 (Unreleased)
+
+NOTES:
+
+- resource/project: The `description` field has been deprecated and will be removed in the next major release
 
 ## 0.2.1 (Dec 20, 2021)
 
@@ -12,3 +16,4 @@ FEATURES:
 
 - Initial release
 
+## 0.1.0 (Unreleased)
