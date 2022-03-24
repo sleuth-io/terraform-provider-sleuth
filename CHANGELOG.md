@@ -1,5 +1,9 @@
 ## 0.3.0 (March 24, 2022)
 
+ENHANCEMENTS:
+
+- Expand docs about how to use Sleut resources  
+
 NOTES:
 
 - resource/project: The `description` field has been deprecated and will be removed in the next major release
