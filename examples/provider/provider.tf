@@ -2,7 +2,7 @@ terraform {
   required_providers {
     sleuth = {
       source  = "sleuth-io/sleuth"
-      version = "~> x.x.x"
+      version = "~> 0.2.0"
     }
   }
 }
