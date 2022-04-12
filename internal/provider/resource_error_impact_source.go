@@ -125,12 +125,14 @@ func resourceErrorImpactSourceRead(ctx context.Context, d *schema.ResourceData, 
 	projectSlug := parsed[0]
 	environmentSlug := parsed[1]
 
-	env, err := c.GetErrorImpactSource(&projectSlug, &environmentSlug)
+	source, err := c.GetErrorImpactSource(&projectSlug, &environmentSlug)
 	if err != nil {
 		return diag.FromErr(err)
+	} else if source == nil {
+		d.SetId("")
+	} else {
+		setErrorImpactSourceFields(d, projectSlug, source)
 	}
-
-	setErrorImpactSourceFields(d, projectSlug, env)
 
 	return diags
 

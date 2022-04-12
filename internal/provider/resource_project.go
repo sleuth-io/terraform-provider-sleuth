@@ -34,7 +34,7 @@ func resourceProject() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Default:     "",
-				Deprecated: "Project description will be removed",
+				Deprecated:  "Project description will be removed",
 			},
 			"issue_tracker_provider_type": {
 				Description: "Where to find issues linked to by changes",
@@ -132,7 +132,11 @@ func resourceProjectRead(ctx context.Context, d *schema.ResourceData, meta inter
 		return diag.FromErr(err)
 	}
 
-	setProjectFields(d, proj)
+	if proj == nil {
+		d.SetId("")
+	} else {
+		setProjectFields(d, proj)
+	}
 
 	return diags
 

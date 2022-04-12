@@ -33,7 +33,7 @@ func (c *Client) GetErrorImpactSource(projectSlug *string, slug *string) (*Error
 			}
 		}
 	}
-	return nil, errors.New("Error impact source not found")
+	return nil, nil
 }
 
 // CreateErrorImpactSource - Creates a environment
