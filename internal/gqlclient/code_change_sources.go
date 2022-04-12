@@ -37,7 +37,7 @@ func (c *Client) GetCodeChangeSource(projectSlug *string, slug *string) (*CodeCh
 			}
 		}
 	}
-	return nil, errors.New("Code change source not found")
+	return nil, nil
 }
 
 func (c *Client) CreateCodeChangeSource(input CreateCodeChangeSourceMutationInput) (*CodeChangeSource, error) {

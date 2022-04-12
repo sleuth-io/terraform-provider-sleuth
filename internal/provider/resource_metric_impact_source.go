@@ -120,12 +120,14 @@ func resourceMetricImpactSourceRead(ctx context.Context, d *schema.ResourceData,
 	projectSlug := parsed[0]
 	environmentSlug := parsed[1]
 
-	env, err := c.GetMetricImpactSource(&projectSlug, &environmentSlug)
+	source, err := c.GetMetricImpactSource(&projectSlug, &environmentSlug)
 	if err != nil {
 		return diag.FromErr(err)
+	} else if source == nil {
+		d.SetId("")
+	} else {
+		setMetricImpactSourceFields(d, projectSlug, source)
 	}
-
-	setMetricImpactSourceFields(d, projectSlug, env)
 
 	return diags
 

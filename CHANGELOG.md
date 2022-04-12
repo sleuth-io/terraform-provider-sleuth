@@ -1,8 +1,14 @@
+## 0.3.1 (Unreleased)
+
+ENHANCEMENTS:
+
+- Better handle remote-deleted objects and recreate in that case
+
 ## 0.3.0 (March 24, 2022)
 
 ENHANCEMENTS:
 
-- Expand docs about how to use Sleut resources  
+- Expand docs about how to use Sleuth resources  
 
 NOTES:
 
@@ -20,4 +26,4 @@ FEATURES:
 
 - Initial release
 
-## 0.1.0 (Unreleased)
+## 0.1.0 (Nov 22, 2021)

@@ -3,6 +3,7 @@ package gqlclient
 import (
 	"errors"
 	"github.com/shurcooL/graphql"
+	"strings"
 )
 
 //// GetProjects - Returns list of projects
@@ -40,10 +41,12 @@ func (c *Client) GetProject(slug *string) (*Project, error) {
 	variables := map[string]interface{}{
 		"projectSlug": graphql.ID(*slug),
 	}
-
 	err := c.doQuery(&query, variables)
 
 	if err != nil {
+		if strings.HasSuffix(err.Error(), "not found") {
+			return nil, nil
+		}
 		return nil, err
 	}
 

@@ -118,9 +118,11 @@ func resourceEnvironmentRead(ctx context.Context, d *schema.ResourceData, meta i
 	env, err := c.GetEnvironment(&projectSlug, &environmentSlug)
 	if err != nil {
 		return diag.FromErr(err)
+	} else if env == nil {
+		d.SetId("")
+	} else {
+		setEnvironmentFields(d, projectSlug, env)
 	}
-
-	setEnvironmentFields(d, projectSlug, env)
 
 	return diags
 

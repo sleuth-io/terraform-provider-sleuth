@@ -179,9 +179,11 @@ func resourceCodeChangeSourceRead(ctx context.Context, d *schema.ResourceData, m
 	source, err := c.GetCodeChangeSource(&projectSlug, &changeSlug)
 	if err != nil {
 		return diag.FromErr(err)
+	} else if source == nil {
+		d.SetId("")
+	} else {
+		setCodeChangeSourceFields(d, projectSlug, source)
 	}
-
-	setCodeChangeSourceFields(d, projectSlug, source)
 
 	return diags
 

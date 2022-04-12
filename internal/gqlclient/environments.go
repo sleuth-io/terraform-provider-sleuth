@@ -51,7 +51,7 @@ func (c *Client) GetEnvironment(projectSlug *string, slug *string) (*Environment
 			return &env, nil
 		}
 	}
-	return nil, errors.New("Environment not found")
+	return nil, nil
 }
 
 // CreateEnvironment - Creates a environment

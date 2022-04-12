@@ -33,7 +33,7 @@ func (c *Client) GetMetricImpactSource(projectSlug *string, slug *string) (*Metr
 			}
 		}
 	}
-	return nil, errors.New(fmt.Sprintf("Metric impact source not found, queried %s", *slug))
+	return nil, nil
 }
 
 // CreateMetricImpactSource - Creates a environment
