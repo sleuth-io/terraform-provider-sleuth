@@ -29,14 +29,14 @@ resource "sleuth_project" "example_tf_app" {
 
 - `build_provider` (String) Where to find builds related to changes
 - `change_failure_rate_boundary` (String) The health rating at which point it will be considered a failure
-- `description` (String) Project description
+- `description` (String, Deprecated) Project description
 - `failure_sensitivity` (Number) The amount of time (in seconds) a deploy must spend in a failure status (Unhealthy, Incident, etc.) before it is determined a failure. Setting this value to a longer time means that less deploys will be classified.
-- `id` (String) The ID of this resource.
 - `impact_sensitivity` (String) How many impact measures Sleuth takes into account when auto-determining a deploys health.
 - `issue_tracker_provider_type` (String) Where to find issues linked to by changes
 
 ### Read-Only
 
+- `id` (String) The ID of this resource.
 - `slug` (String) Project slug
 
 

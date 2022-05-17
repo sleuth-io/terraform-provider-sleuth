@@ -38,6 +38,9 @@ resource "sleuth_environment" "stage" {
 
 - `color` (String) The color for the UI
 - `description` (String) Environment description
+
+### Read-Only
+
 - `id` (String) The ID of this resource.
 
 

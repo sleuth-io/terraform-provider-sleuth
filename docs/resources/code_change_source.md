@@ -50,10 +50,13 @@ resource "sleuth_code_change_source" "sleuth-terraform-provider" {
 
 - `auto_tracking_delay` (Number) The delay to add to a deployment event
 - `collect_impact` (Boolean) Whether to collect impact for its deploys
-- `id` (String) The ID of this resource.
 - `include_in_dashboard` (Boolean) Whether to include deploys from this change source in the metrics dashboard
 - `notify_in_slack` (Boolean) Whether to send Slack notifications for deploys or not
 - `path_prefix` (String) What code source path to limit this deployment to. Useful for monorepos
+
+### Read-Only
+
+- `id` (String) The ID of this resource.
 
 <a id="nestedblock--environment_mappings"></a>
 ### Nested Schema for `environment_mappings`
