@@ -1,4 +1,10 @@
-## 0.3.1 (Unreleased)
+## 0.3.2 (May 17, 2022)
+
+ENHANCEMENTS:
+
+- Document available deployment tracking choices
+
+## 0.3.1 (April 13, 2022)
 
 ENHANCEMENTS:
 
