@@ -79,7 +79,7 @@ func resourceCodeChangeSource() *schema.Resource {
 				},
 			},
 			"deploy_tracking_type": {
-				Description: "How to track deploys",
+				Description: "How to track deploys. Valid choices are build, manual, auto_pr, auto_tag, auto_push",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
