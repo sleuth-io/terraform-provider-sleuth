@@ -54,8 +54,11 @@ resource "sleuth_metric_impact_source" "cloudwatch_rds_cpu" {
 
 ### Optional
 
-- `id` (String) The ID of this resource.
 - `less_is_better` (Boolean) Whether smaller values are better or not
 - `manually_set_health_threshold` (Number) The manually set threshold to start marking failed values
+
+### Read-Only
+
+- `id` (String) The ID of this resource.
 
 

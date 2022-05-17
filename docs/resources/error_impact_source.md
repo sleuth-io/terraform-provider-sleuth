@@ -39,7 +39,10 @@ resource "sleuth_error_impact_source" "sentry_production" {
 
 ### Optional
 
-- `id` (String) The ID of this resource.
 - `manually_set_health_threshold` (Number) The manually set threshold to start marking failed values
+
+### Read-Only
+
+- `id` (String) The ID of this resource.
 
 
