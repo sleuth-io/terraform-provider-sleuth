@@ -34,7 +34,7 @@ func (transport *AuthenticatedTransport) RoundTrip(req *http.Request) (*http.Res
 
 // NewClient -
 func NewClient(baseurl, apiKey *string) (*Client, error) {
-	httpClient := http.Client{Timeout: 10 * time.Second,
+	httpClient := http.Client{Timeout: 20 * time.Second,
 		Transport: &AuthenticatedTransport{http.DefaultTransport, *apiKey}}
 	c := Client{
 		GQLClient:  graphql.NewClient(*baseurl+"/graphql", &httpClient),

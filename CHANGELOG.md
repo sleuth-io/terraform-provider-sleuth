@@ -1,3 +1,10 @@
+## 0.3.3 (June 14, 2022)
+
+ENHANCEMENTS:
+
+- Increase HTTP timeout from 10 secs to 20
+
+
 ## 0.3.2 (May 17, 2022)
 
 ENHANCEMENTS:
