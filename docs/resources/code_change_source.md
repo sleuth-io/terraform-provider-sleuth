@@ -49,6 +49,7 @@ resource "sleuth_code_change_source" "sleuth-terraform-provider" {
 ### Optional
 
 - `auto_tracking_delay` (Number) The delay to add to a deployment event
+- `build_mappings` (Block List) (see [below for nested schema](#nestedblock--build_mappings))
 - `collect_impact` (Boolean) Whether to collect impact for its deploys
 - `include_in_dashboard` (Boolean) Whether to include deploys from this change source in the metrics dashboard
 - `notify_in_slack` (Boolean) Whether to send Slack notifications for deploys or not
@@ -76,5 +77,20 @@ Required:
 - `owner` (String) The repository owner, usually the organization or user name
 - `provider` (String) The repository provider, such as GITHUB
 - `url` (String) The repository url, used for links
+
+
+<a id="nestedblock--build_mappings"></a>
+### Nested Schema for `build_mappings`
+
+Required:
+
+- `build_name` (String) The remote build or pipeline name
+- `environment_slug` (String) The environment slug or id
+- `provider` (String) The repository provider, such as CIRCLECI
+
+Optional:
+
+- `job_name` (String) The job or stage within the build or pipeline, if supported
+- `project_key` (String) The build project key
 
 

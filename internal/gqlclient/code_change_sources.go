@@ -33,6 +33,9 @@ func (c *Client) GetCodeChangeSource(projectSlug *string, slug *string) (*CodeCh
 				for idx, mapping := range src.ChangeSource.EnvironmentMappings {
 					src.ChangeSource.EnvironmentMappings[idx].EnvironmentSlug = fmt.Sprintf("%s/%s", *projectSlug, mapping.EnvironmentSlug)
 				}
+				for idx, _ := range src.ChangeSource.DeployTrackingBuildMappings {
+					src.ChangeSource.DeployTrackingBuildMappings[idx].Provider = strings.ToLower(src.ChangeSource.DeployTrackingBuildMappings[idx].Provider)
+				}
 				return &src.ChangeSource, nil
 			}
 		}

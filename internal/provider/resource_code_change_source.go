@@ -78,6 +78,39 @@ func resourceCodeChangeSource() *schema.Resource {
 					},
 				},
 			},
+			"build_mappings": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"environment_slug": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "The environment slug or id",
+						},
+						"provider": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "The repository provider, such as CIRCLECI",
+						},
+						"build_name": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "The remote build or pipeline name",
+						},
+						"job_name": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The job or stage within the build or pipeline, if supported",
+						},
+						"project_key": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The build project key",
+						},
+					},
+				},
+			},
 			"deploy_tracking_type": {
 				Description: "How to track deploys. Valid choices are build, manual, auto_pr, auto_tag, auto_push",
 				Type:        schema.TypeString,
@@ -130,7 +163,7 @@ func resourceCodeChangeSourceCreate(ctx context.Context, d *schema.ResourceData,
 	inputFields := gqlclient.MutableCodeChangeSource{}
 	input := gqlclient.CreateCodeChangeSourceMutationInput{ProjectSlug: projectSlug, MutableCodeChangeSource: &inputFields}
 	input.InitializeChanges = true
-	populateCodeChangeSource(d, &inputFields)
+	diags = populateCodeChangeSource(d, &inputFields, diags)
 
 	src, err := c.CreateCodeChangeSource(input)
 	if err != nil {
@@ -154,7 +187,7 @@ func resourceCodeChangeSourceUpdate(ctx context.Context, d *schema.ResourceData,
 
 	inputFields := gqlclient.MutableCodeChangeSource{}
 	input := gqlclient.UpdateCodeChangeSourceMutationInput{ProjectSlug: projectSlug, Slug: changeSourceSlug, MutableCodeChangeSource: &inputFields}
-	populateCodeChangeSource(d, &inputFields)
+	diags = populateCodeChangeSource(d, &inputFields, diags)
 
 	source, err := c.UpdateCodeChangeSource(input)
 	if err != nil {
@@ -207,10 +240,22 @@ func setCodeChangeSourceFields(d *schema.ResourceData, projectSlug string, sourc
 		environmentMappings[idx] = m
 	}
 
+	buildMappings := make([]map[string]interface{}, len(source.DeployTrackingBuildMappings))
+	for idx, v := range source.DeployTrackingBuildMappings {
+		m := make(map[string]interface{})
+		m["build_name"] = v.BuildName
+		m["job_name"] = v.JobName
+		m["provider"] = v.Provider
+		m["project_key"] = v.BuildProjectKey
+		m["environment_slug"] = v.Environment
+		buildMappings[idx] = m
+	}
+
 	d.Set("project_slug", projectSlug)
 	d.Set("name", source.Name)
 	d.Set("repository", repositoryList)
 	d.Set("environment_mappings", environmentMappings)
+	d.Set("build_mappings", buildMappings)
 	d.Set("auto_tracking_delay", source.AutoTrackingDelay)
 	d.Set("include_in_dashboard", source.IncludeInDashboard)
 	d.Set("path_prefix", source.PathPrefix)
@@ -219,7 +264,7 @@ func setCodeChangeSourceFields(d *schema.ResourceData, projectSlug string, sourc
 	d.Set("deploy_tracking_type", source.DeployTrackingType)
 }
 
-func populateCodeChangeSource(d *schema.ResourceData, input *gqlclient.MutableCodeChangeSource) bool {
+func populateCodeChangeSource(d *schema.ResourceData, input *gqlclient.MutableCodeChangeSource, diags diag.Diagnostics) diag.Diagnostics {
 	repoList := d.Get("repository").([]interface{})
 	repoData := repoList[0].(map[string]interface{})
 	repo := gqlclient.Repository{Owner: repoData["owner"].(string),
@@ -237,9 +282,36 @@ func populateCodeChangeSource(d *schema.ResourceData, input *gqlclient.MutableCo
 		environmentMappings[idx] = mapping
 	}
 
+	buildMappingsData := d.Get("build_mappings").([]interface{})
+	buildMappings := make([]gqlclient.BuildMapping, len(buildMappingsData))
+	for idx, v := range buildMappingsData {
+		m := v.(map[string]interface{})
+		var envRaw = m["environment_slug"].(string)
+
+		for _, v2 := range environmentMappings {
+			var envSlug = v2.EnvironmentSlug
+			if strings.Contains(v2.EnvironmentSlug, "/") {
+				envSlug = strings.Split(v2.EnvironmentSlug, "/")[1]
+			}
+			if envRaw == envSlug {
+				mapping := gqlclient.BuildMapping{EnvironmentSlug: envSlug,
+					BuildName:       m["build_name"].(string),
+					JobName:         m["job_name"].(string),
+					Provider:        m["provider"].(string),
+					BuildProjectKey: m["project_key"].(string),
+					IntegrationSlug: strings.ToLower(m["provider"].(string)),
+					BuildBranch:     v2.Branch,
+				}
+				buildMappings[idx] = mapping
+				break
+			}
+		}
+	}
+
 	input.Name = d.Get("name").(string)
 	input.Repository = repo
 	input.EnvironmentMappings = environmentMappings
+	input.BuildMappings = buildMappings
 	input.AutoTrackingDelay = d.Get("auto_tracking_delay").(int)
 	input.IncludeInDashboard = d.Get("include_in_dashboard").(bool)
 	input.PathPrefix = d.Get("path_prefix").(string)
@@ -247,7 +319,7 @@ func populateCodeChangeSource(d *schema.ResourceData, input *gqlclient.MutableCo
 	input.CollectImpact = d.Get("collect_impact").(bool)
 	input.DeployTrackingType = d.Get("deploy_tracking_type").(string)
 
-	return true
+	return diags
 }
 
 func resourceCodeChangeSourceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

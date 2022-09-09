@@ -52,16 +52,17 @@ type BranchMapping struct {
 }
 
 type CodeChangeSource struct {
-	Slug                string          `json:"slug"`
-	Name                string          `json:"name"`
-	Repository          Repository      `json:"repository"`
-	DeployTrackingType  string          `json:"deployTrackingType"`
-	CollectImpact       bool            `json:"collectImpact"`
-	PathPrefix          string          `json:"pathPrefix"`
-	NotifyInSlack       bool            `json:"notifyInSlack"`
-	IncludeInDashboard  bool            `json:"includeInDashboard"`
-	AutoTrackingDelay   int             `json:"autoTrackingDelay"`
-	EnvironmentMappings []BranchMapping `json:"environmentMappings"`
+	Slug                        string                       `json:"slug"`
+	Name                        string                       `json:"name"`
+	Repository                  Repository                   `json:"repository"`
+	DeployTrackingType          string                       `json:"deployTrackingType"`
+	CollectImpact               bool                         `json:"collectImpact"`
+	PathPrefix                  string                       `json:"pathPrefix"`
+	NotifyInSlack               bool                         `json:"notifyInSlack"`
+	IncludeInDashboard          bool                         `json:"includeInDashboard"`
+	AutoTrackingDelay           int                          `json:"autoTrackingDelay"`
+	EnvironmentMappings         []BranchMapping              `json:"environmentMappings"`
+	DeployTrackingBuildMappings []DeployTrackingBuildMapping `json:"deployTrackingBuildMappings"`
 }
 
 type MutableProject struct {
@@ -155,6 +156,24 @@ type DeleteImpactSourceMutationInput struct {
 	Slug        string `json:"slug"`
 }
 
+type BuildMapping struct {
+	EnvironmentSlug string `json:"environmentSlug"`
+	Provider        string `json:"provider"`
+	BuildName       string `json:"buildName"`
+	JobName         string `json:"jobName,omitempty"`
+	BuildProjectKey string `json:"buildProjectKey,omitempty"`
+	IntegrationSlug string `json:"integrationSlug"`
+	BuildBranch     string `json:"buildBranch"`
+}
+
+type DeployTrackingBuildMapping struct {
+	Environment     Environment `json:"environment"`
+	Provider        string      `json:"provider"`
+	BuildName       string      `json:"buildName"`
+	JobName         string      `json:"jobName,omitempty"`
+	BuildProjectKey string      `json:"buildProjectKey"`
+}
+
 type MutableCodeChangeSource struct {
 	Name                string          `json:"name"`
 	Repository          Repository      `json:"repository"`
@@ -165,6 +184,7 @@ type MutableCodeChangeSource struct {
 	IncludeInDashboard  bool            `json:"includeInDashboard"`
 	AutoTrackingDelay   int             `json:"autoTrackingDelay"`
 	EnvironmentMappings []BranchMapping `json:"environmentMappings"`
+	BuildMappings       []BuildMapping  `json:"buildMappings"`
 }
 
 type CreateCodeChangeSourceMutationInput struct {
