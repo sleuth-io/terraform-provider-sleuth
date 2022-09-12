@@ -32,6 +32,11 @@ func resourceEnvironment() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 			},
+			"slug": {
+				Description: "Environment slug",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
 			"description": {
 				Description: "Environment description",
 				Type:        schema.TypeString,
@@ -132,6 +137,7 @@ func setEnvironmentFields(d *schema.ResourceData, projectSlug string, env *gqlcl
 
 	d.Set("project_slug", projectSlug)
 	d.Set("name", env.Name)
+	d.Set("slug", env.Slug)
 	d.Set("description", env.Description)
 	d.Set("color", env.Color)
 }

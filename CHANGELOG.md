@@ -1,3 +1,10 @@
+## 0.3.4 (Sept 9, 2022)
+
+ENHANCEMENTS:
+
+- Add support for build mapping for code deployments
+
+
 ## 0.3.3 (June 14, 2022)
 
 ENHANCEMENTS:

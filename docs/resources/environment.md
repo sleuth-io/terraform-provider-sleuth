@@ -42,5 +42,6 @@ resource "sleuth_environment" "stage" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+- `slug` (String) Environment slug
 
 
