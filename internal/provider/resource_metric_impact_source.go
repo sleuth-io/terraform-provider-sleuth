@@ -42,6 +42,11 @@ func resourceMetricImpactSource() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 			},
+			"integration_slug": {
+				Description: "The integration slug",
+				Type:        schema.TypeString,
+				Optional:    true,
+			},
 			"query": {
 				Description: "The metric query",
 				Type:        schema.TypeString,
@@ -147,10 +152,23 @@ func setMetricImpactSourceFields(d *schema.ResourceData, projectSlug string, env
 func populateMetricImpactSource(d *schema.ResourceData, input *gqlclient.MutableMetricImpactSource) bool {
 	input.Name = d.Get("name").(string)
 	var envRaw = d.Get("environment_slug").(string)
-	var envSlug = strings.Split(envRaw, "/")[1]
+
+	var envSlug string
+	if strings.Contains(envRaw, "/") {
+		envSlug = strings.Split(envRaw, "/")[1]
+	} else {
+		envSlug = envRaw
+	}
+
+	var providerType = d.Get("provider_type").(string)
+	var integrationSlug = d.Get("integration_slug").(string)
+	if integrationSlug == "" {
+		integrationSlug = providerType
+	}
 	input.EnvironmentSlug = envSlug
-	input.Provider = strings.ToUpper(d.Get("provider_type").(string))
+	input.Provider = strings.ToUpper(providerType)
 	input.Query = d.Get("query").(string)
+	input.IntegrationSlug = integrationSlug
 	input.LessIsBetter = d.Get("less_is_better").(bool)
 	input.ManuallySetHealthThreshold = d.Get("manually_set_health_threshold").(float64)
 

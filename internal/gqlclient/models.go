@@ -136,6 +136,7 @@ type MutableMetricImpactSource struct {
 	Name                       string  `json:"name"`
 	Provider                   string  `json:"provider"`
 	Query                      string  `json:"query,omitempty"`
+	IntegrationSlug            string  `json:"auth,omitempty"`
 	LessIsBetter               bool    `json:"lessIsBetter,omitempty"`
 	ManuallySetHealthThreshold float64 `json:"manuallySetHealthThreshold,omitempty"`
 }
