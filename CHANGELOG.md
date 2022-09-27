@@ -1,3 +1,10 @@
+## 0.3.5 (Sept 27, 2022)
+
+ENHANCEMENTS:
+
+- Add support for specifying the integration slug for metric impact source
+
+
 ## 0.3.4 (Sept 9, 2022)
 
 ENHANCEMENTS:
