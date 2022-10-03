@@ -28,6 +28,7 @@ provider "sleuth" {
 The Sleuth provider authenticates to Sleuth using your Sleuth organization API key. Find this by clicking on your
 organization name at the top left, selecting "Organization settings", and looking under "Api key".
 
+You can provide the API key via `SLEUTH_API_KEY` environment variable.
 
 ## Slugs
 
