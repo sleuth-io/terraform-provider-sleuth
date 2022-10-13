@@ -4,6 +4,6 @@ go 1.15
 
 require (
 	github.com/hashicorp/terraform-plugin-docs v0.8.1
-	github.com/hashicorp/terraform-plugin-sdk/v2 v2.10.0
+	github.com/hashicorp/terraform-plugin-sdk/v2 v2.24.0
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a
 )
