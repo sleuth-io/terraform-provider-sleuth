@@ -189,8 +189,9 @@ type MutableCodeChangeSource struct {
 }
 
 type CreateCodeChangeSourceMutationInput struct {
-	ProjectSlug       string `json:"projectSlug"`
-	InitializeChanges bool   `json:"initializeChanges"`
+	ProjectSlug       		string `json:"projectSlug"`
+	InitializeChanges 		bool   `json:"initializeChanges"`
+	InitializeChangesNow 	bool   `json:"initializeChangesNow"`
 	*MutableCodeChangeSource
 }
 

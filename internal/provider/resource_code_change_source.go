@@ -163,6 +163,7 @@ func resourceCodeChangeSourceCreate(ctx context.Context, d *schema.ResourceData,
 	inputFields := gqlclient.MutableCodeChangeSource{}
 	input := gqlclient.CreateCodeChangeSourceMutationInput{ProjectSlug: projectSlug, MutableCodeChangeSource: &inputFields}
 	input.InitializeChanges = true
+	input.InitializeChangesNow = true
 	diags = populateCodeChangeSource(d, &inputFields, diags)
 
 	src, err := c.CreateCodeChangeSource(input)
