@@ -13,6 +13,12 @@ This repository is a Terraform provider for [Sleuth](https://sleuth.io), allowin
 -	[Terraform](https://www.terraform.io/downloads.html) >= 0.13.x
 -	[Go](https://golang.org/doc/install) >= 1.15
 
+## Known Limitations
+- No support for Azure as repository provider
+- No support for New Relic as impact source provider
+- No support for custom impact sources
+- No support for multiple integrations of same type
+
 ## Building The Provider
 
 1. Clone the repository
