@@ -1,4 +1,7 @@
-.PHONY: docs release
+.PHONY: docs release help
+
+# Help system from https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
+.DEFAULT_GOAL := help
 TEST?=$$(go list ./... | grep -v 'vendor')
 HOSTNAME=sleuth.io
 NAMESPACE=core
@@ -10,27 +13,28 @@ OS_ARCH=linux_amd64
 # go source files, ignore vendor directory
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
-default: install
+help:
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-build:
+build: ## Build the binary
 	go build -o ${BINARY}
 
-format:
+format: ## Format the source code with gofmt
 	@gofmt -l -w $(SRC)
 
-release:
+release: ## Releases the current version as a snapshot
 	goreleaser release --rm-dist --snapshot --skip-publish  --skip-sign
 
-install: build
+install: build ## Builds and installs locally
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
 	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
 
-test: 
+test: ## Runs the tests
 	go test -i $(TEST) || exit 1                                                   
 	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4                    
 
-docs:
+docs: ## Generates docs
 	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
 
-testacc: 
+testacc: ## Runs acceptance tests
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m   
