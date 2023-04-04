@@ -158,21 +158,23 @@ type DeleteImpactSourceMutationInput struct {
 }
 
 type BuildMapping struct {
-	EnvironmentSlug string `json:"environmentSlug"`
-	Provider        string `json:"provider"`
-	BuildName       string `json:"buildName"`
-	JobName         string `json:"jobName,omitempty"`
-	BuildProjectKey string `json:"buildProjectKey,omitempty"`
-	IntegrationSlug string `json:"integrationSlug"`
-	BuildBranch     string `json:"buildBranch"`
+	EnvironmentSlug          string `json:"environmentSlug"`
+	Provider                 string `json:"provider"`
+	BuildName                string `json:"buildName"`
+	JobName                  string `json:"jobName,omitempty"`
+	BuildProjectKey          string `json:"buildProjectKey,omitempty"`
+	IntegrationSlug          string `json:"integrationSlug"`
+	BuildBranch              string `json:"buildBranch"`
+	MatchBranchToEnvironment bool   `json:"matchBranchToEnvironment"`
 }
 
 type DeployTrackingBuildMapping struct {
-	Environment     Environment `json:"environment"`
-	Provider        string      `json:"provider"`
-	BuildName       string      `json:"buildName"`
-	JobName         string      `json:"jobName,omitempty"`
-	BuildProjectKey string      `json:"buildProjectKey"`
+	Environment              Environment `json:"environment"`
+	Provider                 string      `json:"provider"`
+	BuildName                string      `json:"buildName"`
+	JobName                  string      `json:"jobName,omitempty"`
+	BuildProjectKey          string      `json:"buildProjectKey"`
+	MatchBranchToEnvironment bool        `json:"matchBranchToEnvironment"`
 }
 
 type MutableCodeChangeSource struct {
