@@ -1,4 +1,4 @@
-.PHONY: docs release help
+.PHONY: docs release help format
 
 # Help system from https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 .DEFAULT_GOAL := help

@@ -1,3 +1,11 @@
+## 0.3.7 (April 6, 2023)
+
+ENHANCEMENTS:
+
+- Add support for specifying the integration slug for metric impact source
+- Add support for specifying whether build branches should match environment branches in build mapping
+
+
 ## 0.3.5 (Sept 27, 2022)
 
 ENHANCEMENTS:
