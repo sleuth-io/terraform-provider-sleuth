@@ -247,6 +247,7 @@ func setCodeChangeSourceFields(d *schema.ResourceData, projectSlug string, sourc
 		m["job_name"] = v.JobName
 		m["provider"] = v.Provider
 		m["project_key"] = v.BuildProjectKey
+		m["match_branch_to_environment"] = v.MatchBranchToEnvironment
 		m["environment_slug"] = v.Environment
 		buildMappings[idx] = m
 	}
@@ -295,12 +296,13 @@ func populateCodeChangeSource(d *schema.ResourceData, input *gqlclient.MutableCo
 			}
 			if envRaw == envSlug {
 				mapping := gqlclient.BuildMapping{EnvironmentSlug: envSlug,
-					BuildName:       m["build_name"].(string),
-					JobName:         m["job_name"].(string),
-					Provider:        m["provider"].(string),
-					BuildProjectKey: m["project_key"].(string),
-					IntegrationSlug: strings.ToLower(m["provider"].(string)),
-					BuildBranch:     v2.Branch,
+					BuildName:                m["build_name"].(string),
+					JobName:                  m["job_name"].(string),
+					Provider:                 m["provider"].(string),
+					BuildProjectKey:          m["project_key"].(string),
+					MatchBranchToEnvironment: m["match_branch_to_environment"].(bool),
+					IntegrationSlug:          strings.ToLower(m["provider"].(string)),
+					BuildBranch:              v2.Branch,
 				}
 				buildMappings[idx] = mapping
 				break
