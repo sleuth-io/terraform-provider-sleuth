@@ -1,6 +1,7 @@
 # Developing the Provider
 
 If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (see [Requirements](../../README.md)).
+The easiest way to do this is to use dosbox and run `dosbox shell`.
 
 To compile the provider, run `make install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
 
@@ -13,6 +14,11 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 ```sh
 $ make testacc
 ```
+
+To run against a local instance of Sleuth, do the following:
+1. Start Sleuth locally so that it is available on http://dev.sleuth.io 
+2. Copy the `main.tf.example` file as `main.tf` and edit the file to change `api_key`
+3. Run terraform via `main dev`. Note this will delete the state each time.
 
 # Adding Dependencies
 
