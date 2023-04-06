@@ -165,7 +165,7 @@ type BuildMapping struct {
 	BuildProjectKey          string `json:"buildProjectKey,omitempty"`
 	IntegrationSlug          string `json:"integrationSlug"`
 	BuildBranch              string `json:"buildBranch"`
-	MatchBranchToEnvironment bool   `json:"matchBranchToEnvironment"`
+	MatchBranchToEnvironment bool   `json:"matchBranchToEnvironment,omitempty"`
 }
 
 type DeployTrackingBuildMapping struct {
