@@ -309,17 +309,13 @@ func populateCodeChangeSource(d *schema.ResourceData, input *gqlclient.MutableCo
 				envSlug = strings.Split(v2.EnvironmentSlug, "/")[1]
 			}
 			if envRaw == envSlug {
-				var integSlug = strings.ToLower(m["provider"].(string))
-				if val, ok := m["integration_slug"]; ok {
-					integSlug = val.(string)
-				}
 				mapping := gqlclient.BuildMapping{EnvironmentSlug: envSlug,
 					BuildName:                m["build_name"].(string),
 					JobName:                  m["job_name"].(string),
 					Provider:                 m["provider"].(string),
 					BuildProjectKey:          m["project_key"].(string),
 					MatchBranchToEnvironment: m["match_branch_to_environment"].(bool),
-					IntegrationSlug:          integSlug,
+					IntegrationSlug:          m["integration_slug"].(string),
 					BuildBranch:              v2.Branch,
 				}
 				buildMappings[idx] = mapping
