@@ -93,6 +93,11 @@ func resourceCodeChangeSource() *schema.Resource {
 							Required:    true,
 							Description: "The repository provider, such as CIRCLECI",
 						},
+						"integration_slug": {
+							Description: "The integration slug",
+							Type:        schema.TypeString,
+							Optional:    true,
+						},
 						"build_name": {
 							Type:        schema.TypeString,
 							Required:    true,
@@ -107,6 +112,15 @@ func resourceCodeChangeSource() *schema.Resource {
 							Type:        schema.TypeString,
 							Optional:    true,
 							Description: "The build project key",
+						},
+						"match_branch_to_environment": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							Description: "Whether only builds performed on the branch mapped from the environment are " +
+								"tracked or not. Basically if you only want Sleuth to find builds that were triggered" +
+								"by a change on the branch that is configured for the environment, set this to false. " +
+								"Defaults to true",
+							Default: true,
 						},
 					},
 				},
@@ -301,7 +315,7 @@ func populateCodeChangeSource(d *schema.ResourceData, input *gqlclient.MutableCo
 					Provider:                 m["provider"].(string),
 					BuildProjectKey:          m["project_key"].(string),
 					MatchBranchToEnvironment: m["match_branch_to_environment"].(bool),
-					IntegrationSlug:          strings.ToLower(m["provider"].(string)),
+					IntegrationSlug:          m["integration_slug"].(string),
 					BuildBranch:              v2.Branch,
 				}
 				buildMappings[idx] = mapping

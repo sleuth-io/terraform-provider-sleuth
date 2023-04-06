@@ -157,6 +157,7 @@ type DeleteImpactSourceMutationInput struct {
 	Slug        string `json:"slug"`
 }
 
+// This represents a build mapping for creation or mutation
 type BuildMapping struct {
 	EnvironmentSlug          string `json:"environmentSlug"`
 	Provider                 string `json:"provider"`
@@ -168,6 +169,7 @@ type BuildMapping struct {
 	MatchBranchToEnvironment bool   `json:"matchBranchToEnvironment,omitempty"`
 }
 
+// This represents the build mapping as retrieved from a query
 type DeployTrackingBuildMapping struct {
 	Environment              Environment `json:"environment"`
 	Provider                 string      `json:"provider"`
