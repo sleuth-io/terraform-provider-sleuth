@@ -17,7 +17,7 @@ This repository is a Terraform provider for [Sleuth](https://sleuth.io), allowin
 - No support for Azure as repository provider
 - No support for New Relic as impact source provider
 - No support for custom impact sources
-- No support for multiple integrations of same type
+- Limited support for multiple integrations of same type
 
 ## Building The Provider
 

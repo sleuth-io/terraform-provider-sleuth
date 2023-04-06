@@ -37,4 +37,9 @@ docs: ## Generates docs
 	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
 
 testacc: ## Runs acceptance tests
-	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m   
+	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
+
+dev: ## Runs terraform against your local dev env
+	test -s main.tf || (echo "**** Set up main.tf first from main.tf.example *** "; exit 1)
+	rm -f terraform.tfstate && terraform plan && terraform apply
+
