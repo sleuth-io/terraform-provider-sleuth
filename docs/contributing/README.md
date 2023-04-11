@@ -1,7 +1,7 @@
 # Developing the Provider
 
 If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (see [Requirements](../../README.md)).
-The easiest way to do this is to use dosbox and run `dosbox shell`.
+The easiest way to do this is to use devbox and run `devbox shell`.
 
 To compile the provider, run `make install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
 
