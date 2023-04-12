@@ -3,11 +3,12 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
-	"strings"
-	"time"
 )
 
 func resourceErrorImpactSource() *schema.Resource {
@@ -123,9 +124,9 @@ func resourceErrorImpactSourceRead(ctx context.Context, d *schema.ResourceData, 
 
 	parsed := strings.Split(d.Id(), "/")
 	projectSlug := parsed[0]
-	environmentSlug := parsed[1]
+	slug := parsed[1]
 
-	source, err := c.GetErrorImpactSource(&projectSlug, &environmentSlug)
+	source, err := c.GetErrorImpactSource(&projectSlug, &slug)
 	if err != nil {
 		return diag.FromErr(err)
 	} else if source == nil {
