@@ -153,9 +153,7 @@ func setErrorImpactSourceFields(d *schema.ResourceData, projectSlug string, env 
 
 func populateErrorImpactSource(d *schema.ResourceData, input *gqlclient.MutableErrorImpactSource) bool {
 	input.Name = d.Get("name").(string)
-	var envRaw = d.Get("environment_slug").(string)
-	var envSlug = strings.Split(envRaw, "/")[1]
-	input.EnvironmentSlug = envSlug
+	input.EnvironmentSlug = d.Get("environment_slug").(string)
 	input.Provider = strings.ToUpper(d.Get("provider_type").(string))
 	input.ErrorOrgKey = d.Get("error_org_key").(string)
 	input.ErrorProjectKey = d.Get("error_project_key").(string)
