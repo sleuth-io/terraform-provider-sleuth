@@ -143,7 +143,7 @@ func setErrorImpactSourceFields(d *schema.ResourceData, projectSlug string, env 
 
 	d.Set("project_slug", projectSlug)
 	d.Set("name", env.Name)
-	d.Set("environment_slug", fmt.Sprintf("%s/%s", projectSlug, env.Environment.Slug))
+	d.Set("environment_slug", env.Environment.Slug)
 	d.Set("provider_type", env.Provider)
 	d.Set("error_org_key", env.ErrorOrgKey)
 	d.Set("error_project_key", env.ErrorProjectKey)
