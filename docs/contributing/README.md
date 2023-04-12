@@ -22,6 +22,10 @@ To run against a local instance of Sleuth, do the following:
 2. Copy the `main.tf.example` file as `main.tf` and edit the file to change `api_key`
 3. Run terraform via `make dev`. Note this will delete the state each time.
 
+# Debugging
+
+You can use `fmt.Print("here")` with combination of `TF_LOG=WARN` env variable when running `terraform plan` or `terraform apply`.
+
 # Adding Dependencies
 
 This provider uses [Go modules](https://github.com/golang/go/wiki/Modules).
