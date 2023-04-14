@@ -3,11 +3,12 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
-	"strings"
-	"time"
 )
 
 func resourceErrorImpactSource() *schema.Resource {
@@ -123,9 +124,9 @@ func resourceErrorImpactSourceRead(ctx context.Context, d *schema.ResourceData, 
 
 	parsed := strings.Split(d.Id(), "/")
 	projectSlug := parsed[0]
-	environmentSlug := parsed[1]
+	slug := parsed[1]
 
-	source, err := c.GetErrorImpactSource(&projectSlug, &environmentSlug)
+	source, err := c.GetErrorImpactSource(&projectSlug, &slug)
 	if err != nil {
 		return diag.FromErr(err)
 	} else if source == nil {
@@ -142,7 +143,7 @@ func setErrorImpactSourceFields(d *schema.ResourceData, projectSlug string, env 
 
 	d.Set("project_slug", projectSlug)
 	d.Set("name", env.Name)
-	d.Set("environment_slug", fmt.Sprintf("%s/%s", projectSlug, env.Environment.Slug))
+	d.Set("environment_slug", env.Environment.Slug)
 	d.Set("provider_type", env.Provider)
 	d.Set("error_org_key", env.ErrorOrgKey)
 	d.Set("error_project_key", env.ErrorProjectKey)
@@ -152,9 +153,7 @@ func setErrorImpactSourceFields(d *schema.ResourceData, projectSlug string, env 
 
 func populateErrorImpactSource(d *schema.ResourceData, input *gqlclient.MutableErrorImpactSource) bool {
 	input.Name = d.Get("name").(string)
-	var envRaw = d.Get("environment_slug").(string)
-	var envSlug = strings.Split(envRaw, "/")[1]
-	input.EnvironmentSlug = envSlug
+	input.EnvironmentSlug = d.Get("environment_slug").(string)
 	input.Provider = strings.ToUpper(d.Get("provider_type").(string))
 	input.ErrorOrgKey = d.Get("error_org_key").(string)
 	input.ErrorProjectKey = d.Get("error_project_key").(string)

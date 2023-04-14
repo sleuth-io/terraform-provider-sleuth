@@ -1,3 +1,10 @@
+## 0.3.8 (April 14, 2023)
+
+FIXES:
+
+- create and update of error impact source
+- create and update of metric impact source
+
 ## 0.3.7 (April 6, 2023)
 
 ENHANCEMENTS:
@@ -43,7 +50,7 @@ ENHANCEMENTS:
 
 ENHANCEMENTS:
 
-- Expand docs about how to use Sleuth resources  
+- Expand docs about how to use Sleuth resources
 
 NOTES:
 

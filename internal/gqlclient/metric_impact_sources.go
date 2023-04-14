@@ -3,6 +3,7 @@ package gqlclient
 import (
 	"errors"
 	"fmt"
+
 	"github.com/shurcooL/graphql"
 )
 
@@ -13,11 +14,12 @@ func (c *Client) GetMetricImpactSource(projectSlug *string, slug *string) (*Metr
 			ImpactSources []struct {
 				Type         graphql.String
 				ImpactSource MetricImpactSource `graphql:"... on MetricImpactSource"`
-			}
+			} `graphql:"impactSources(impactSourceSlug: $impactSourceSlug)"`
 		} `graphql:"project(projectSlug: $projectSlug)"`
 	}
 	variables := map[string]interface{}{
-		"projectSlug": graphql.ID(*projectSlug),
+		"projectSlug":      graphql.ID(*projectSlug),
+		"impactSourceSlug": graphql.ID(*slug),
 	}
 
 	err := c.doQuery(&query, variables)
@@ -27,10 +29,8 @@ func (c *Client) GetMetricImpactSource(projectSlug *string, slug *string) (*Metr
 	}
 
 	for _, src := range query.Project.ImpactSources {
-		if src.Type == "MetricImpactSource" {
-			if src.ImpactSource.Slug == *slug {
-				return &src.ImpactSource, nil
-			}
+		if src.Type == "METRIC" {
+			return &src.ImpactSource, nil
 		}
 	}
 	return nil, nil

@@ -27,11 +27,13 @@ release: ## Releases the current version as a snapshot
 
 install: build ## Builds and installs locally
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+	rm .terraform.lock.hcl
 	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+	terraform init
 
 test: ## Runs the tests
-	go test -i $(TEST) || exit 1                                                   
-	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4                    
+	go test -i $(TEST) || exit 1
+	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
 
 docs: ## Generates docs
 	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
