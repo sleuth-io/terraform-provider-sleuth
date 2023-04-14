@@ -3,11 +3,12 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
-	"strings"
-	"time"
 )
 
 func resourceMetricImpactSource() *schema.Resource {
@@ -142,7 +143,7 @@ func setMetricImpactSourceFields(d *schema.ResourceData, projectSlug string, env
 
 	d.Set("project_slug", projectSlug)
 	d.Set("name", env.Name)
-	d.Set("environment_slug", fmt.Sprintf("%s/%s", projectSlug, env.Environment.Slug))
+	d.Set("environment_slug", env.Environment.Slug)
 	d.Set("provider_type", env.Provider)
 	d.Set("query", env.Query)
 	d.Set("less_is_better", env.LessIsBetter)
