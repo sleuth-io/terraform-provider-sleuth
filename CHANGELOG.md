@@ -1,3 +1,9 @@
+## 0.3.9 (May 11, 2023)
+
+ENHANCEMENTS:
+
+- Documention improvements, more examples
+
 ## 0.3.8 (April 14, 2023)
 
 FIXES:
