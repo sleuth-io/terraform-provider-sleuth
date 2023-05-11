@@ -32,6 +32,10 @@ resource "sleuth_code_change_source" "sleuth-terraform-provider" {
   }
   deploy_tracking_type = "manual"
   collect_impact = true
+  path_prefix = jsonencode({
+    excludes = [""]
+    includes = [""]
+  })
 }
 ```
 
@@ -53,7 +57,7 @@ resource "sleuth_code_change_source" "sleuth-terraform-provider" {
 - `collect_impact` (Boolean) Whether to collect impact for its deploys
 - `include_in_dashboard` (Boolean) Whether to include deploys from this change source in the metrics dashboard
 - `notify_in_slack` (Boolean) Whether to send Slack notifications for deploys or not
-- `path_prefix` (String) What code source path to limit this deployment to. Useful for monorepos
+- `path_prefix` (String) What code source path to limit this deployment to. Useful for monorepos. Must be used with the [jsonencode()](https://developer.hashicorp.com/terraform/language/functions/jsonencode) function to specify the paths to include and/or exclude respectively. (see example above)
 
 ### Read-Only
 
