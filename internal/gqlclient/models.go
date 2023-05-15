@@ -40,10 +40,17 @@ type MetricImpactSource struct {
 }
 
 type Repository struct {
-	Owner    string `json:"owner"`
-	Name     string `json:"name"`
-	Provider string `json:"provider"`
-	Url      string `json:"url,omitempty"`
+	Owner      string `json:"owner"`
+	Name       string `json:"name"`
+	Provider   string `json:"provider"`
+	Url        string `json:"url,omitempty"`
+	ProjectUID string `json:"projectUid,omitempty"`
+	RepoUID    string `json:"repoUid,omitempty"`
+}
+
+type MutableRepository struct {
+	Repository
+	IntegrationSlug string `json:"integrationSlug,omitempty"`
 }
 
 type BranchMapping struct {
@@ -180,16 +187,16 @@ type DeployTrackingBuildMapping struct {
 }
 
 type MutableCodeChangeSource struct {
-	Name                string          `json:"name"`
-	Repository          Repository      `json:"repository"`
-	DeployTrackingType  string          `json:"deployTrackingType"`
-	CollectImpact       bool            `json:"collectImpact"`
-	PathPrefix          string          `json:"pathPrefix"`
-	NotifyInSlack       bool            `json:"notifyInSlack"`
-	IncludeInDashboard  bool            `json:"includeInDashboard"`
-	AutoTrackingDelay   int             `json:"autoTrackingDelay"`
-	EnvironmentMappings []BranchMapping `json:"environmentMappings"`
-	BuildMappings       []BuildMapping  `json:"buildMappings"`
+	Name                string            `json:"name"`
+	Repository          MutableRepository `json:"repository"`
+	DeployTrackingType  string            `json:"deployTrackingType"`
+	CollectImpact       bool              `json:"collectImpact"`
+	PathPrefix          string            `json:"pathPrefix"`
+	NotifyInSlack       bool              `json:"notifyInSlack"`
+	IncludeInDashboard  bool              `json:"includeInDashboard"`
+	AutoTrackingDelay   int               `json:"autoTrackingDelay"`
+	EnvironmentMappings []BranchMapping   `json:"environmentMappings"`
+	BuildMappings       []BuildMapping    `json:"buildMappings"`
 }
 
 type CreateCodeChangeSourceMutationInput struct {

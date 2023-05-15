@@ -57,6 +57,21 @@ func resourceCodeChangeSource() *schema.Resource {
 							Required:    true,
 							Description: "The repository provider, such as GITHUB",
 						},
+						"integration_slug": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "IntegrationAuthentication slug used",
+						},
+						"repo_uid": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Repository UID, required only for AZURE provider",
+						},
+						"project_uid": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Project UID, required only for AZURE provider",
+						},
 					},
 				},
 			},
@@ -167,6 +182,17 @@ func resourceCodeChangeSource() *schema.Resource {
 	}
 }
 
+func validateCodeChangeInput(ccs gqlclient.MutableCodeChangeSource) error {
+	if strings.ToLower(ccs.Repository.Provider) != "azure" {
+		return nil
+	}
+
+	if ccs.Repository.ProjectUID == "" || ccs.Repository.RepoUID == "" || ccs.Repository.IntegrationSlug == "" {
+		return fmt.Errorf("project_uid, repo_uid and integration_slug are required for AZURE provider")
+	}
+	return nil
+}
+
 func resourceCodeChangeSourceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	c := meta.(*gqlclient.Client)
 
@@ -178,6 +204,16 @@ func resourceCodeChangeSourceCreate(ctx context.Context, d *schema.ResourceData,
 	input := gqlclient.CreateCodeChangeSourceMutationInput{ProjectSlug: projectSlug, MutableCodeChangeSource: &inputFields}
 	input.InitializeChanges = true
 	diags = populateCodeChangeSource(d, &inputFields, diags)
+
+	if err := validateCodeChangeInput(inputFields); err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Error validating repository input",
+			Detail:   err.Error(),
+		})
+
+		return diags
+	}
 
 	src, err := c.CreateCodeChangeSource(input)
 	if err != nil {
@@ -243,6 +279,8 @@ func setCodeChangeSourceFields(d *schema.ResourceData, projectSlug string, sourc
 	repository["name"] = source.Repository.Name
 	repository["provider"] = strings.ToUpper(source.Repository.Provider)
 	repository["url"] = source.Repository.Url
+	repository["repoUID"] = source.Repository.RepoUID
+	repository["projectUID"] = source.Repository.ProjectUID
 	var repositoryList [1]map[string]interface{}
 	repositoryList[0] = repository
 
@@ -282,10 +320,16 @@ func setCodeChangeSourceFields(d *schema.ResourceData, projectSlug string, sourc
 func populateCodeChangeSource(d *schema.ResourceData, input *gqlclient.MutableCodeChangeSource, diags diag.Diagnostics) diag.Diagnostics {
 	repoList := d.Get("repository").([]interface{})
 	repoData := repoList[0].(map[string]interface{})
-	repo := gqlclient.Repository{Owner: repoData["owner"].(string),
-		Name:     repoData["name"].(string),
-		Provider: repoData["provider"].(string),
-		Url:      repoData["url"].(string),
+	repo := gqlclient.MutableRepository{
+		IntegrationSlug: repoData["integration_slug"].(string),
+		Repository: gqlclient.Repository{
+			Owner:      repoData["owner"].(string),
+			Name:       repoData["name"].(string),
+			Provider:   repoData["provider"].(string),
+			Url:        repoData["url"].(string),
+			RepoUID:    repoData["repo_uid"].(string),
+			ProjectUID: repoData["project_uid"].(string),
+		},
 	}
 
 	environmentMappingsData := d.Get("environment_mappings").([]interface{})
