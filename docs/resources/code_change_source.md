@@ -78,6 +78,12 @@ Required:
 - `provider` (String) The repository provider, such as GITHUB
 - `url` (String) The repository url, used for links
 
+Optional:
+
+- `integration_slug` (String) IntegrationAuthentication slug used
+- `project_uid` (String) Project UID, required only for AZURE provider
+- `repo_uid` (String) Repository UID, required only for AZURE provider
+
 
 <a id="nestedblock--build_mappings"></a>
 ### Nested Schema for `build_mappings`
