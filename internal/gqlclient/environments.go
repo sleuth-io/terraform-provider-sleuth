@@ -2,6 +2,7 @@ package gqlclient
 
 import (
 	"errors"
+	"fmt"
 	"github.com/shurcooL/graphql"
 )
 
@@ -74,7 +75,7 @@ func (c *Client) CreateEnvironment(input CreateEnvironmentMutationInput) (*Envir
 	}
 
 	if len(m.CreateEnvironment.Errors) > 0 {
-		return nil, errors.New("Errors creating environment")
+		return nil, fmt.Errorf("Errors creating environment, %+v", m.CreateEnvironment.Errors)
 	}
 	return &m.CreateEnvironment.Environment, nil
 }

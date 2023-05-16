@@ -75,7 +75,6 @@ func (c *Client) doQuery(query interface{}, variables map[string]interface{}) er
 }
 
 func (c *Client) doMutate(query interface{}, variables map[string]interface{}) error {
-
 	err := c.GQLClient.Mutate(context.Background(), query, variables)
 	if err != nil {
 		return err

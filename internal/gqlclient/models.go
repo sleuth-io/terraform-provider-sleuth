@@ -284,3 +284,36 @@ type IncidentImpactSourceDeleteInputType struct {
 	Slug        string `json:"slug"`
 	ProjectSlug string `json:"projectSlug"`
 }
+
+type Team struct {
+	Name    string  `json:"name"`
+	Slug    string  `json:"slug,omitempty"`
+	Members []int64 `json:"-"`
+}
+
+type TeamM struct {
+	Team
+	Members []int64 `json:"members"`
+}
+
+type TeamMutations struct {
+	Name    string `json:"name"`
+	Slug    string `json:"slug,omitempty"`
+	Members struct {
+		Objects []struct {
+			ID string `json:"id"`
+		}
+	} `graphql:"members(page:1, pageSize:50)"` //TODO: make more dynamic
+}
+
+type CreateTeamMutationInput struct {
+	TeamM
+}
+
+type UpdateTeamMutationInput struct {
+	TeamM
+}
+
+type DeleteTeamMutationInput struct {
+	Slug string `json:"slug,omitempty"`
+}
