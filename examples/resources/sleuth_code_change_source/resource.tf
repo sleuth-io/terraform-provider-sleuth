@@ -17,4 +17,8 @@ resource "sleuth_code_change_source" "sleuth-terraform-provider" {
   }
   deploy_tracking_type = "manual"
   collect_impact = true
+  path_prefix = jsonencode({
+    excludes = [""]
+    includes = [""]
+  })
 }
