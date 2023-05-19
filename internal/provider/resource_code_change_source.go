@@ -65,12 +65,12 @@ func resourceCodeChangeSource() *schema.Resource {
 						"repo_uid": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "Repository UID, required only for AZURE provider",
+							Description: "Repository UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)",
 						},
 						"project_uid": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "Project UID, required only for AZURE provider",
+							Description: "Project UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)",
 						},
 					},
 				},
