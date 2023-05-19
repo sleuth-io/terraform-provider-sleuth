@@ -1,3 +1,10 @@
+## 0.3.10 (May 19, 2023)
+
+ENHANCEMENTS:
+
+- Support for Azure in Code Changes resources
+- SDK v2 version upgrade
+
 ## 0.3.9 (May 11, 2023)
 
 ENHANCEMENTS:
