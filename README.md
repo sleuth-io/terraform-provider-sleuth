@@ -14,7 +14,6 @@ This repository is a Terraform provider for [Sleuth](https://sleuth.io), allowin
 -	[Go](https://golang.org/doc/install) >= 1.15
 
 ## Known Limitations
-- No support for Azure as repository provider
 - No support for New Relic as impact source provider
 - No support for custom impact sources
 - Limited support for multiple integrations of same type
