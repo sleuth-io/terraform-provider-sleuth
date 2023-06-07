@@ -152,7 +152,7 @@ func resourceCodeChangeSource() *schema.Resource {
 				Default:     true,
 			},
 			"path_prefix": {
-				Description: "What code source path to limit this deployment to. Useful for monorepos",
+				Description: "What code source path to limit this deployment to. Useful for monorepos. Must be used with the [jsonencode()](https://developer.hashicorp.com/terraform/language/functions/jsonencode) function to specify the paths to include and/or exclude respectively. (see example above)",
 				Type:        schema.TypeString,
 				Optional:    true,
 				Default:     "",
