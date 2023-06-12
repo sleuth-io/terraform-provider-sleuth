@@ -76,8 +76,9 @@ func resourceCodeChangeSource() *schema.Resource {
 				},
 			},
 			"environment_mappings": {
-				Type:     schema.TypeList,
-				Required: true,
+				Type:        schema.TypeList,
+				Required:    true,
+				Description: "Environment mappings of the environment. They must be ordered by environment_slug ascending to avoid Terraform plan changes.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"environment_slug": {
@@ -89,6 +90,11 @@ func resourceCodeChangeSource() *schema.Resource {
 							Type:        schema.TypeString,
 							Required:    true,
 							Description: "The repository branch name for the environment",
+						},
+						"id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Computed ID",
 						},
 					},
 				},
@@ -220,7 +226,7 @@ func resourceCodeChangeSourceCreate(ctx context.Context, d *schema.ResourceData,
 		return diag.FromErr(err)
 	}
 	d.SetId(fmt.Sprintf("%s/%s", projectSlug, src.Slug))
-	setCodeChangeSourceFields(d, projectSlug, src)
+	setCodeChangeSourceFields(ctx, d, projectSlug, src)
 
 	return diags
 }
@@ -244,7 +250,7 @@ func resourceCodeChangeSourceUpdate(ctx context.Context, d *schema.ResourceData,
 		return diag.FromErr(err)
 	}
 	d.Set("last_updated", time.Now().Format(time.RFC850))
-	setCodeChangeSourceFields(d, projectSlug, source)
+	setCodeChangeSourceFields(ctx, d, projectSlug, source)
 
 	return diags
 }
@@ -259,20 +265,19 @@ func resourceCodeChangeSourceRead(ctx context.Context, d *schema.ResourceData, m
 	projectSlug := parsed[0]
 	changeSlug := parsed[1]
 
-	source, err := c.GetCodeChangeSource(&projectSlug, &changeSlug)
+	source, err := c.GetCodeChangeSource(ctx, &projectSlug, &changeSlug)
 	if err != nil {
 		return diag.FromErr(err)
 	} else if source == nil {
 		d.SetId("")
 	} else {
-		setCodeChangeSourceFields(d, projectSlug, source)
+		setCodeChangeSourceFields(ctx, d, projectSlug, source)
 	}
-
 	return diags
 
 }
 
-func setCodeChangeSourceFields(d *schema.ResourceData, projectSlug string, source *gqlclient.CodeChangeSource) {
+func setCodeChangeSourceFields(ctx context.Context, d *schema.ResourceData, projectSlug string, source *gqlclient.CodeChangeSource) {
 
 	repository := make(map[string]interface{})
 	repository["owner"] = source.Repository.Owner
@@ -289,6 +294,7 @@ func setCodeChangeSourceFields(d *schema.ResourceData, projectSlug string, sourc
 		m := make(map[string]interface{})
 		m["branch"] = v.Branch
 		m["environment_slug"] = v.EnvironmentSlug
+		m["id"] = fmt.Sprintf("%s/%s", projectSlug, v.EnvironmentSlug)
 		environmentMappings[idx] = m
 	}
 
