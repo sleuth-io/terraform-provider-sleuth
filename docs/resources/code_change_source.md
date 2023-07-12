@@ -45,7 +45,7 @@ resource "sleuth_code_change_source" "sleuth-terraform-provider" {
 ### Required
 
 - `deploy_tracking_type` (String) How to track deploys. Valid choices are build, manual, auto_pr, auto_tag, auto_push
-- `environment_mappings` (Block List, Min: 1) (see [below for nested schema](#nestedblock--environment_mappings))
+- `environment_mappings` (Block List, Min: 1) Environment mappings of the environment. They must be ordered by environment_slug ascending to avoid Terraform plan changes. (see [below for nested schema](#nestedblock--environment_mappings))
 - `name` (String) Change source name
 - `project_slug` (String) The project for this environment
 - `repository` (Block List, Min: 1, Max: 1) (see [below for nested schema](#nestedblock--repository))
@@ -70,6 +70,10 @@ Required:
 
 - `branch` (String) The repository branch name for the environment
 - `environment_slug` (String) The environment slug or id
+
+Read-Only:
+
+- `id` (String) Computed ID
 
 
 <a id="nestedblock--repository"></a>
