@@ -68,3 +68,13 @@ resource "sleuth_code_change_source" "cd" {
   collect_impact = true
 }
 
+resource "sleuth_incident_impact_source" "pd" {
+    project_slug = sleuth_project.terraform_poc.slug
+    name = "PagerDuty TF incident impact"
+    environment_name = sleuth_environment.staging.name
+    provider_name = "PAGERDUTY"
+    pagerduty_input {
+        remote_services = ""
+        remote_urgency = "ANY"
+    }
+}
