@@ -1,13 +1,14 @@
 {
   "packages": [
-    "go_1_19"
+    "golangci-lint@1.53.3",
+    "go@1.19.10",
+    "terraform@1.5.2"
   ],
   "shell": {
-        "init_hook": [
-            "echo '\nMake commands:\n' && make"
-
-        ]
-    },
+    "init_hook": [
+      "echo '\nMake commands:\n' && make"
+    ]
+  },
   "nixpkgs": {
     "commit": "f80ac848e3d6f0c12c52758c0f25c10c97ca3b62"
   }
