@@ -1,3 +1,10 @@
+## 0.3.11 (unreleased)
+
+FIXES:
+
+- [PR 83](https://github.com/sleuth-io/terraform-provider-sleuth/pull/83) Environment slug should not show up as updating when re-applying
+
+
 ## 0.3.10 (May 19, 2023)
 
 ENHANCEMENTS:
