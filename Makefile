@@ -8,7 +8,7 @@ NAMESPACE=core
 NAME=sleuth
 BINARY=terraform-provider-${NAME}
 VERSION=0.3.0-dev
-OS_ARCH=linux_amd64
+OS_ARCH=$$(go env GOOS)_$$(go env GOARCH)
 
 # go source files, ignore vendor directory
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
