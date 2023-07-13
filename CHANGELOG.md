@@ -1,4 +1,4 @@
-## 0.3.11 (unreleased)
+## 0.3.11 (July 13, 2023)
 
 FIXES:
 
