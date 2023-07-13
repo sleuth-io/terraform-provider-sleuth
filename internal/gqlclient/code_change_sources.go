@@ -1,13 +1,14 @@
 package gqlclient
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/shurcooL/graphql"
 	"strings"
 )
 
-func (c *Client) GetCodeChangeSource(projectSlug *string, slug *string) (*CodeChangeSource, error) {
+func (c *Client) GetCodeChangeSource(ctx context.Context, projectSlug *string, slug *string) (*CodeChangeSource, error) {
 	var query struct {
 		Project struct {
 			ChangeSources []struct {
@@ -30,16 +31,15 @@ func (c *Client) GetCodeChangeSource(projectSlug *string, slug *string) (*CodeCh
 		if src.Type == "CODE" {
 			if src.ChangeSource.Slug == *slug {
 				src.ChangeSource.Repository.Provider = strings.ToUpper(src.ChangeSource.Repository.Provider)
-				for idx, mapping := range src.ChangeSource.EnvironmentMappings {
-					src.ChangeSource.EnvironmentMappings[idx].EnvironmentSlug = fmt.Sprintf("%s/%s", *projectSlug, mapping.EnvironmentSlug)
-				}
 				for idx, _ := range src.ChangeSource.DeployTrackingBuildMappings {
 					src.ChangeSource.DeployTrackingBuildMappings[idx].Provider = strings.ToLower(src.ChangeSource.DeployTrackingBuildMappings[idx].Provider)
 				}
 				return &src.ChangeSource, nil
 			}
+
 		}
 	}
+
 	return nil, nil
 }
 
@@ -65,9 +65,6 @@ func (c *Client) CreateCodeChangeSource(input CreateCodeChangeSourceMutationInpu
 	if len(m.CreateCodeChangeSource.Errors) > 0 {
 		return nil, errors.New(fmt.Sprintf("%s %+v", "Errors creating change source: ", m.CreateCodeChangeSource.Errors))
 	}
-	for idx, mapping := range m.CreateCodeChangeSource.ChangeSource.EnvironmentMappings {
-		m.CreateCodeChangeSource.ChangeSource.EnvironmentMappings[idx].EnvironmentSlug = fmt.Sprintf("%s/%s", input.ProjectSlug, mapping.EnvironmentSlug)
-	}
 	return &m.CreateCodeChangeSource.ChangeSource, nil
 }
 
@@ -92,9 +89,6 @@ func (c *Client) UpdateCodeChangeSource(input UpdateCodeChangeSourceMutationInpu
 
 	if len(m.UpdateCodeChangeSource.Errors) > 0 {
 		return nil, errors.New("Errors updating code change source")
-	}
-	for idx, mapping := range m.UpdateCodeChangeSource.ChangeSource.EnvironmentMappings {
-		m.UpdateCodeChangeSource.ChangeSource.EnvironmentMappings[idx].EnvironmentSlug = fmt.Sprintf("%s/%s", input.ProjectSlug, mapping.EnvironmentSlug)
 	}
 	return &m.UpdateCodeChangeSource.ChangeSource, nil
 }
