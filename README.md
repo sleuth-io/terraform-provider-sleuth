@@ -10,8 +10,13 @@ This repository is a Terraform provider for [Sleuth](https://sleuth.io), allowin
 
 ## Requirements
 
--	[Terraform](https://www.terraform.io/downloads.html) >= 0.13.x
--	[Go](https://golang.org/doc/install) >= 1.15
+-	[Terraform](https://www.terraform.io/downloads.html) >= 1.x
+-	[Go](https://golang.org/doc/install) >= 1.19.x
+-   [GolangCI-Lint](https://golangci-lint.run/usage/install/#local-installation) >= 1.53.x
+
+or
+-  [Devbox](https://www.jetpack.io/devbox/docs/installing_devbox/) >= 0.5.x
+
 
 ## Known Limitations
 - No support for New Relic as impact source provider
@@ -24,7 +29,7 @@ This repository is a Terraform provider for [Sleuth](https://sleuth.io), allowin
 1. Enter the repository directory
 1. Build the provider using the Go `install` command: 
 ```sh
-$ go install
+$ go install .
 ```
 
 ## Quick Starts
