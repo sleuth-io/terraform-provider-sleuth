@@ -45,3 +45,7 @@ dev: ## Runs terraform against your local dev env
 	test -s main.tf || (echo "**** Set up main.tf first from main.tf.example *** "; exit 1)
 	rm -f terraform.tfstate && terraform plan && terraform apply
 
+meta:
+	golangci-lint run
+
+lint: format meta
