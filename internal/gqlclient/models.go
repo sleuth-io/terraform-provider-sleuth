@@ -220,3 +220,43 @@ type ErrorsType []struct {
 	Field    string   `json:"field"`
 	Messages []string `json:"messages"`
 }
+
+type PagerDutyProviderData struct {
+	RemoteServices string `json:"remoteServices"`
+	RemoteUrgency  string `json:"remoteUrgency"`
+}
+
+type ProviderData struct {
+	PagerDutyProviderData PagerDutyProviderData `json:"pagerDutyProviderData" graphql:"... on PagerDutyProviderData"`
+}
+
+type IncidentImpactSource struct {
+	Slug         string       `json:"slug"`
+	Environment  Environment  `json:"environment"`
+	Name         string       `json:"name"`
+	Provider     string       `json:"provider"`
+	ProviderData ProviderData `json:"providerData"`
+}
+
+type PagerDutyInputType struct {
+	RemoteServices string `json:"remoteServices"`
+	RemoteUrgency  string `json:"remoteUrgency"`
+}
+
+type IncidentImpactSourceInputType struct {
+	ProjectSlug        string             `json:"projectSlug"`
+	EnvironmentName    string             `json:"environmentName"`
+	Name               string             `json:"name"`
+	Provider           string             `json:"provider"`
+	PagerDutyInputType PagerDutyInputType `json:"pagerDutyInput"`
+}
+
+type IncidentImpactSourceInputUpdateType struct {
+	IncidentImpactSourceInputType
+	Slug string `json:"slug"`
+}
+
+type IncidentImpactSourceDeleteInputType struct {
+	Slug        string `json:"slug"`
+	ProjectSlug string `json:"projectSlug"`
+}
