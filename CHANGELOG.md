@@ -1,13 +1,14 @@
 ## 0.4.0 (Unreleased)
 
 ENHANCEMENTS:
-- [87](https://github.com/sleuth-io/terraform-provider-sleuth/pull/87) Add Incident Impact Source resource
+- [#87](https://github.com/sleuth-io/terraform-provider-sleuth/pull/87) Add Incident Impact Source resource
+- [#94](https://github.com/sleuth-io/terraform-provider-sleuth/pull/94) Add DataDog provider as Incident Impact Source input
 
 ## 0.3.11 (July 13, 2023)
 
 FIXES:
 
-- [PR 83](https://github.com/sleuth-io/terraform-provider-sleuth/pull/83) Environment slug should not show up as updating when re-applying
+- [#83](https://github.com/sleuth-io/terraform-provider-sleuth/pull/83) Environment slug should not show up as updating when re-applying
 
 
 ## 0.3.10 (May 19, 2023)
