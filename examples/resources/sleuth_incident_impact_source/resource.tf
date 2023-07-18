@@ -21,3 +21,14 @@ resource "sleuth_incident_impact_source" "dd" {
     }
 }
 
+resource "sleuth_incident_impact_source" "jira" {
+    project_slug = "project_slug"
+    name = "JIRA TF incident impact"
+    environment_name = "environment_name"
+    provider_name = "JIRA"
+    jira_input {
+        remote_jql = "status IN (\"Incident\")"
+        integration_slug = "optional_integration_slug"
+    }
+}
+

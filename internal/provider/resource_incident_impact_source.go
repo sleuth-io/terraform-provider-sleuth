@@ -17,6 +17,7 @@ const (
 	Unknown ImpactProvider = iota
 	PagerDuty
 	DataDog
+	Jira
 )
 
 func ImpactProviderFromString(s string) ImpactProvider {
@@ -25,6 +26,8 @@ func ImpactProviderFromString(s string) ImpactProvider {
 		return PagerDuty
 	case "DATADOG":
 		return DataDog
+	case "JIRA":
+		return Jira
 	}
 	return Unknown
 }
@@ -35,6 +38,8 @@ func (s ImpactProvider) String() string {
 		return "PAGERDUTY"
 	case DataDog:
 		return "DATADOG"
+	case Jira:
+		return "JIRA"
 	}
 	return "unknown"
 }
@@ -130,6 +135,26 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 					},
 				},
 			},
+			"jira_input": {
+				Description: "JIRA input",
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"remote_jql": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "JIRA active incidents issues JQL",
+						},
+						"integration_slug": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "JIRA IntegrationAuthentication slug from app",
+						},
+					},
+				},
+			},
 			"slug": {
 				Description: "Impact source slug",
 				Type:        schema.TypeString,
@@ -177,6 +202,12 @@ func getProviderData(d *schema.ResourceData, i gqlclient.IncidentImpactSourceInp
 				RemotePriorityThreshold: d.Get("datadog_input.0.remote_priority_threshold").(string),
 			},
 			IntegrationSlug: d.Get("datadog_input.0.integration_slug").(string),
+		}
+	case Jira:
+		i.JiraInputType = &gqlclient.JiraInputType{
+			JiraProviderData: gqlclient.JiraProviderData{
+				RemoteJql: d.Get("jira_input.0.remote_jql").(string),
+			},
 		}
 	}
 
@@ -297,6 +328,10 @@ func setProviderDetailsData(ctx context.Context, d *schema.ResourceData, is *gql
 		dataDogInput["integration_auth"] = is.IntegrationAuthSlug
 
 		d.Set("datadog_input", []map[string]interface{}{dataDogInput})
+	case Jira:
+		jiraInput := make(map[string]interface{})
+		jiraInput["remote_jql"] = is.ProviderData.JiraProviderData.RemoteJql
+		jiraInput["integration_auth"] = is.IntegrationAuthSlug
 	}
 }
 
