@@ -1,4 +1,4 @@
-## 0.4.0 (Unreleased)
+## 0.4.0 (July 18, 2023)
 
 ENHANCEMENTS:
 - [#87](https://github.com/sleuth-io/terraform-provider-sleuth/pull/87) Add Incident Impact Source resource
