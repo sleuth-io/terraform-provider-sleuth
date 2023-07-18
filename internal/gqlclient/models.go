@@ -231,9 +231,14 @@ type DataDogProviderData struct {
 	RemotePriorityThreshold string `json:"remotePriorityThreshold"`
 }
 
+type JiraProviderData struct {
+	RemoteJql string `json:"remoteJql"`
+}
+
 type ProviderData struct {
 	PagerDutyProviderData PagerDutyProviderData `json:"pagerDutyProviderData" graphql:"... on PagerDutyProviderData"`
 	DataDogProviderData   DataDogProviderData   `json:"dataDogProviderData" graphql:"... on DataDogProviderData"`
+	JiraProviderData      JiraProviderData      `json:"jiraProviderData" graphql:"... on JiraProviderData"`
 }
 
 type IncidentImpactSource struct {
@@ -255,6 +260,11 @@ type DataDogInputType struct {
 	IntegrationSlug string `json:"integrationSlug"`
 }
 
+type JiraInputType struct {
+	JiraProviderData
+	IntegrationSlug string `json:"integrationSlug"`
+}
+
 type IncidentImpactSourceInputType struct {
 	ProjectSlug        string              `json:"projectSlug"`
 	EnvironmentName    string              `json:"environmentName"`
@@ -262,6 +272,7 @@ type IncidentImpactSourceInputType struct {
 	Provider           string              `json:"provider"`
 	PagerDutyInputType *PagerDutyInputType `json:"pagerDutyInput"`
 	DataDogInputType   *DataDogInputType   `json:"datadogInput"`
+	JiraInputType      *JiraInputType      `json:"jiraInput"`
 }
 
 type IncidentImpactSourceInputUpdateType struct {
