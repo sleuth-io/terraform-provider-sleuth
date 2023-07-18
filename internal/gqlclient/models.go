@@ -226,16 +226,23 @@ type PagerDutyProviderData struct {
 	RemoteUrgency  string `json:"remoteUrgency"`
 }
 
+type DataDogProviderData struct {
+	Query                   string `json:"query"`
+	RemotePriorityThreshold string `json:"remotePriorityThreshold"`
+}
+
 type ProviderData struct {
 	PagerDutyProviderData PagerDutyProviderData `json:"pagerDutyProviderData" graphql:"... on PagerDutyProviderData"`
+	DataDogProviderData   DataDogProviderData   `json:"dataDogProviderData" graphql:"... on DataDogProviderData"`
 }
 
 type IncidentImpactSource struct {
-	Slug         string       `json:"slug"`
-	Environment  Environment  `json:"environment"`
-	Name         string       `json:"name"`
-	Provider     string       `json:"provider"`
-	ProviderData ProviderData `json:"providerData"`
+	Slug                string       `json:"slug"`
+	Environment         Environment  `json:"environment"`
+	Name                string       `json:"name"`
+	Provider            string       `json:"provider"`
+	ProviderData        ProviderData `json:"providerData"`
+	IntegrationAuthSlug string       `json:"integrationAuthSlug"`
 }
 
 type PagerDutyInputType struct {
@@ -243,12 +250,18 @@ type PagerDutyInputType struct {
 	RemoteUrgency  string `json:"remoteUrgency"`
 }
 
+type DataDogInputType struct {
+	DataDogProviderData
+	IntegrationSlug string `json:"integrationSlug"`
+}
+
 type IncidentImpactSourceInputType struct {
-	ProjectSlug        string             `json:"projectSlug"`
-	EnvironmentName    string             `json:"environmentName"`
-	Name               string             `json:"name"`
-	Provider           string             `json:"provider"`
-	PagerDutyInputType PagerDutyInputType `json:"pagerDutyInput"`
+	ProjectSlug        string              `json:"projectSlug"`
+	EnvironmentName    string              `json:"environmentName"`
+	Name               string              `json:"name"`
+	Provider           string              `json:"provider"`
+	PagerDutyInputType *PagerDutyInputType `json:"pagerDutyInput"`
+	DataDogInputType   *DataDogInputType   `json:"datadogInput"`
 }
 
 type IncidentImpactSourceInputUpdateType struct {

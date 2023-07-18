@@ -11,6 +11,34 @@ import (
 	"time"
 )
 
+type ImpactProvider int
+
+const (
+	Unknown ImpactProvider = iota
+	PagerDuty
+	DataDog
+)
+
+func ImpactProviderFromString(s string) ImpactProvider {
+	switch strings.ToUpper(s) {
+	case "PAGERDUTY":
+		return PagerDuty
+	case "DATADOG":
+		return DataDog
+	}
+	return Unknown
+}
+
+func (s ImpactProvider) String() string {
+	switch s {
+	case PagerDuty:
+		return "PAGERDUTY"
+	case DataDog:
+		return "DATADOG"
+	}
+	return "unknown"
+}
+
 func resourceIncidentImpactSource() *schema.Resource {
 	return &schema.Resource{
 		Description: "Sleuth incident impact source",
@@ -73,6 +101,35 @@ func resourceIncidentImpactSource() *schema.Resource {
 					},
 				},
 			},
+			"datadog_input": {
+				Description: "DataDog input",
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"query": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Description: `The query to scope the monitors to track. If you are using a custom facet you would need to add @ to the beginning of the facet name. If empty, all monitors in Datadog will be matched regardless of environment or service.
+See [DataDog documentation](https://docs.datadoghq.com/monitors/manage/search/) for more information.`,
+							Default: "",
+						},
+						"remote_priority_threshold": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "ALL",
+							Description: `Monitor states with matching or higher priorities will be considered a failure in Sleuth. 
+Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
+						},
+						"integration_slug": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "DataDog IntegrationAuthentication slug from app",
+						},
+					},
+				},
+			},
 			"slug": {
 				Description: "Impact source slug",
 				Type:        schema.TypeString,
@@ -99,33 +156,62 @@ func resourceIncidentImpactSourceRead(ctx context.Context, d *schema.ResourceDat
 		return diag.FromErr(err)
 	}
 
-	setFields(ctx, d, iis, projectSlug)
+	provider := ImpactProviderFromString(iis.Provider)
+
+	setFields(ctx, d, iis, projectSlug, provider)
 
 	return nil
+}
+
+func getProviderData(d *schema.ResourceData, i gqlclient.IncidentImpactSourceInputType, provider ImpactProvider) gqlclient.IncidentImpactSourceInputType {
+	switch provider {
+	case PagerDuty:
+		i.PagerDutyInputType = &gqlclient.PagerDutyInputType{
+			RemoteServices: d.Get("pagerduty_input.0.remote_services").(string),
+			RemoteUrgency:  d.Get("pagerduty_input.0.remote_urgency").(string),
+		}
+	case DataDog:
+		i.DataDogInputType = &gqlclient.DataDogInputType{
+			DataDogProviderData: gqlclient.DataDogProviderData{
+				Query:                   d.Get("datadog_input.0.query").(string),
+				RemotePriorityThreshold: d.Get("datadog_input.0.remote_priority_threshold").(string),
+			},
+			IntegrationSlug: d.Get("datadog_input.0.integration_slug").(string),
+		}
+	}
+
+	return i
 }
 
 func resourceIncidentImpactSourceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	c := meta.(*gqlclient.Client)
 
 	projectSlug := d.Get("project_slug").(string)
-	createIncidentImpactSourceMutationInput := gqlclient.IncidentImpactSourceInputType{
-		ProjectSlug:     projectSlug,
-		Name:            d.Get("name").(string),
-		Provider:        d.Get("provider_name").(string),
-		EnvironmentName: strings.ToLower(d.Get("environment_name").(string)),
-		PagerDutyInputType: gqlclient.PagerDutyInputType{
-			RemoteServices: d.Get("pagerduty_input.0.remote_services").(string),
-			RemoteUrgency:  d.Get("pagerduty_input.0.remote_urgency").(string),
-		},
+	providerStr := d.Get("provider_name").(string)
+
+	provider := ImpactProviderFromString(providerStr)
+	if provider == Unknown {
+		return diag.FromErr(fmt.Errorf("unknown provider %s", providerStr))
 	}
 
-	incidentImpact, err := c.CreateIncidentImpactSource(ctx, createIncidentImpactSourceMutationInput)
+	input := gqlclient.IncidentImpactSourceInputType{
+		ProjectSlug:     projectSlug,
+		Name:            d.Get("name").(string),
+		Provider:        provider.String(),
+		EnvironmentName: strings.ToLower(d.Get("environment_name").(string)),
+	}
+
+	input = getProviderData(d, input, provider)
+
+	tflog.Debug(ctx, fmt.Sprintf("CreateIncidentImpactSourceMutationInput: %v", input))
+
+	incidentImpact, err := c.CreateIncidentImpactSource(ctx, input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	d.SetId(fmt.Sprintf("%s/%s", projectSlug, incidentImpact.Slug))
 
-	setFields(ctx, d, incidentImpact, projectSlug)
+	setFields(ctx, d, incidentImpact, projectSlug, provider)
 
 	return nil
 }
@@ -134,22 +220,25 @@ func resourceIncidentImpactSourceUpdate(ctx context.Context, d *schema.ResourceD
 	c := meta.(*gqlclient.Client)
 
 	projectSlug, slug, err := getSlugsFromID(d.Id())
-	if err != nil {
-		return diag.FromErr(err)
+
+	providerStr := d.Get("provider_name").(string)
+	provider := ImpactProviderFromString(providerStr)
+	if provider == Unknown {
+		return diag.FromErr(fmt.Errorf("unknown provider %s", providerStr))
 	}
 
+	incident_input := gqlclient.IncidentImpactSourceInputType{
+		ProjectSlug:     projectSlug,
+		Name:            d.Get("name").(string),
+		Provider:        d.Get("provider_name").(string),
+		EnvironmentName: strings.ToLower(d.Get("environment_name").(string)),
+	}
+
+	incident_input = getProviderData(d, incident_input, provider)
+
 	input := gqlclient.IncidentImpactSourceInputUpdateType{
-		Slug: slug,
-		IncidentImpactSourceInputType: gqlclient.IncidentImpactSourceInputType{
-			ProjectSlug:     projectSlug,
-			Name:            d.Get("name").(string),
-			Provider:        d.Get("provider_name").(string),
-			EnvironmentName: strings.ToLower(d.Get("environment_name").(string)),
-			PagerDutyInputType: gqlclient.PagerDutyInputType{
-				RemoteServices: d.Get("pagerduty_input.0.remote_services").(string),
-				RemoteUrgency:  d.Get("pagerduty_input.0.remote_urgency").(string),
-			},
-		},
+		Slug:                          slug,
+		IncidentImpactSourceInputType: incident_input,
 	}
 
 	proj, err := c.UpdateIncidentImpactSource(ctx, input)
@@ -159,7 +248,7 @@ func resourceIncidentImpactSourceUpdate(ctx context.Context, d *schema.ResourceD
 
 	d.Set("last_updated", time.Now().Format(time.RFC850))
 
-	setFields(ctx, d, proj, projectSlug)
+	setFields(ctx, d, proj, projectSlug, provider)
 
 	return nil
 }
@@ -194,17 +283,29 @@ func getSlugsFromID(id string) (string, string, error) {
 	return splits[0], splits[1], nil
 }
 
-func setFields(ctx context.Context, d *schema.ResourceData, is *gqlclient.IncidentImpactSource, projectSlug string) {
+func setProviderDetailsData(ctx context.Context, d *schema.ResourceData, is *gqlclient.IncidentImpactSource, provider ImpactProvider) {
+	switch provider {
+	case PagerDuty:
+		pagerDutyInput := make(map[string]interface{})
+		pagerDutyInput["remote_services"] = is.ProviderData.PagerDutyProviderData.RemoteServices
+		pagerDutyInput["remote_urgency"] = is.ProviderData.PagerDutyProviderData.RemoteUrgency
+		d.Set("pagerduty_input", []map[string]interface{}{pagerDutyInput})
+	case DataDog:
+		dataDogInput := make(map[string]interface{})
+		dataDogInput["query"] = is.ProviderData.DataDogProviderData.Query
+		dataDogInput["remote_priority_threshold"] = is.ProviderData.DataDogProviderData.RemotePriorityThreshold
+		dataDogInput["integration_auth"] = is.IntegrationAuthSlug
+
+		d.Set("datadog_input", []map[string]interface{}{dataDogInput})
+	}
+}
+
+func setFields(ctx context.Context, d *schema.ResourceData, is *gqlclient.IncidentImpactSource, projectSlug string, provider ImpactProvider) {
 	d.Set("name", is.Name)
 	d.Set("slug", is.Slug)
 	d.Set("provider_name", strings.ToUpper(is.Provider))
 	d.Set("environment_name", is.Environment.Name)
 	d.Set("project_slug", projectSlug)
 
-	pager_duty_input := make(map[string]interface{})
-	pager_duty_input["remote_services"] = is.ProviderData.PagerDutyProviderData.RemoteServices
-	pager_duty_input["remote_urgency"] = is.ProviderData.PagerDutyProviderData.RemoteUrgency
-
-	d.Set("pagerduty_input", []map[string]interface{}{pager_duty_input})
-
+	setProviderDetailsData(ctx, d, is, provider)
 }
