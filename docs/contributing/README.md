@@ -17,11 +17,11 @@ You have 2 options to run the provider locally:
     1. update `dev.tfrc` with `echo $GOBIN`
     1. run `export TF_CLI_CONFIG_FILE=dev.tfrc`
     1. check that overrides are successfully applied with `terraform apply` -> you should see `Provider development overrides are in effect` in the output
-    1. run `go install .` to build the provider and install it to `$GOBIN`
+    1. run `make install` to build the provider and install it to `$GOBIN`
     1. Done! You can now use the provider locally with `terraform apply`
 
 2. Manually install the provider:
-    1. run `make install`
+    1. run `make install_deprecated`
         - this will build the provider and put the provider binary in the `$GOPATH/bin` directory & in correct location for terraform providers
         - *Note:* if you're on macOS, change `OS_ARCH` in `Makefile` to `darwin_amd64` (Intel) or `darwin_arm64` (Apple silicon)
     2. run `terraform init` to initialize the provider and use newly built binary
