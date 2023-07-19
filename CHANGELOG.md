@@ -1,6 +1,13 @@
+## 0.4.1-dev (unreleased)
+
+ENHANCEMENTS:
+
+- [#96](https://github.com/sleuth-io/terraform-provider-sleuth/pull/96) Add JIRA provider as Incident Impact Source
+
 ## 0.4.0 (July 18, 2023)
 
 ENHANCEMENTS:
+
 - [#87](https://github.com/sleuth-io/terraform-provider-sleuth/pull/87) Add Incident Impact Source resource
 - [#94](https://github.com/sleuth-io/terraform-provider-sleuth/pull/94) Add DataDog provider as Incident Impact Source input
 
@@ -9,7 +16,6 @@ ENHANCEMENTS:
 FIXES:
 
 - [#83](https://github.com/sleuth-io/terraform-provider-sleuth/pull/83) Environment slug should not show up as updating when re-applying
-
 
 ## 0.3.10 (May 19, 2023)
 
@@ -22,7 +28,7 @@ ENHANCEMENTS:
 
 ENHANCEMENTS:
 
-- Documention improvements, more examples
+- Documentation improvements, more examples
 
 ## 0.3.8 (April 14, 2023)
 
@@ -38,13 +44,11 @@ ENHANCEMENTS:
 - Add support for specifying the integration slug for metric impact source
 - Add support for specifying whether build branches should match environment branches in build mapping
 
-
 ## 0.3.5 (Sept 27, 2022)
 
 ENHANCEMENTS:
 
 - Add support for specifying the integration slug for metric impact source
-
 
 ## 0.3.4 (Sept 9, 2022)
 
@@ -52,13 +56,11 @@ ENHANCEMENTS:
 
 - Add support for build mapping for code deployments
 
-
 ## 0.3.3 (June 14, 2022)
 
 ENHANCEMENTS:
 
 - Increase HTTP timeout from 10 secs to 20
-
 
 ## 0.3.2 (May 17, 2022)
 
