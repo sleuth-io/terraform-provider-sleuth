@@ -3,10 +3,11 @@
 # Help system from https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 .DEFAULT_GOAL := help
 TEST?=$$(go list ./... | grep -v 'vendor')
-HOSTNAME=sleuth.io
-NAMESPACE=core
 NAME=sleuth
 BINARY=terraform-provider-${NAME}
+# DEPRECATED VARIABLES - do not use them
+HOSTNAME=sleuth.io
+NAMESPACE=core
 VERSION=0.3.0-dev
 OS_ARCH=$$(go env GOOS)_$$(go env GOARCH)
 
@@ -25,7 +26,10 @@ format: ## Format the source code with gofmt
 release: ## Releases the current version as a snapshot
 	goreleaser release --rm-dist --snapshot --skip-publish  --skip-sign
 
-install: build ## Builds and installs locally
+install: ## Installs the binary into $GOPATH/bin or $GOBIN
+	go install .
+
+install_deprecated: build ## DEPRECATED: Builds and installs locally
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
 	rm .terraform.lock.hcl
 	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
@@ -43,7 +47,7 @@ testacc: ## Runs acceptance tests
 
 dev: ## Runs terraform against your local dev env
 	test -s main.tf || (echo "**** Set up main.tf first from main.tf.example *** "; exit 1)
-	rm -f terraform.tfstate && terraform plan && terraform apply
+	rm -f terraform.tfstate && terraform apply
 
 meta:
 	golangci-lint run
