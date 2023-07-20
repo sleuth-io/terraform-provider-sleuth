@@ -4,6 +4,9 @@ ENHANCEMENTS:
 
 - [#96](https://github.com/sleuth-io/terraform-provider-sleuth/pull/96) Add JIRA provider as Incident Impact Source
 
+MISC:
+- [#98](https://github.com/sleuth-io/terraform-provider-sleuth/pull/98) Update provider dependencies
+
 ## 0.4.0 (July 18, 2023)
 
 ENHANCEMENTS:
@@ -44,7 +47,7 @@ ENHANCEMENTS:
 - Add support for specifying the integration slug for metric impact source
 - Add support for specifying whether build branches should match environment branches in build mapping
 
-## 0.3.5 (Sept 27, 2022)
+## 0.3.5 (Sept 27, 2022)\
 
 ENHANCEMENTS:
 
