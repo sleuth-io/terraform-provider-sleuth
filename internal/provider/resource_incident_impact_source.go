@@ -3,12 +3,13 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
-	"strings"
-	"time"
 )
 
 type ImpactProvider int
@@ -18,6 +19,7 @@ const (
 	PagerDuty
 	DataDog
 	Jira
+	CustomIncident
 )
 
 func ImpactProviderFromString(s string) ImpactProvider {
@@ -28,6 +30,8 @@ func ImpactProviderFromString(s string) ImpactProvider {
 		return DataDog
 	case "JIRA":
 		return Jira
+	case "CUSTOM_INCIDENT":
+		return CustomIncident
 	}
 	return Unknown
 }
@@ -40,6 +44,8 @@ func (s ImpactProvider) String() string {
 		return "DATADOG"
 	case Jira:
 		return "JIRA"
+	case CustomIncident:
+		return "CUSTOM_INCIDENT"
 	}
 	return "unknown"
 }
@@ -66,7 +72,7 @@ func resourceIncidentImpactSource() *schema.Resource {
 			},
 			// can't use `provider` because terraform tries to import provider
 			"provider_name": {
-				Description: "Impact source provider (options: PAGERDUTY)",
+				Description: "Impact source provider (options: PAGERDUTY, CUSTOM_INCIDENT)",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
@@ -74,6 +80,11 @@ func resourceIncidentImpactSource() *schema.Resource {
 				Description: "Impact source environment name",
 				Type:        schema.TypeString,
 				Required:    true,
+			},
+			"register_impact_link": {
+				Description: "Impact source webhook registration link (for CUSTOM_INCIDENT only)",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 			"pagerduty_input": {
 				Description: "PagerDuty input",
@@ -341,6 +352,7 @@ func setFields(ctx context.Context, d *schema.ResourceData, is *gqlclient.Incide
 	d.Set("provider_name", strings.ToUpper(is.Provider))
 	d.Set("environment_name", is.Environment.Name)
 	d.Set("project_slug", projectSlug)
+	d.Set("register_impact_link", is.RegisterImpactLink)
 
 	setProviderDetailsData(ctx, d, is, provider)
 }
