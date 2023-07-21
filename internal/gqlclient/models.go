@@ -248,6 +248,7 @@ type IncidentImpactSource struct {
 	Provider            string       `json:"provider"`
 	ProviderData        ProviderData `json:"providerData"`
 	IntegrationAuthSlug string       `json:"integrationAuthSlug"`
+	RegisterImpactLink  string       `json:"registerImpactLink"`
 }
 
 type PagerDutyInputType struct {
