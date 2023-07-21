@@ -2,6 +2,7 @@
 
 ENHANCEMENTS:
 
+- [#101](https://github.com/sleuth-io/terraform-provider-sleuth/pull/101) Add CUSTOM_INCIDENT as Incident Impact Source
 - [#96](https://github.com/sleuth-io/terraform-provider-sleuth/pull/96) Add JIRA provider as Incident Impact Source
 
 ## 0.4.0 (July 18, 2023)
