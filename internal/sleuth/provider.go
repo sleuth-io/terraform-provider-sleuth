@@ -3,6 +3,7 @@ package sleuth
 import (
 	"context"
 	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -119,5 +120,7 @@ func (p *sleuthProvider) DataSources(_ context.Context) []func() datasource.Data
 
 // Resources defines the resources implemented in the provider.
 func (p *sleuthProvider) Resources(_ context.Context) []func() resource.Resource {
-	return []func() resource.Resource{}
+	return []func() resource.Resource{
+		NewProjectResource,
+	}
 }
