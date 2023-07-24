@@ -3,12 +3,12 @@
 page_title: "sleuth_project Resource - terraform-provider-sleuth"
 subcategory: ""
 description: |-
-  Sleuth project.
+  Project resource manages Sleuth project.
 ---
 
 # sleuth_project (Resource)
 
-Sleuth project.
+Project resource manages Sleuth project.
 
 ## Example Usage
 
@@ -39,7 +39,6 @@ resource "sleuth_project" "example_tf_app" {
 
 ### Read-Only
 
-- `id` (String) The ID of this resource.
 - `slug` (String) Project slug
 
 
