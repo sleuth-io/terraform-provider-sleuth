@@ -1,5 +1,9 @@
 ## 0.4.1-dev (unreleased)
 
+FIXES:
+
+- [#103](https://github.com/sleuth-io/terraform-provider-sleuth/pull/103) Translate log
+
 ENHANCEMENTS:
 
 - [#101](https://github.com/sleuth-io/terraform-provider-sleuth/pull/101) Add CUSTOM_INCIDENT as Incident Impact Source
