@@ -23,7 +23,7 @@ func (c *Client) GetIncidentImpactSource(ctx context.Context, projectSlug, slug 
 	}
 
 	err := c.doQuery(&query, variables)
-	tflog.Error(ctx, fmt.Sprintf("Error po klicu %+v", err))
+	tflog.Error(ctx, fmt.Sprintf("Error when calling GraphQL, %+v", err))
 	if err != nil {
 		return nil, err
 	}
