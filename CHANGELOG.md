@@ -1,4 +1,4 @@
-## 0.4.1-dev (unreleased)
+## 0.4.1 (July 25, 2023)
 
 FIXES:
 
