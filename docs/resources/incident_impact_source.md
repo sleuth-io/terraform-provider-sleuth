@@ -56,7 +56,7 @@ resource "sleuth_incident_impact_source" "jira" {
 - `environment_name` (String) Impact source environment name
 - `name` (String) Impact source name
 - `project_slug` (String) Project slug
-- `provider_name` (String) Impact source provider (options: PAGERDUTY)
+- `provider_name` (String) Impact source provider (options: PAGERDUTY, CUSTOM_INCIDENT)
 
 ### Optional
 
@@ -67,6 +67,7 @@ resource "sleuth_incident_impact_source" "jira" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+- `register_impact_link` (String) Impact source webhook registration link (for CUSTOM_INCIDENT only)
 - `slug` (String) Impact source slug
 
 <a id="nestedblock--datadog_input"></a>
