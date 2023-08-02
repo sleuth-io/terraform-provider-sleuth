@@ -28,7 +28,18 @@ provider "sleuth" {
 The Sleuth provider authenticates to Sleuth using your Sleuth organization API key. Find this by clicking on your
 organization name at the top left, selecting "Organization settings", and looking under "Api key".
 
-You can provide the API key via `SLEUTH_API_KEY` environment variable.
+You can provide the API key via `SLEUTH_API_KEY` environment variable. Note that you cannot use a *personal* API key, doing so will result in a *403 Forbidden* error. The key must be an *Organization* API key.
+
+### How to generate an Organization API key
+
+1. Navigate to "Organization Settings" in Sleuth dashboard
+
+![first organization api key generation instructions](images/first-org-gen.png)
+
+2. Under the "Details" tab, there is an "Api Key" field that contains the desired key
+
+![second organization api key generation instructions](images/second-org-gen.png)
+
 
 ## Slugs
 
