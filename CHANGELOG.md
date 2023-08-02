@@ -1,3 +1,9 @@
+## 0.4.2-dev (unreleased)
+
+ENHANCEMENTS:
+
+- [#107](https://github.com/sleuth-io/terraform-provider-sleuth/pull/107) Update api key documentation 
+
 ## 0.4.1 (July 25, 2023)
 
 FIXES:
