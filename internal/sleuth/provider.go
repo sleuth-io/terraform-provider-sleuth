@@ -3,6 +3,7 @@ package sleuth
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -11,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 )
 
@@ -45,7 +47,8 @@ func (p *sleuthProvider) Schema(_ context.Context, _ provider.SchemaRequest, res
 		Attributes: map[string]schema.Attribute{
 			"api_key": schema.StringAttribute{
 				MarkdownDescription: "The Sleuth organization's Api key",
-				Required:            true,
+				Optional:            true,
+				Sensitive:           true,
 			},
 			"baseurl": schema.StringAttribute{
 				MarkdownDescription: "Ignore this, as it is only used by Sleuth developers",
@@ -57,6 +60,10 @@ func (p *sleuthProvider) Schema(_ context.Context, _ provider.SchemaRequest, res
 
 func (p *sleuthProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 	tflog.Info(ctx, "Configuring Sleuth client")
+
+	apiKeyFallback := os.Getenv("SLEUTH_API_KEY")
+	baseURLENVFallback := os.Getenv("SLEUTH_BASEURL")
+
 	// Retrieve provider data from configuration
 	var config sleuthProviderModel
 	diags := req.Config.Get(ctx, &config)
@@ -65,20 +72,18 @@ func (p *sleuthProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
-	if config.APIKey.IsUnknown() {
-		resp.Diagnostics.AddAttributeError(
-			path.Root("api_key"),
-			"API key not present",
-			"Key not present",
-		)
-	}
-
-	if config.APIKey.IsNull() {
+	if config.APIKey.IsNull() && apiKeyFallback == "" {
 		resp.Diagnostics.AddAttributeError(
 			path.Root("api_key"),
 			"API key must be set",
-			"Key not present",
+			"API key must be set",
 		)
+		return
+	}
+
+	apiKey := config.APIKey
+	if config.APIKey.IsNull() {
+		apiKey = types.StringValue(apiKeyFallback)
 	}
 
 	if resp.Diagnostics.HasError() {
@@ -87,7 +92,11 @@ func (p *sleuthProvider) Configure(ctx context.Context, req provider.ConfigureRe
 
 	baseURL := config.BaseURL
 	if baseURL.IsNull() {
-		baseURL = types.StringValue("https://app.sleuth.io")
+		if baseURLENVFallback != "" {
+			baseURL = types.StringValue(baseURLENVFallback)
+		} else {
+			baseURL = types.StringValue("https://app.sleuth.io")
+		}
 	}
 
 	if resp.Diagnostics.HasError() {
@@ -96,11 +105,11 @@ func (p *sleuthProvider) Configure(ctx context.Context, req provider.ConfigureRe
 
 	ctx = tflog.SetField(ctx, "sleuth_base_url", baseURL)
 
-	c, err := gqlclient.NewClient(baseURL.ValueStringPointer(), config.APIKey.ValueStringPointer())
+	c, err := gqlclient.NewClient(baseURL.ValueStringPointer(), apiKey.ValueStringPointer())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating new client",
-			fmt.Sprintf("%+w", err),
+			fmt.Sprintf("%+v", err),
 		)
 		return
 	}
