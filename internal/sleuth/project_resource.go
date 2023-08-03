@@ -22,6 +22,7 @@ var (
 )
 
 type projectResourceModel struct {
+	ID                        types.String `tfsdk:"id"`
 	Name                      types.String `tfsdk:"name"`
 	Slug                      types.String `tfsdk:"slug"`
 	Description               types.String `tfsdk:"description"`
@@ -44,6 +45,10 @@ func (p *projectResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 	res.Schema = schema.Schema{
 		Description: "Project resource manages Sleuth project.",
 		Attributes: map[string]schema.Attribute{
+			// Added due to tests
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Project name",
 				Required:            true,
@@ -129,6 +134,8 @@ func (p *projectResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
+	tflog.Info(ctx, "Created Project", map[string]any{"project": proj})
+
 	state := getNewStateFromProject(proj)
 
 	diags = res.State.Set(ctx, state)
@@ -150,12 +157,16 @@ func (p *projectResource) Read(ctx context.Context, req resource.ReadRequest, re
 	}
 
 	proj, err := p.c.GetProject(state.Slug.ValueStringPointer())
+	tflog.Error(ctx, fmt.Sprintf("PRoj: %+v %+v", proj, err))
 	if err != nil {
 		tflog.Error(ctx, fmt.Sprintf("Error obtaining project: %+v", err))
 		res.Diagnostics.AddError(
 			"Error Reading Project",
 			fmt.Sprintf("Could not read Project Slug %+s, %+v", state.Slug.ValueString(), err.Error()),
 		)
+		return
+	}
+	if proj == nil {
 		return
 	}
 
@@ -185,10 +196,13 @@ func (p *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 	input := gqlclient.UpdateProjectMutationInput{Slug: state.Slug.ValueString(), MutableProject: &inputFields}
 
 	proj, err := p.c.UpdateProject(state.Slug.ValueStringPointer(), input)
+	tflog.Error(ctx, fmt.Sprintf("PRoj: %+v %+v", proj, err))
 	if err != nil {
 		diags.AddError("Error updating project", err.Error())
 		return
 	}
+
+	tflog.Info(ctx, "Updated Project", map[string]any{"project": proj})
 
 	newState := getNewStateFromProject(proj)
 
@@ -224,6 +238,7 @@ func (p *projectResource) ImportState(ctx context.Context, req resource.ImportSt
 
 func getNewStateFromProject(proj *gqlclient.Project) projectResourceModel {
 	return projectResourceModel{
+		ID:                        types.StringValue(proj.Slug),
 		Name:                      types.StringValue(proj.Name),
 		Slug:                      types.StringValue(proj.Slug),
 		Description:               types.StringValue(proj.Description),
