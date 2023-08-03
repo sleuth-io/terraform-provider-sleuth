@@ -3,11 +3,13 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 )
 
 func resourceEnvironment() *schema.Resource {
@@ -25,7 +27,7 @@ func resourceEnvironment() *schema.Resource {
 				Description: "The project for this environment",
 				Type:        schema.TypeString,
 				Required:    true,
-				ForceNew:    true,
+				ForceNew:    false,
 			},
 			"name": {
 				Description: "Environment name",
