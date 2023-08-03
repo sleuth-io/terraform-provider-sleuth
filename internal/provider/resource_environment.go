@@ -27,7 +27,7 @@ func resourceEnvironment() *schema.Resource {
 				Description: "The project for this environment",
 				Type:        schema.TypeString,
 				Required:    true,
-				ForceNew:    true,
+				ForceNew:    false,
 			},
 			"name": {
 				Description: "Environment name",
