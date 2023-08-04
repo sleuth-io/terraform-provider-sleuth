@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/shurcooL/graphql"
 	"strings"
+
+	"github.com/shurcooL/graphql"
 )
 
 func (c *Client) GetCodeChangeSource(ctx context.Context, projectSlug *string, slug *string) (*CodeChangeSource, error) {
