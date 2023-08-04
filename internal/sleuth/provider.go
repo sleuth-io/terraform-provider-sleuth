@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 )
 
@@ -122,5 +123,6 @@ func (p *sleuthProvider) DataSources(_ context.Context) []func() datasource.Data
 func (p *sleuthProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewProjectResource,
+		NewCodeChangeSourceResource,
 	}
 }
