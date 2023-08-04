@@ -131,5 +131,6 @@ func (p *sleuthProvider) DataSources(_ context.Context) []func() datasource.Data
 func (p *sleuthProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewProjectResource,
+		NewCodeChangeSourceResource,
 	}
 }
