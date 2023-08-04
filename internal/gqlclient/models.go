@@ -66,8 +66,8 @@ type MutableRepository struct {
 }
 
 type BranchMapping struct {
-	EnvironmentSlug string `json:"environmentSlug"`
-	Branch          string `json:"branch"`
+	EnvironmentSlug string `json:"environmentSlug" tfsdk:"environment_slug"`
+	Branch          string `json:"branch" tfsdk:"branch"`
 }
 
 type CodeChangeSource struct {
@@ -195,6 +195,7 @@ type BuildMapping struct {
 type DeployTrackingBuildMapping struct {
 	Environment              Environment `json:"environment"`
 	Provider                 string      `json:"provider"`
+	IntegrationSlug          string      `json:"integrationSlug"`
 	BuildName                string      `json:"buildName"`
 	JobName                  string      `json:"jobName,omitempty"`
 	BuildProjectKey          string      `json:"buildProjectKey"`
