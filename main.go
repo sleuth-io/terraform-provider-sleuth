@@ -13,13 +13,15 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
+
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov5"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov5/tf5server"
 	"github.com/hashicorp/terraform-plugin-mux/tf5muxserver"
+
 	sdkProvider "github.com/sleuth-io/terraform-provider-sleuth/internal/provider"
 	frameworkProvider "github.com/sleuth-io/terraform-provider-sleuth/internal/sleuth"
-	"log"
 )
 
 var (
