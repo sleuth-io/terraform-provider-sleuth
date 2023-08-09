@@ -60,6 +60,7 @@ resource "sleuth_incident_impact_source" "jira" {
 
 ### Optional
 
+- `blameless_input` (Block List, Max: 1) Blameless input (see [below for nested schema](#nestedblock--blameless_input))
 - `datadog_input` (Block List, Max: 1) DataDog input (see [below for nested schema](#nestedblock--datadog_input))
 - `jira_input` (Block List, Max: 1) JIRA input (see [below for nested schema](#nestedblock--jira_input))
 - `pagerduty_input` (Block List, Max: 1) PagerDuty input (see [below for nested schema](#nestedblock--pagerduty_input))
@@ -69,6 +70,16 @@ resource "sleuth_incident_impact_source" "jira" {
 - `id` (String) The ID of this resource.
 - `register_impact_link` (String) Impact source webhook registration link (for CUSTOM_INCIDENT only)
 - `slug` (String) Impact source slug
+
+<a id="nestedblock--blameless_input"></a>
+### Nested Schema for `blameless_input`
+
+Optional:
+
+- `integration_slug` (String) Blameless IntegrationAuthentication slug from app
+- `remote_severity_threshold` (String) Incidents with matching or lower severities will be considered a failure in Sleuth
+- `remote_types` (Set of String) The types of incidents to the monitors should track
+
 
 <a id="nestedblock--datadog_input"></a>
 ### Nested Schema for `datadog_input`
