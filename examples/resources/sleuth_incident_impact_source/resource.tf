@@ -32,3 +32,15 @@ resource "sleuth_incident_impact_source" "jira" {
     }
 }
 
+resource "sleuth_incident_impact_source" "blameless" {
+    project_slug = "project_slug"
+    name = "Blameless TF incident impact"
+    environment_name = "environment_name"
+    provider_name = "BLAMELESS"
+    blameless_input {
+        remote_types = ["type1", "type2"]
+	remote_severity_threshold = "SEV1"
+        integration_slug = "optional_integration_slug"
+    }
+}
+

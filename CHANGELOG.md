@@ -3,6 +3,7 @@
 ENHANCEMENTS:
 
 - [#107](https://github.com/sleuth-io/terraform-provider-sleuth/pull/107) Update api key documentation 
+- [#109](https://github.com/sleuth-io/terraform-provider-sleuth/pull/109) Add Blameless as Incident Impact Source
 
 ## 0.4.1 (July 25, 2023)
 
