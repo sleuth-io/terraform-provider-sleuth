@@ -235,10 +235,16 @@ type JiraProviderData struct {
 	RemoteJql string `json:"remoteJql"`
 }
 
+type BlamelessProviderData struct {
+	RemoteTypes             []string `json:"remoteTypes"`
+	RemoteSeverityThreshold string   `json:"remoteSeverityThreshold"`
+}
+
 type ProviderData struct {
 	PagerDutyProviderData PagerDutyProviderData `json:"pagerDutyProviderData" graphql:"... on PagerDutyProviderData"`
 	DataDogProviderData   DataDogProviderData   `json:"dataDogProviderData" graphql:"... on DataDogProviderData"`
 	JiraProviderData      JiraProviderData      `json:"jiraProviderData" graphql:"... on JiraProviderData"`
+	BlamelessProviderData BlamelessProviderData `json:"blamelessProviderData" graphql:"... on BlamelessProviderData"`
 }
 
 type IncidentImpactSource struct {
@@ -266,6 +272,11 @@ type JiraInputType struct {
 	IntegrationSlug string `json:"integrationSlug"`
 }
 
+type BlamelessInputType struct {
+	BlamelessProviderData
+	IntegrationSlug string `json:"integrationSlug"`
+}
+
 type IncidentImpactSourceInputType struct {
 	ProjectSlug        string              `json:"projectSlug"`
 	EnvironmentName    string              `json:"environmentName"`
@@ -274,6 +285,7 @@ type IncidentImpactSourceInputType struct {
 	PagerDutyInputType *PagerDutyInputType `json:"pagerDutyInput"`
 	DataDogInputType   *DataDogInputType   `json:"datadogInput"`
 	JiraInputType      *JiraInputType      `json:"jiraInput"`
+	BlamelessInputType *BlamelessInputType `json:"blamelessInput"`
 }
 
 type IncidentImpactSourceInputUpdateType struct {
