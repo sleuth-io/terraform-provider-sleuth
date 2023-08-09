@@ -20,6 +20,7 @@ const (
 	DataDog
 	Jira
 	CustomIncident
+	Blameless
 )
 
 func ImpactProviderFromString(s string) ImpactProvider {
@@ -32,6 +33,8 @@ func ImpactProviderFromString(s string) ImpactProvider {
 		return Jira
 	case "CUSTOM_INCIDENT":
 		return CustomIncident
+	case "BLAMELESS":
+		return Blameless
 	}
 	return Unknown
 }
@@ -46,6 +49,8 @@ func (s ImpactProvider) String() string {
 		return "JIRA"
 	case CustomIncident:
 		return "CUSTOM_INCIDENT"
+	case Blameless:
+		return "BLAMELESS"
 	}
 	return "unknown"
 }
@@ -166,6 +171,34 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 					},
 				},
 			},
+			"blameless_input": {
+				Description: "Blameless input",
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"remote_types": {
+							Optional:    true,
+							Type:        schema.TypeSet,
+							Description: "The types of incidents to the monitors should track",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"remote_severity_threshold": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Incidents with matching or lower severities will be considered a failure in Sleuth",
+						},
+						"integration_slug": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Blameless IntegrationAuthentication slug from app",
+						},
+					},
+				},
+			},
 			"slug": {
 				Description: "Impact source slug",
 				Type:        schema.TypeString,
@@ -218,6 +251,13 @@ func getProviderData(d *schema.ResourceData, i gqlclient.IncidentImpactSourceInp
 		i.JiraInputType = &gqlclient.JiraInputType{
 			JiraProviderData: gqlclient.JiraProviderData{
 				RemoteJql: d.Get("jira_input.0.remote_jql").(string),
+			},
+		}
+	case Blameless:
+		i.BlamelessInputType = &gqlclient.BlamelessInputType{
+			BlamelessProviderData: gqlclient.BlamelessProviderData{
+				RemoteTypes:             expandStringList(d, "blameless_input.0.remote_types"),
+				RemoteSeverityThreshold: d.Get("blameless_input.0.remote_severity_threshold").(string),
 			},
 		}
 	}
@@ -343,6 +383,13 @@ func setProviderDetailsData(ctx context.Context, d *schema.ResourceData, is *gql
 		jiraInput := make(map[string]interface{})
 		jiraInput["remote_jql"] = is.ProviderData.JiraProviderData.RemoteJql
 		jiraInput["integration_auth"] = is.IntegrationAuthSlug
+	case Blameless:
+		blamelessInput := make(map[string]interface{})
+		blamelessInput["remote_types"] = flattenStringSet(is.ProviderData.BlamelessProviderData.RemoteTypes)
+		blamelessInput["remote_severity_threshold"] = is.ProviderData.BlamelessProviderData.RemoteSeverityThreshold
+		blamelessInput["integration_auth"] = is.IntegrationAuthSlug
+
+		d.Set("blameless_input", []map[string]interface{}{blamelessInput})
 	}
 }
 
@@ -355,4 +402,27 @@ func setFields(ctx context.Context, d *schema.ResourceData, is *gqlclient.Incide
 	d.Set("register_impact_link", is.RegisterImpactLink)
 
 	setProviderDetailsData(ctx, d, is, provider)
+}
+
+func flattenStringList(list []string) []interface{} {
+	vs := make([]interface{}, 0, len(list))
+	for _, v := range list {
+		vs = append(vs, v)
+	}
+	return vs
+}
+
+func flattenStringSet(list []string) *schema.Set {
+	return schema.NewSet(schema.HashString, flattenStringList(list))
+}
+
+func expandStringList(d *schema.ResourceData, v string) []string {
+	set := d.Get(v).(*schema.Set)
+	list := set.List()
+	stringList := make([]string, len(list))
+	for i, v := range list {
+		stringList[i] = v.(string)
+	}
+
+	return stringList
 }
