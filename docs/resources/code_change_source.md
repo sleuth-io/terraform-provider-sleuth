@@ -45,23 +45,41 @@ resource "sleuth_code_change_source" "sleuth-terraform-provider" {
 ### Required
 
 - `deploy_tracking_type` (String) How to track deploys. Valid choices are build, manual, auto_pr, auto_tag, auto_push
-- `environment_mappings` (Block List, Min: 1) Environment mappings of the environment. They must be ordered by environment_slug ascending to avoid Terraform plan changes. (see [below for nested schema](#nestedblock--environment_mappings))
-- `name` (String) Change source name
-- `project_slug` (String) The project for this environment
-- `repository` (Block List, Min: 1, Max: 1) (see [below for nested schema](#nestedblock--repository))
+- `name` (String) Code change source name
+- `project_slug` (String) The slug of the project that this code change source belongs to.
 
 ### Optional
 
 - `auto_tracking_delay` (Number) The delay to add to a deployment event
-- `build_mappings` (Block List) Build mappings of the environment. They must be ordered by environment_slug ascending to avoid Terraform plan changes. (see [below for nested schema](#nestedblock--build_mappings))
+- `build_mappings` (Block List) Build mappings of the code change source. They must be ordered by environment_slug ascending to avoid Terraform plan changes. (see [below for nested schema](#nestedblock--build_mappings))
 - `collect_impact` (Boolean) Whether to collect impact for its deploys
+- `environment_mappings` (Block List) Environment mappings of the code change source. They must be ordered by environment_slug ascending to avoid Terraform plan changes. (see [below for nested schema](#nestedblock--environment_mappings))
 - `include_in_dashboard` (Boolean) Whether to include deploys from this change source in the metrics dashboard
 - `notify_in_slack` (Boolean) Whether to send Slack notifications for deploys or not
 - `path_prefix` (String) What code source path to limit this deployment to. Useful for monorepos. Must be used with the [jsonencode()](https://developer.hashicorp.com/terraform/language/functions/jsonencode) function to specify the paths to include and/or exclude respectively. (see example above)
+- `repository` (Block, Optional) (see [below for nested schema](#nestedblock--repository))
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+- `slug` (String)
+
+<a id="nestedblock--build_mappings"></a>
+### Nested Schema for `build_mappings`
+
+Required:
+
+- `build_name` (String) The remote build or pipeline name
+- `environment_slug` (String) The environment slug
+- `provider` (String) The build provider. Options: AZURE, BITBUCKET_PIPELINES, BUILDKITE, CIRCLECI, GITHUB, GITLAB, JENKINS
+
+Optional:
+
+- `integration_slug` (String) IntegrationAuthentication slug used
+- `job_name` (String) The job or stage within the build or pipeline, if supported
+- `match_branch_to_environment` (Boolean) Whether only builds performed on the branch mapped from the environment are tracked or not. Basically if you only want Sleuth to find builds that were triggeredby a change on the branch that is configured for the environment, set this to false. Defaults to true
+- `project_key` (String) The build project key
+
 
 <a id="nestedblock--environment_mappings"></a>
 ### Nested Schema for `environment_mappings`
@@ -69,7 +87,7 @@ resource "sleuth_code_change_source" "sleuth-terraform-provider" {
 Required:
 
 - `branch` (String) The repository branch name for the environment
-- `environment_slug` (String) The environment slug or id
+- `environment_slug` (String) The environment slug for mapping
 
 Read-Only:
 
@@ -83,30 +101,13 @@ Required:
 
 - `name` (String) The repository name
 - `owner` (String) The repository owner, usually the organization or user name
-- `provider` (String) The repository provider, such as GITHUB
-- `url` (String) The repository url, used for links
+- `provider` (String) The repository provider, options: AZURE, BITBUCKET, CUSTOM_GIT, GITHUB, GITHUB_ENTERPRISE, GITLAB
+- `url` (String) The repository URL, used for links
 
 Optional:
 
 - `integration_slug` (String) IntegrationAuthentication slug used
 - `project_uid` (String) Project UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)
 - `repo_uid` (String) Repository UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)
-
-
-<a id="nestedblock--build_mappings"></a>
-### Nested Schema for `build_mappings`
-
-Required:
-
-- `build_name` (String) The remote build or pipeline name
-- `environment_slug` (String) The environment slug or id
-- `provider` (String) The repository provider, such as CIRCLECI
-
-Optional:
-
-- `integration_slug` (String) The integration slug
-- `job_name` (String) The job or stage within the build or pipeline, if supported
-- `match_branch_to_environment` (Boolean) Whether only builds performed on the branch mapped from the environment are tracked or not. Basically if you only want Sleuth to find builds that were triggeredby a change on the branch that is configured for the environment, set this to false. Defaults to true
-- `project_key` (String) The build project key
 
 
