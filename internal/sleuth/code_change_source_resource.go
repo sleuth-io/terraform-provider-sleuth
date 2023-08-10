@@ -100,6 +100,8 @@ var buildMappingsResourceTFTypes = map[string]attr.Type{
 	"match_branch_to_environment": types.BoolType,
 }
 
+const azureProvider = "azure"
+
 type codeChangeSourceResource struct {
 	c *gqlclient.Client
 }
@@ -464,7 +466,7 @@ func (ccsr *codeChangeSourceResource) ImportState(ctx context.Context, req resou
 }
 
 func validateCodeChangeInput(ccs gqlclient.MutableCodeChangeSource) error {
-	if strings.ToLower(ccs.Repository.Provider) != "azure" {
+	if strings.ToLower(ccs.Repository.Provider) != azureProvider {
 		return nil
 	}
 
@@ -548,7 +550,8 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 		ProjectUID:      types.StringNull(),
 	}
 
-	if ccs.Repository.Provider == "AZURE" {
+	if strings.ToLower(ccs.Repository.Provider) == azureProvider {
+		r.IntegrationSlug = types.StringValue(ccs.Repository.IntegrationAuth.Slug)
 		r.RepoUID = types.StringValue(ccs.Repository.RepoUID)
 		r.ProjectUID = types.StringValue(ccs.Repository.ProjectUID)
 	}
@@ -607,7 +610,7 @@ func getMutableCodeChangeSourceStruct(plan codeChangeResourceModel, repo reposit
 	return &gqlclient.MutableCodeChangeSource{
 		Name: plan.Name.ValueString(),
 		Repository: gqlclient.MutableRepository{
-			Repository: gqlclient.Repository{
+			RepositoryBase: gqlclient.RepositoryBase{
 				Owner:      repo.Owner.ValueString(),
 				Name:       repo.Name.ValueString(),
 				Provider:   repo.Provider.ValueString(),
