@@ -46,22 +46,26 @@ type MetricImpactSource struct {
 	ManuallySetHealthThreshold float64     `json:"manuallySetHealthThreshold,omitempty"`
 }
 
-type IntegrationAuth struct {
-	Slug string `json:"string"`
+type RepositoryBase struct {
+	Owner      string `json:"owner"`
+	Name       string `json:"name"`
+	Provider   string `json:"provider"`
+	Url        string `json:"url,omitempty"`
+	ProjectUID string `json:"projectUid,omitempty"`
+	RepoUID    string `json:"repoUid,omitempty"`
 }
 
 type Repository struct {
-	Owner           string           `json:"owner"`
-	Name            string           `json:"name"`
-	Provider        string           `json:"provider"`
-	Url             string           `json:"url,omitempty"`
-	ProjectUID      string           `json:"projectUid,omitempty"`
-	RepoUID         string           `json:"repoUid,omitempty"`
-	IntegrationAuth *IntegrationAuth `json:"integrationAuth,omitempty"`
+	RepositoryBase
+	IntegrationAuth IntegrationAuth `json:"integrationAuth,omitempty"`
+}
+
+type IntegrationAuth struct {
+	Slug string `json:"slug"`
 }
 
 type MutableRepository struct {
-	Repository
+	RepositoryBase
 	IntegrationSlug string `json:"integrationSlug,omitempty"`
 }
 
