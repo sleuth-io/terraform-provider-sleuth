@@ -2,14 +2,15 @@ package gqlclient
 
 import (
 	"context"
-
 	// 	"encoding/json"
 	"fmt"
-	"github.com/shurcooL/graphql"
 	"io/ioutil"
 	"net/http"
+
 	// 	"strings"
 	"time"
+
+	"github.com/shurcooL/graphql"
 )
 
 // Client -
@@ -24,18 +25,19 @@ type Client struct {
 type AuthenticatedTransport struct {
 	T      http.RoundTripper
 	ApiKey string
+	UA     string
 }
 
 func (transport *AuthenticatedTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	req.Header.Add("User-Agent", "sleuth-terraform")
+	req.Header.Add("User-Agent", transport.UA)
 	req.Header.Add("Authorization", fmt.Sprintf("apikey %s", transport.ApiKey))
 	return transport.T.RoundTrip(req)
 }
 
 // NewClient -
-func NewClient(baseurl, apiKey *string) (*Client, error) {
+func NewClient(baseurl, apiKey *string, ua string) (*Client, error) {
 	httpClient := http.Client{Timeout: 20 * time.Second,
-		Transport: &AuthenticatedTransport{http.DefaultTransport, *apiKey}}
+		Transport: &AuthenticatedTransport{http.DefaultTransport, *apiKey, ua}}
 	c := Client{
 		GQLClient:  graphql.NewClient(*baseurl+"/graphql", &httpClient),
 		HTTPClient: &httpClient,

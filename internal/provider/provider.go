@@ -2,8 +2,10 @@ package provider
 
 import (
 	"context"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 )
 
@@ -62,6 +64,7 @@ func New(version string) func() *schema.Provider {
 
 func configure(version string, p *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+
 		apiKey := d.Get("api_key").(string)
 
 		var baseurl *string
@@ -75,7 +78,8 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 		// Warning or errors can be collected in a slice type
 		var diags diag.Diagnostics
 
-		c, err := gqlclient.NewClient(baseurl, &apiKey)
+		ua := p.UserAgent("sleuth_terraform_provider", version)
+		c, err := gqlclient.NewClient(baseurl, &apiKey, ua)
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
