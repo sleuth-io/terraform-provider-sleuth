@@ -1,9 +1,10 @@
-## 0.4.2-dev (unreleased)
+## 0.4.2 (August 16, 2023)
 
 ENHANCEMENTS:
 
 - [#107](https://github.com/sleuth-io/terraform-provider-sleuth/pull/107) Update api key documentation 
 - [#109](https://github.com/sleuth-io/terraform-provider-sleuth/pull/109) Add Blameless as Incident Impact Source
+- [#111](https://github.com/sleuth-io/terraform-provider-sleuth/pull/111) Update UserAgent string to include provider version
 
 ## 0.4.1 (July 25, 2023)
 
