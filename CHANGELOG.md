@@ -2,6 +2,7 @@
 
 ENHANCEMENTS:
 
+- [#128](https://github.com/sleuth-io/terraform-provider-sleuth/pull/128) Add FireHydrant as Incident Impact Source
 - [#126](https://github.com/sleuth-io/terraform-provider-sleuth/pull/126) Add OpsGenie as Incident Impact Source
 - [#120](https://github.com/sleuth-io/terraform-provider-sleuth/pull/120) Update Metric Impact Source docs re: `integration_slug`
 

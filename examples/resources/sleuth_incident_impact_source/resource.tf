@@ -70,3 +70,15 @@ resource "sleuth_incident_impact_source" "opsgenie" {
     remote_use_alerts         = false
   }
 }
+
+resource "sleuth_incident_impact_source" "firehydrant" {
+  project_slug     = "project_slug"
+  name             = "FireHydrant TF incident impact"
+  environment_name = "environment_name"
+  provider_name    = "FIREHYDRANT"
+  opsgenie_input {
+    remote_services             = "service_uuid"
+    remote_environments         = "environment_uuid"
+    remote_mitigated_is_healthy = true
+  }
+}
