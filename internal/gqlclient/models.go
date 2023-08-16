@@ -39,7 +39,7 @@ type MetricImpactSource struct {
 	ManuallySetHealthThreshold float64     `json:"manuallySetHealthThreshold,omitempty"`
 }
 
-type Repository struct {
+type RepositoryBase struct {
 	Owner      string `json:"owner"`
 	Name       string `json:"name"`
 	Provider   string `json:"provider"`
@@ -48,14 +48,23 @@ type Repository struct {
 	RepoUID    string `json:"repoUid,omitempty"`
 }
 
+type Repository struct {
+	RepositoryBase
+	IntegrationAuth IntegrationAuth `json:"integrationAuth,omitempty"`
+}
+
+type IntegrationAuth struct {
+	Slug string `json:"slug"`
+}
+
 type MutableRepository struct {
-	Repository
+	RepositoryBase
 	IntegrationSlug string `json:"integrationSlug,omitempty"`
 }
 
 type BranchMapping struct {
-	EnvironmentSlug string `json:"environmentSlug"`
-	Branch          string `json:"branch"`
+	EnvironmentSlug string `json:"environmentSlug" tfsdk:"environment_slug"`
+	Branch          string `json:"branch" tfsdk:"branch"`
 }
 
 type CodeChangeSource struct {
@@ -180,6 +189,7 @@ type BuildMapping struct {
 type DeployTrackingBuildMapping struct {
 	Environment              Environment `json:"environment"`
 	Provider                 string      `json:"provider"`
+	IntegrationSlug          string      `json:"integrationSlug"`
 	BuildName                string      `json:"buildName"`
 	JobName                  string      `json:"jobName,omitempty"`
 	BuildProjectKey          string      `json:"buildProjectKey"`

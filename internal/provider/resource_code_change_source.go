@@ -3,11 +3,13 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 )
 
 func resourceCodeChangeSource() *schema.Resource {
@@ -328,7 +330,7 @@ func populateCodeChangeSource(d *schema.ResourceData, input *gqlclient.MutableCo
 	repoData := repoList[0].(map[string]interface{})
 	repo := gqlclient.MutableRepository{
 		IntegrationSlug: repoData["integration_slug"].(string),
-		Repository: gqlclient.Repository{
+		RepositoryBase: gqlclient.RepositoryBase{
 			Owner:      repoData["owner"].(string),
 			Name:       repoData["name"].(string),
 			Provider:   repoData["provider"].(string),
