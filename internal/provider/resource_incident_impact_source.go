@@ -23,6 +23,7 @@ const (
 	Blameless
 	Statuspage
 	OpsGenie
+	FireHydrant
 )
 
 func ImpactProviderFromString(s string) ImpactProvider {
@@ -41,6 +42,8 @@ func ImpactProviderFromString(s string) ImpactProvider {
 		return Statuspage
 	case "OPSGENIE":
 		return OpsGenie
+	case "FIREHYDRANT":
+		return FireHydrant
 	}
 	return Unknown
 }
@@ -61,6 +64,8 @@ func (s ImpactProvider) String() string {
 		return "STATUSPAGE"
 	case OpsGenie:
 		return "OPSGENIE"
+	case FireHydrant:
+		return "FIREHYDRANT"
 	}
 	return "unknown"
 }
@@ -286,6 +291,32 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 					},
 				},
 			},
+			"firehydrant_input": {
+				Description: "FireHydrant input",
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"remote_environments": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The environment defined in FireHydrant to monitor",
+						},
+						"remote_services": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The service defined in FireHydrant to monitor",
+						},
+						"remote_mitigated_is_healthy": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "If true, incident considered to have ended once reaching mitigated Milestone or it is resolved",
+							Default:     false,
+						},
+					},
+				},
+			},
 			"slug": {
 				Description: "Impact source slug",
 				Type:        schema.TypeString,
@@ -364,6 +395,14 @@ func getProviderData(d *schema.ResourceData, i gqlclient.IncidentImpactSourceInp
 				RemotePriorityThreshold: d.Get("opsgenie_input.0.remote_priority_threshold").(string),
 				RemoteService:           d.Get("opsgenie_input.0.remote_service").(string),
 				RemoteUseAlerts:         d.Get("opsgenie_input.0.remote_use_alerts").(bool),
+			},
+		}
+	case FireHydrant:
+		i.FireHydrantInputType = &gqlclient.FireHydrantInputType{
+			FireHydrantProviderData: gqlclient.FireHydrantProviderData{
+				RemoteEnvironments:       d.Get("firehydrant_input.0.remote_environments").(string),
+				RemoteServices:           d.Get("firehydrant_input.0.remote_services").(string),
+				RemoteMitigatedIsHealthy: d.Get("firehydrant_input.0.remote_mitigated_is_healthy").(bool),
 			},
 		}
 	}
@@ -515,6 +554,13 @@ func setProviderDetailsData(ctx context.Context, d *schema.ResourceData, is *gql
 		opsgenieInput["integration_auth"] = is.IntegrationAuthSlug
 
 		d.Set("opsgenie_input", []map[string]interface{}{opsgenieInput})
+	case FireHydrant:
+		fireHydrantInput := make(map[string]interface{})
+		fireHydrantInput["remote_environments"] = is.ProviderData.FireHydrantProviderData.RemoteEnvironments
+		fireHydrantInput["remote_services"] = is.ProviderData.FireHydrantProviderData.RemoteServices
+		fireHydrantInput["remote_mitigated_is_healthy"] = is.ProviderData.FireHydrantProviderData.RemoteMitigatedIsHealthy
+
+		d.Set("firehydrant_input", []map[string]interface{}{fireHydrantInput})
 	}
 }
 

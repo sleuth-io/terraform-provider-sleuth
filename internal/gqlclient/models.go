@@ -255,13 +255,20 @@ type OpsGenieProviderData struct {
 	RemoteUseAlerts         bool   `json:"remoteUseAlerts"`
 }
 
+type FireHydrantProviderData struct {
+	RemoteEnvironments       string `json:"remoteEnvironments"`
+	RemoteServices           string `json:"remoteServices"`
+	RemoteMitigatedIsHealthy bool   `json:"remoteMitigatedIsHealthy"`
+}
+
 type ProviderData struct {
-	PagerDutyProviderData  PagerDutyProviderData  `json:"pagerDutyProviderData" graphql:"... on PagerDutyProviderData"`
-	DataDogProviderData    DataDogProviderData    `json:"dataDogProviderData" graphql:"... on DataDogProviderData"`
-	JiraProviderData       JiraProviderData       `json:"jiraProviderData" graphql:"... on JiraProviderData"`
-	BlamelessProviderData  BlamelessProviderData  `json:"blamelessProviderData" graphql:"... on BlamelessProviderData"`
-	StatuspageProviderData StatuspageProviderData `json:"statuspageProviderData" graphql:"... on StatuspageProviderData"`
-	OpsGenieProviderData   OpsGenieProviderData   `json:"opsgenieProviderData" graphql:"... on OpsgenieProviderData"`
+	PagerDutyProviderData   PagerDutyProviderData   `json:"pagerDutyProviderData" graphql:"... on PagerDutyProviderData"`
+	DataDogProviderData     DataDogProviderData     `json:"dataDogProviderData" graphql:"... on DataDogProviderData"`
+	JiraProviderData        JiraProviderData        `json:"jiraProviderData" graphql:"... on JiraProviderData"`
+	BlamelessProviderData   BlamelessProviderData   `json:"blamelessProviderData" graphql:"... on BlamelessProviderData"`
+	StatuspageProviderData  StatuspageProviderData  `json:"statuspageProviderData" graphql:"... on StatuspageProviderData"`
+	OpsGenieProviderData    OpsGenieProviderData    `json:"opsgenieProviderData" graphql:"... on OpsgenieProviderData"`
+	FireHydrantProviderData FireHydrantProviderData `json:"firehydrantProviderData" graphql:"... on FireHydrantProviderData"`
 }
 
 type IncidentImpactSource struct {
@@ -298,6 +305,10 @@ type StatuspageInputType struct {
 	StatuspageProviderData
 	IntegrationSlug string `json:"integrationSlug"`
 }
+type FireHydrantInputType struct {
+	FireHydrantProviderData
+	IntegrationSlug string `json:"integrationSlug"`
+}
 
 type OpsGenieInputType struct {
 	OpsGenieProviderData
@@ -305,16 +316,17 @@ type OpsGenieInputType struct {
 }
 
 type IncidentImpactSourceInputType struct {
-	ProjectSlug         string               `json:"projectSlug"`
-	EnvironmentName     string               `json:"environmentName"`
-	Name                string               `json:"name"`
-	Provider            string               `json:"provider"`
-	PagerDutyInputType  *PagerDutyInputType  `json:"pagerDutyInput"`
-	DataDogInputType    *DataDogInputType    `json:"datadogInput"`
-	JiraInputType       *JiraInputType       `json:"jiraInput"`
-	BlamelessInputType  *BlamelessInputType  `json:"blamelessInput"`
-	StatuspageInputType *StatuspageInputType `json:"statuspageInput"`
-	OpsGenieInputType   *OpsGenieInputType   `json:"opsgenieInput"`
+	ProjectSlug          string                `json:"projectSlug"`
+	EnvironmentName      string                `json:"environmentName"`
+	Name                 string                `json:"name"`
+	Provider             string                `json:"provider"`
+	PagerDutyInputType   *PagerDutyInputType   `json:"pagerDutyInput"`
+	DataDogInputType     *DataDogInputType     `json:"datadogInput"`
+	JiraInputType        *JiraInputType        `json:"jiraInput"`
+	BlamelessInputType   *BlamelessInputType   `json:"blamelessInput"`
+	StatuspageInputType  *StatuspageInputType  `json:"statuspageInput"`
+	OpsGenieInputType    *OpsGenieInputType    `json:"opsgenieInput"`
+	FireHydrantInputType *FireHydrantInputType `json:"firehydrantInput"`
 }
 
 type IncidentImpactSourceInputUpdateType struct {
