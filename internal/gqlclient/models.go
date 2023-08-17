@@ -35,8 +35,9 @@ type MetricImpactSource struct {
 	Name                       string      `json:"name"`
 	Provider                   string      `json:"provider,omitempty"`
 	Query                      string      `json:"query,omitempty"`
+	IntegrationAuthSlug        string      `json:"integrationAuthSlug,omitempty"`
 	LessIsBetter               bool        `json:"lessIsBetter,omitempty"`
-	ManuallySetHealthThreshold float64     `json:"manuallySetHealthThreshold,omitempty"`
+	ManuallySetHealthThreshold *float64    `json:"manuallySetHealthThreshold,omitempty"`
 }
 
 type RepositoryBase struct {
