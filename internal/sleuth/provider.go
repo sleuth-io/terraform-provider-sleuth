@@ -48,7 +48,6 @@ func (p *sleuthProvider) Schema(_ context.Context, _ provider.SchemaRequest, res
 			"api_key": schema.StringAttribute{
 				MarkdownDescription: "The Sleuth organization's Api key",
 				Optional:            true,
-				Sensitive:           true,
 			},
 			"baseurl": schema.StringAttribute{
 				MarkdownDescription: "Ignore this, as it is only used by Sleuth developers",
@@ -132,5 +131,6 @@ func (p *sleuthProvider) Resources(_ context.Context) []func() resource.Resource
 	return []func() resource.Resource{
 		NewProjectResource,
 		NewCodeChangeSourceResource,
+		NewEnvironmentResource,
 	}
 }
