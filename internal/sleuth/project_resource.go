@@ -157,7 +157,6 @@ func (p *projectResource) Read(ctx context.Context, req resource.ReadRequest, re
 	}
 
 	proj, err := p.c.GetProject(state.Slug.ValueStringPointer())
-	tflog.Error(ctx, fmt.Sprintf("PRoj: %+v %+v", proj, err))
 	if err != nil {
 		tflog.Error(ctx, fmt.Sprintf("Error obtaining project: %+v", err))
 		res.Diagnostics.AddError(

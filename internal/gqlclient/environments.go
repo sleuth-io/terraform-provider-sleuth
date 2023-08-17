@@ -2,8 +2,12 @@ package gqlclient
 
 import (
 	"errors"
+	"fmt"
+
 	"github.com/shurcooL/graphql"
 )
+
+var ErrNotFound = errors.New("Resource was not found")
 
 func (c *Client) GetEnvironmentByName(projectSlug *string, name *string) (*Environment, error) {
 	var query struct {
@@ -26,7 +30,7 @@ func (c *Client) GetEnvironmentByName(projectSlug *string, name *string) (*Envir
 			return &env, nil
 		}
 	}
-	return nil, errors.New("Not found")
+	return nil, ErrNotFound
 }
 
 // GetEnvironment - Returns environment
@@ -74,7 +78,7 @@ func (c *Client) CreateEnvironment(input CreateEnvironmentMutationInput) (*Envir
 	}
 
 	if len(m.CreateEnvironment.Errors) > 0 {
-		return nil, errors.New("Errors creating environment")
+		return nil, fmt.Errorf("errors creating environment: %+v", m.CreateEnvironment.Errors)
 	}
 	return &m.CreateEnvironment.Environment, nil
 }
@@ -111,6 +115,7 @@ func (c *Client) DeleteEnvironment(projectSlug *string, slug *string) error {
 	var m struct {
 		DeleteEnvironment struct {
 			Success graphql.Boolean
+			Errors  ErrorsType
 		} `graphql:"deleteEnvironment(input: $input)"`
 	}
 	variables := map[string]interface{}{
@@ -124,7 +129,7 @@ func (c *Client) DeleteEnvironment(projectSlug *string, slug *string) error {
 	}
 
 	if !m.DeleteEnvironment.Success {
-		return errors.New("Missing")
+		return fmt.Errorf("deleting environment was not successful: %+v", m.DeleteEnvironment.Errors)
 	} else {
 		return nil
 	}
