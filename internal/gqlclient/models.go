@@ -33,7 +33,8 @@ type ErrorImpactSource struct {
 	ErrorOrgKey                string      `json:"errorOrgKey"`
 	ErrorProjectKey            string      `json:"errorProjectKey"`
 	ErrorEnvironment           string      `json:"errorEnvironment"`
-	ManuallySetHealthThreshold float64     `json:"manuallySetHealthThreshold,omitempty"`
+	ManuallySetHealthThreshold *float64    `json:"manuallySetHealthThreshold,omitempty"`
+	IntegrationAuthSlug        string      `json:"integrationAuthSlug,omitempty"`
 }
 
 type MetricImpactSource struct {
@@ -145,6 +146,7 @@ type MutableErrorImpactSource struct {
 	ErrorProjectKey            string  `json:"errorProjectKey"`
 	ErrorEnvironment           string  `json:"errorEnvironment"`
 	ManuallySetHealthThreshold float64 `json:"manuallySetHealthThreshold,omitempty"`
+	IntegrationSlug            string  `json:"auth,omitempty"`
 }
 
 type CreateErrorImpactSourceMutationInput struct {
