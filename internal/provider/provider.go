@@ -49,7 +49,7 @@ func New(version string) func() *schema.Provider {
 			ResourcesMap: map[string]*schema.Resource{
 				//"sleuth_project":                resourceProject(),
 				//"sleuth_environment":          resourceEnvironment(),
-				"sleuth_error_impact_source": resourceErrorImpactSource(),
+				//"sleuth_error_impact_source": resourceErrorImpactSource(),
 				//"sleuth_metric_impact_source": resourceMetricImpactSource(),
 				//"sleuth_code_change_source":     resourceCodeChangeSource(),
 				"sleuth_incident_impact_source": resourceIncidentImpactSource(),
@@ -64,7 +64,6 @@ func New(version string) func() *schema.Provider {
 
 func configure(version string, p *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
-
 		apiKey := d.Get("api_key").(string)
 
 		var baseurl *string
