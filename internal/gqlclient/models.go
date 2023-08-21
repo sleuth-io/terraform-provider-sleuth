@@ -59,7 +59,7 @@ type RepositoryBase struct {
 
 type Repository struct {
 	RepositoryBase
-	IntegrationAuth IntegrationAuth `json:"integrationAuth,omitempty"`
+	IntegrationAuth *IntegrationAuth `json:"integrationAuth,omitempty"`
 }
 
 type IntegrationAuth struct {
