@@ -2,8 +2,10 @@ package gqlclient
 
 import (
 	"errors"
-	"github.com/shurcooL/graphql"
+	"fmt"
 	"strings"
+
+	"github.com/shurcooL/graphql"
 )
 
 //// GetProjects - Returns list of projects
@@ -73,7 +75,7 @@ func (c *Client) CreateProject(input CreateProjectMutationInput) (*Project, erro
 	}
 
 	if len(m.CreateProject.Errors) > 0 {
-		return nil, errors.New("Errors creating project")
+		return nil, fmt.Errorf("%+v", m.CreateProject.Errors)
 	}
 	return &m.CreateProject.Project, nil
 }
@@ -98,7 +100,7 @@ func (c *Client) UpdateProject(slug *string, input UpdateProjectMutationInput) (
 	}
 
 	if len(m.UpdateProject.Errors) > 0 {
-		return nil, errors.New("Errors updating project")
+		return nil, fmt.Errorf("%+v", m.UpdateProject.Errors)
 	}
 
 	return &m.UpdateProject.Project, nil
