@@ -39,7 +39,7 @@ func main() {
 
 	sdkGrpcProvider := sdkProvider.New(version)().GRPCProvider
 	providers := []func() tfprotov5.ProviderServer{
-		providerserver.NewProtocol5(frameworkProvider.New()),
+		providerserver.NewProtocol5(frameworkProvider.New(version)),
 		sdkGrpcProvider,
 	}
 
