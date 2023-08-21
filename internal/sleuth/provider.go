@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/meta"
 
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 )
@@ -22,12 +23,14 @@ var (
 )
 
 // New is a helper function to simplify provider server and testing implementation.
-func New() provider.Provider {
-	return &sleuthProvider{}
+func New(v string) provider.Provider {
+	return &sleuthProvider{v: v}
 }
 
 // sleuthProvider is the provider implementation.
-type sleuthProvider struct{}
+type sleuthProvider struct {
+	v string
+}
 
 // sleuthProviderModel maps provider schema data to a Go type.
 type sleuthProviderModel struct {
@@ -36,8 +39,9 @@ type sleuthProviderModel struct {
 }
 
 // Metadata returns the provider type name.
-func (p *sleuthProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
+func (p *sleuthProvider) Metadata(_ context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
 	resp.TypeName = "sleuth"
+	resp.Version = p.v
 }
 
 // Schema defines the provider-level schema for configuration data.
@@ -103,8 +107,8 @@ func (p *sleuthProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	}
 
 	ctx = tflog.SetField(ctx, "sleuth_base_url", baseURL)
-
-	c, err := gqlclient.NewClient(baseURL.ValueStringPointer(), apiKey.ValueStringPointer())
+	ua := userAgent(req.TerraformVersion, "terraform-provider-sleuth", p.v)
+	c, err := gqlclient.NewClient(baseURL.ValueStringPointer(), apiKey.ValueStringPointer(), ua)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating new client",
@@ -133,4 +137,17 @@ func (p *sleuthProvider) Resources(_ context.Context) []func() resource.Resource
 		NewCodeChangeSourceResource,
 		NewEnvironmentResource,
 	}
+}
+
+// modified from Plugin SDK (https://github.com/hashicorp/terraform-plugin-sdk/blob/ee14c4b6cb40fe4c6dc8ad2e50eda4c7f29cd291/helper/schema/provider.go#L489)
+func userAgent(terraformVersion, name, version string) string {
+	ua := fmt.Sprintf("Terraform/%s (+https://www.terraform.io) Terraform-Plugin-SDK/%s", terraformVersion, meta.SDKVersionString())
+	if name != "" {
+		ua += " " + name
+		if version != "" {
+			ua += "/" + version
+		}
+	}
+
+	return ua
 }
