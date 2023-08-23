@@ -1,3 +1,9 @@
+## 0.4.3 (UNRELEASED)
+
+ENHANCEMENTS:
+
+- [#120](https://github.com/sleuth-io/terraform-provider-sleuth/pull/120) Update Metric Impact Source docs re: `integration_slug`
+
 ## 0.4.2 (August 16, 2023)
 
 ENHANCEMENTS:

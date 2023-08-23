@@ -12,6 +12,7 @@ resource "sleuth_metric_impact_source" "cloudwatch_rds_cpu" {
   environment_slug = "prod"
   name = "RDS CPU"
   provider_type = "cloudwatch"
+  integration_slug = "" /* If left empty or omitted completely, Sleuth will revert to `integration_slug == provider_type` */
   query = jsonencode({
     "metrics": [
       [ "AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", "my-db-identifier", { "id": "m1" } ]

@@ -44,7 +44,7 @@ func resourceMetricImpactSource() *schema.Resource {
 				Required:    true,
 			},
 			"integration_slug": {
-				Description: "The integration slug",
+				Description: "Integration slug is generated automatically when an integration is set up in Sleuth. By default, it matches the `provider_type`. Any value specified in the integration's `Description label` field gets appended to the `integration_slug`, spaces replaced with dashes, e.g. `cloudwatch-test`",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},

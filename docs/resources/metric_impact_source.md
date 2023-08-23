@@ -27,6 +27,7 @@ resource "sleuth_metric_impact_source" "cloudwatch_rds_cpu" {
   environment_slug = "prod"
   name = "RDS CPU"
   provider_type = "cloudwatch"
+  integration_slug = "" /* If left empty or omitted completely, Sleuth will revert to `integration_slug == provider_type` */
   query = jsonencode({
     "metrics": [
       [ "AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", "my-db-identifier", { "id": "m1" } ]
@@ -54,7 +55,7 @@ resource "sleuth_metric_impact_source" "cloudwatch_rds_cpu" {
 
 ### Optional
 
-- `integration_slug` (String) The integration slug
+- `integration_slug` (String) Integration slug is generated automatically when an integration is set up in Sleuth. By default, it matches the `provider_type`. Any value specified in the integration's `Description label` field gets appended to the `integration_slug`, spaces replaced with dashes, e.g. `cloudwatch-test`
 - `less_is_better` (Boolean) Whether smaller values are better or not
 - `manually_set_health_threshold` (Number) The manually set threshold to start marking failed values
 
