@@ -14,37 +14,62 @@ Sleuth incident impact source
 
 ```terraform
 resource "sleuth_incident_impact_source" "pd" {
-    project_slug = "project_slug"
-    name = "PagerDuty TF incident impact"
-    environment_name = "environment_name"
-    provider_name = "PAGERDUTY"
-    pagerduty_input {
-        remote_services = ""
-        remote_urgency = "ANY"
-    }
+  project_slug     = "project_slug"
+  name             = "PagerDuty TF incident impact"
+  environment_name = "environment_name"
+  provider_name    = "PAGERDUTY"
+  pagerduty_input {
+    remote_services = ""
+    remote_urgency  = "ANY"
+  }
 }
 
 resource "sleuth_incident_impact_source" "dd" {
-    project_slug = "project_slug"
-    name = "DataDog TF incident impact"
-    environment_name = "environment_name"
-    provider_name = "DATADOG"
-    datadog_input {
-        query = "@query=123" # use @ if you are using facets in DataDog
-        remote_priority_threshold = "ALL" # or P1 to P5
-        integration_slug = "optional_integration_slug"
-    }
+  project_slug     = "project_slug"
+  name             = "DataDog TF incident impact"
+  environment_name = "environment_name"
+  provider_name    = "DATADOG"
+  datadog_input {
+    query                     = "@query=123" # use @ if you are using facets in DataDog
+    remote_priority_threshold = "ALL"        # or P1 to P5
+    integration_slug          = "optional_integration_slug"
+  }
 }
 
 resource "sleuth_incident_impact_source" "jira" {
-    project_slug = "project_slug"
-    name = "JIRA TF incident impact"
-    environment_name = "environment_name"
-    provider_name = "JIRA"
-    jira_input {
-        remote_jql = "status IN (\"Incident\")"
-        integration_slug = "optional_integration_slug"
-    }
+  project_slug     = "project_slug"
+  name             = "JIRA TF incident impact"
+  environment_name = "environment_name"
+  provider_name    = "JIRA"
+  jira_input {
+    remote_jql       = "status IN (\"Incident\")"
+    integration_slug = "optional_integration_slug"
+  }
+}
+
+resource "sleuth_incident_impact_source" "blameless" {
+  project_slug     = "project_slug"
+  name             = "Blameless TF incident impact"
+  environment_name = "environment_name"
+  provider_name    = "BLAMELESS"
+  blameless_input {
+    remote_types              = ["type1", "type2"]
+    remote_severity_threshold = "SEV1"
+    integration_slug          = "optional_integration_slug"
+  }
+}
+
+resource "sleuth_incident_impact_source" "statuspage" {
+  project_slug     = "project_slug"
+  name             = "Statuspage TF incident impact"
+  environment_name = "environment_name"
+  provider_name    = "STATUSPAGE"
+  statuspage_input {
+    remote_page                  = "remote_page"
+    remote_component             = "remote_component"
+    remote_impact                = "remote_impact"
+    ignore_maintenance_incidents = false
+  }
 }
 ```
 
@@ -64,6 +89,7 @@ resource "sleuth_incident_impact_source" "jira" {
 - `datadog_input` (Block List, Max: 1) DataDog input (see [below for nested schema](#nestedblock--datadog_input))
 - `jira_input` (Block List, Max: 1) JIRA input (see [below for nested schema](#nestedblock--jira_input))
 - `pagerduty_input` (Block List, Max: 1) PagerDuty input (see [below for nested schema](#nestedblock--pagerduty_input))
+- `statuspage_input` (Block List, Max: 1) Statuspage input (see [below for nested schema](#nestedblock--statuspage_input))
 
 ### Read-Only
 
@@ -111,5 +137,17 @@ Optional:
 - `integration_slug` (String) IntegrationAuthentication slug used
 - `remote_services` (String) List of remote services, empty string means all
 - `remote_urgency` (String) PagerDuty remote urgency, options: HIGH, LOW, ANY
+
+
+<a id="nestedblock--statuspage_input"></a>
+### Nested Schema for `statuspage_input`
+
+Optional:
+
+- `ignore_maintenance_incidents` (Boolean) Option to ignore maintenance incidents
+- `integration_slug` (String) Statuspage IntegrationAuthentication slug from app
+- `remote_component` (String) UPDATE ME
+- `remote_impact` (String) UPDATE ME
+- `remote_page` (Set of String) The types of incidents to the monitors should track
 
 

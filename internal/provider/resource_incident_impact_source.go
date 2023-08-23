@@ -21,6 +21,7 @@ const (
 	Jira
 	CustomIncident
 	Blameless
+	Statuspage
 )
 
 func ImpactProviderFromString(s string) ImpactProvider {
@@ -35,6 +36,8 @@ func ImpactProviderFromString(s string) ImpactProvider {
 		return CustomIncident
 	case "BLAMELESS":
 		return Blameless
+	case "STATUSPAGE":
+		return Statuspage
 	}
 	return Unknown
 }
@@ -51,6 +54,8 @@ func (s ImpactProvider) String() string {
 		return "CUSTOM_INCIDENT"
 	case Blameless:
 		return "BLAMELESS"
+	case Statuspage:
+		return "STATUSPAGE"
 	}
 	return "unknown"
 }
@@ -199,6 +204,41 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 					},
 				},
 			},
+			"statuspage_input": {
+				Description: "Statuspage input",
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"remote_page": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Statuspage page the incident impact source should monitor",
+						},
+						"remote_component": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Statuspage component the incident impact source should monitor",
+						},
+						"remote_impact": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Incidents with matching or lower severities will be considered a failure in Sleuth",
+						},
+						"ignore_maintenance_incidents": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Option to ignore maintenance incidents",
+						},
+						"integration_slug": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Statuspage IntegrationAuthentication slug from app",
+						},
+					},
+				},
+			},
 			"slug": {
 				Description: "Impact source slug",
 				Type:        schema.TypeString,
@@ -258,6 +298,15 @@ func getProviderData(d *schema.ResourceData, i gqlclient.IncidentImpactSourceInp
 			BlamelessProviderData: gqlclient.BlamelessProviderData{
 				RemoteTypes:             expandStringList(d, "blameless_input.0.remote_types"),
 				RemoteSeverityThreshold: d.Get("blameless_input.0.remote_severity_threshold").(string),
+			},
+		}
+	case Statuspage:
+		i.StatuspageInputType = &gqlclient.StatuspageInputType{
+			StatuspageProviderData: gqlclient.StatuspageProviderData{
+				RemotePage:                 d.Get("statuspage_input.0.remote_page").(string),
+				RemoteComponent:            d.Get("statuspage_input.0.remote_component").(string),
+				RemoteImpact:               d.Get("statuspage_input.0.remote_impact").(string),
+				IgnoreMaintenanceIncidents: d.Get("statuspage_input.0.ignore_maintenance_incidents").(bool),
 			},
 		}
 	}
@@ -390,6 +439,15 @@ func setProviderDetailsData(ctx context.Context, d *schema.ResourceData, is *gql
 		blamelessInput["integration_auth"] = is.IntegrationAuthSlug
 
 		d.Set("blameless_input", []map[string]interface{}{blamelessInput})
+	case Statuspage:
+		statuspageInput := make(map[string]interface{})
+		statuspageInput["remote_page"] = is.ProviderData.StatuspageProviderData.RemotePage
+		statuspageInput["remote_component"] = is.ProviderData.StatuspageProviderData.RemoteComponent
+		statuspageInput["remote_impact"] = is.ProviderData.StatuspageProviderData.RemoteImpact
+		statuspageInput["ignore_maintenance_incidents"] = is.ProviderData.StatuspageProviderData.IgnoreMaintenanceIncidents
+		statuspageInput["integration_auth"] = is.IntegrationAuthSlug
+
+		d.Set("statuspage_input", []map[string]interface{}{statuspageInput})
 	}
 }
 

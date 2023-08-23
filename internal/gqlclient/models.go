@@ -240,11 +240,19 @@ type BlamelessProviderData struct {
 	RemoteSeverityThreshold string   `json:"remoteSeverityThreshold"`
 }
 
+type StatuspageProviderData struct {
+	RemotePage                 string `json:"remotePage"`
+	RemoteComponent            string `json:"remoteComponent"`
+	RemoteImpact               string `json:"remoteImpact"`
+	IgnoreMaintenanceIncidents bool   `json:"ignoreMaintenanceIncidents"`
+}
+
 type ProviderData struct {
-	PagerDutyProviderData PagerDutyProviderData `json:"pagerDutyProviderData" graphql:"... on PagerDutyProviderData"`
-	DataDogProviderData   DataDogProviderData   `json:"dataDogProviderData" graphql:"... on DataDogProviderData"`
-	JiraProviderData      JiraProviderData      `json:"jiraProviderData" graphql:"... on JiraProviderData"`
-	BlamelessProviderData BlamelessProviderData `json:"blamelessProviderData" graphql:"... on BlamelessProviderData"`
+	PagerDutyProviderData  PagerDutyProviderData  `json:"pagerDutyProviderData" graphql:"... on PagerDutyProviderData"`
+	DataDogProviderData    DataDogProviderData    `json:"dataDogProviderData" graphql:"... on DataDogProviderData"`
+	JiraProviderData       JiraProviderData       `json:"jiraProviderData" graphql:"... on JiraProviderData"`
+	BlamelessProviderData  BlamelessProviderData  `json:"blamelessProviderData" graphql:"... on BlamelessProviderData"`
+	StatuspageProviderData StatuspageProviderData `json:"statuspageProviderData" graphql:"... on StatuspageProviderData"`
 }
 
 type IncidentImpactSource struct {
@@ -277,15 +285,21 @@ type BlamelessInputType struct {
 	IntegrationSlug string `json:"integrationSlug"`
 }
 
+type StatuspageInputType struct {
+	StatuspageProviderData
+	IntegrationSlug string `json:"integrationSlug"`
+}
+
 type IncidentImpactSourceInputType struct {
-	ProjectSlug        string              `json:"projectSlug"`
-	EnvironmentName    string              `json:"environmentName"`
-	Name               string              `json:"name"`
-	Provider           string              `json:"provider"`
-	PagerDutyInputType *PagerDutyInputType `json:"pagerDutyInput"`
-	DataDogInputType   *DataDogInputType   `json:"datadogInput"`
-	JiraInputType      *JiraInputType      `json:"jiraInput"`
-	BlamelessInputType *BlamelessInputType `json:"blamelessInput"`
+	ProjectSlug         string               `json:"projectSlug"`
+	EnvironmentName     string               `json:"environmentName"`
+	Name                string               `json:"name"`
+	Provider            string               `json:"provider"`
+	PagerDutyInputType  *PagerDutyInputType  `json:"pagerDutyInput"`
+	DataDogInputType    *DataDogInputType    `json:"datadogInput"`
+	JiraInputType       *JiraInputType       `json:"jiraInput"`
+	BlamelessInputType  *BlamelessInputType  `json:"blamelessInput"`
+	StatuspageInputType *StatuspageInputType `json:"statuspageInput"`
 }
 
 type IncidentImpactSourceInputUpdateType struct {
