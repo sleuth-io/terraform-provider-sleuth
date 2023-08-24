@@ -563,6 +563,7 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 		ProjectSlug:         types.StringValue(projectSlug),
 		Name:                types.StringValue(ccs.Name),
 		Slug:                types.StringValue(ccs.Slug),
+		ID:                  types.StringValue(ccs.Slug),
 		Repository:          repo,
 		EnvironmentMappings: environmentMappingsList,
 		BuildMappings:       buildMappingsList,
