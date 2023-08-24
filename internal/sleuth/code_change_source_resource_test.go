@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/tfversion"
 )
 
-func TestAccChangeImpactSourceResource_v6(t *testing.T) {
+func TestAccChangeSourceResource_v6(t *testing.T) {
 	// tests are run in parallel both locally & on CI, so we need to generate a random name so slugs don't collide
 	randomStr := acctest.RandStringFromCharSet(5, acctest.CharSetAlpha)
 	projectString := fmt.Sprintf("Terraform test project %s", randomStr)
@@ -74,7 +74,7 @@ func TestAccChangeImpactSourceResource_v6(t *testing.T) {
 				Check: func(state *terraform.State) error {
 					// Manually add delay because if we try to delete Code change it will fail because it's still in initailizing state
 					// If you are getting errors with this test, try increasing the sleep time
-					time.Sleep(15 * time.Second)
+					time.Sleep(60 * time.Second)
 					return nil
 				},
 			},
@@ -110,7 +110,7 @@ func TestAccChangeImpactSourceResource_v6(t *testing.T) {
 	})
 }
 
-func TestAccCodeChangeImpactSourceResource_v5(t *testing.T) {
+func TestAccCodeChangeSourceResource_v5(t *testing.T) {
 	// tests are run in parallel both locally & on CI, so we need to generate a random name so slugs don't collide
 	randomStr := acctest.RandStringFromCharSet(5, acctest.CharSetAlpha)
 	projectString := fmt.Sprintf("Terraform test project %s", randomStr)
@@ -173,7 +173,7 @@ func TestAccCodeChangeImpactSourceResource_v5(t *testing.T) {
 				Check: func(state *terraform.State) error {
 					// Manually add delay because if we try to delete Code change it will fail because it's still in initailizing state
 					// If you are getting errors with this test, try increasing the sleep time
-					time.Sleep(15 * time.Second)
+					time.Sleep(60 * time.Second)
 					return nil
 				},
 			},
