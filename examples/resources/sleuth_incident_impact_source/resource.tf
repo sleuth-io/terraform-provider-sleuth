@@ -56,3 +56,17 @@ resource "sleuth_incident_impact_source" "statuspage" {
     ignore_maintenance_incidents = false
   }
 }
+
+resource "sleuth_incident_impact_source" "opsgenie" {
+  project_slug     = "project_slug"
+  name             = "OpsGenie TF incident impact"
+  environment_name = "environment_name"
+  provider_name    = "OPSGENIE"
+  opsgenie_input {
+    remote_alert_tags         = "tag1"
+    remote_incidents_tags     = "tag1"
+    remote_priority_threshold = "P1"
+    remote_service            = "test_service"
+    remote_use_alerts         = false
+  }
+}
