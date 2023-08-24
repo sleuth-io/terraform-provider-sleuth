@@ -22,6 +22,7 @@ const (
 	CustomIncident
 	Blameless
 	Statuspage
+	OpsGenie
 )
 
 func ImpactProviderFromString(s string) ImpactProvider {
@@ -38,6 +39,8 @@ func ImpactProviderFromString(s string) ImpactProvider {
 		return Blameless
 	case "STATUSPAGE":
 		return Statuspage
+	case "OPSGENIE":
+		return OpsGenie
 	}
 	return Unknown
 }
@@ -56,6 +59,8 @@ func (s ImpactProvider) String() string {
 		return "BLAMELESS"
 	case Statuspage:
 		return "STATUSPAGE"
+	case OpsGenie:
+		return "OPSGENIE"
 	}
 	return "unknown"
 }
@@ -239,6 +244,48 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 					},
 				},
 			},
+			"opsgenie_input": {
+				Description: "OpsGenie input",
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"remote_alert_tags": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Optionally filter by alert tags",
+						},
+						"remote_incident_tags": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Optionally filter by incident tags",
+						},
+						"remote_priority_threshold": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Monitor states with matching or higher priorities will be considered a failure in Sleuth",
+							Default:     "ALL",
+						},
+						"remote_service": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Only taken into consideration when using OpsGenie Incidents",
+						},
+						"remote_use_alerts": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Use OpsGenie Alerts instead of Incidents",
+							Default:     false,
+						},
+						"integration_slug": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The slug for the integration",
+						},
+					},
+				},
+			},
 			"slug": {
 				Description: "Impact source slug",
 				Type:        schema.TypeString,
@@ -307,6 +354,16 @@ func getProviderData(d *schema.ResourceData, i gqlclient.IncidentImpactSourceInp
 				RemoteComponent:            d.Get("statuspage_input.0.remote_component").(string),
 				RemoteImpact:               d.Get("statuspage_input.0.remote_impact").(string),
 				IgnoreMaintenanceIncidents: d.Get("statuspage_input.0.ignore_maintenance_incidents").(bool),
+			},
+		}
+	case OpsGenie:
+		i.OpsGenieInputType = &gqlclient.OpsGenieInputType{
+			OpsGenieProviderData: gqlclient.OpsGenieProviderData{
+				RemoteAlertTags:         d.Get("opsgenie_input.0.remote_alert_tags").(string),
+				RemoteIncidentTags:      d.Get("opsgenie_input.0.remote_incident_tags").(string),
+				RemotePriorityThreshold: d.Get("opsgenie_input.0.remote_priority_threshold").(string),
+				RemoteService:           d.Get("opsgenie_input.0.remote_service").(string),
+				RemoteUseAlerts:         d.Get("opsgenie_input.0.remote_use_alerts").(bool),
 			},
 		}
 	}
@@ -448,6 +505,16 @@ func setProviderDetailsData(ctx context.Context, d *schema.ResourceData, is *gql
 		statuspageInput["integration_auth"] = is.IntegrationAuthSlug
 
 		d.Set("statuspage_input", []map[string]interface{}{statuspageInput})
+	case OpsGenie:
+		opsgenieInput := make(map[string]interface{})
+		opsgenieInput["remote_alert_tags"] = is.ProviderData.OpsGenieProviderData.RemoteAlertTags
+		opsgenieInput["remote_incident_tags"] = is.ProviderData.OpsGenieProviderData.RemoteIncidentTags
+		opsgenieInput["remote_priority_threshold"] = is.ProviderData.OpsGenieProviderData.RemotePriorityThreshold
+		opsgenieInput["remote_service"] = is.ProviderData.OpsGenieProviderData.RemoteService
+		opsgenieInput["remote_use_alerts"] = is.ProviderData.OpsGenieProviderData.RemoteUseAlerts
+		opsgenieInput["integration_auth"] = is.IntegrationAuthSlug
+
+		d.Set("opsgenie_input", []map[string]interface{}{opsgenieInput})
 	}
 }
 

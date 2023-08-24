@@ -247,12 +247,21 @@ type StatuspageProviderData struct {
 	IgnoreMaintenanceIncidents bool   `json:"ignoreMaintenanceIncidents"`
 }
 
+type OpsGenieProviderData struct {
+	RemoteAlertTags         string `json:"remoteAlertTags,omitempty"`
+	RemoteIncidentTags      string `json:"remoteIncidentTags,omitempty"`
+	RemotePriorityThreshold string `json:"remotePriorityThreshold"`
+	RemoteService           string `json:"remoteService,omitempty"`
+	RemoteUseAlerts         bool   `json:"remoteUseAlerts"`
+}
+
 type ProviderData struct {
 	PagerDutyProviderData  PagerDutyProviderData  `json:"pagerDutyProviderData" graphql:"... on PagerDutyProviderData"`
 	DataDogProviderData    DataDogProviderData    `json:"dataDogProviderData" graphql:"... on DataDogProviderData"`
 	JiraProviderData       JiraProviderData       `json:"jiraProviderData" graphql:"... on JiraProviderData"`
 	BlamelessProviderData  BlamelessProviderData  `json:"blamelessProviderData" graphql:"... on BlamelessProviderData"`
 	StatuspageProviderData StatuspageProviderData `json:"statuspageProviderData" graphql:"... on StatuspageProviderData"`
+	OpsGenieProviderData   OpsGenieProviderData   `json:"opsgenieProviderData" graphql:"... on OpsgenieProviderData"`
 }
 
 type IncidentImpactSource struct {
@@ -290,6 +299,11 @@ type StatuspageInputType struct {
 	IntegrationSlug string `json:"integrationSlug"`
 }
 
+type OpsGenieInputType struct {
+	OpsGenieProviderData
+	IntegrationSlug string `json:"integrationSlug"`
+}
+
 type IncidentImpactSourceInputType struct {
 	ProjectSlug         string               `json:"projectSlug"`
 	EnvironmentName     string               `json:"environmentName"`
@@ -300,6 +314,7 @@ type IncidentImpactSourceInputType struct {
 	JiraInputType       *JiraInputType       `json:"jiraInput"`
 	BlamelessInputType  *BlamelessInputType  `json:"blamelessInput"`
 	StatuspageInputType *StatuspageInputType `json:"statuspageInput"`
+	OpsGenieInputType   *OpsGenieInputType   `json:"opsgenieInput"`
 }
 
 type IncidentImpactSourceInputUpdateType struct {
