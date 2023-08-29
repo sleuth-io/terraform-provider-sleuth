@@ -1,4 +1,4 @@
-## 0.4.3 (UNRELEASED)
+## 0.4.3 (August 29, 2023)
 
 ENHANCEMENTS:
 
