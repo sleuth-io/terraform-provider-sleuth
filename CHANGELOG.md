@@ -1,6 +1,7 @@
 ## 0.4.4 (unreleased)
 FIXES:
 - [#137](https://github.com/sleuth-io/terraform-provider-sleuth/pull/137) Fix code_change_source import
+- [#138](https://github.com/sleuth-io/terraform-provider-sleuth/pull/138) Fix errors when deleting default environment
 
 ## 0.4.3 (August 29, 2023)
 
