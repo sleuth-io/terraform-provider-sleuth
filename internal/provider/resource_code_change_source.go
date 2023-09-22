@@ -3,11 +3,13 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 )
 
 func resourceCodeChangeSource() *schema.Resource {
@@ -278,14 +280,13 @@ func resourceCodeChangeSourceRead(ctx context.Context, d *schema.ResourceData, m
 }
 
 func setCodeChangeSourceFields(ctx context.Context, d *schema.ResourceData, projectSlug string, source *gqlclient.CodeChangeSource) {
-
 	repository := make(map[string]interface{})
 	repository["owner"] = source.Repository.Owner
 	repository["name"] = source.Repository.Name
 	repository["provider"] = strings.ToUpper(source.Repository.Provider)
 	repository["url"] = source.Repository.Url
-	repository["repoUID"] = source.Repository.RepoUID
-	repository["projectUID"] = source.Repository.ProjectUID
+	repository["repo_uid"] = source.Repository.RepoUID
+	repository["project_uid"] = source.Repository.ProjectUID
 	var repositoryList [1]map[string]interface{}
 	repositoryList[0] = repository
 
@@ -306,7 +307,7 @@ func setCodeChangeSourceFields(ctx context.Context, d *schema.ResourceData, proj
 		m["provider"] = v.Provider
 		m["project_key"] = v.BuildProjectKey
 		m["match_branch_to_environment"] = v.MatchBranchToEnvironment
-		m["environment_slug"] = v.Environment
+		m["environment_slug"] = v.Environment.Slug
 		buildMappings[idx] = m
 	}
 
