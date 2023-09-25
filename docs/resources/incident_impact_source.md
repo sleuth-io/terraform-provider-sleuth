@@ -175,7 +175,7 @@ Optional:
 - `remote_alert_tags` (String) Optionally filter by alert tags
 - `remote_incident_tags` (String) Optionally filter by incident tags
 - `remote_priority_threshold` (String) Monitor states with matching or higher priorities will be considered a failure in Sleuth
-- `remote_service` (String) Only taken into consideration when using OpsGenie Incidents
+- `remote_service` (String) Only taken into consideration when using OpsGenie Incidents. This value should be the Unique ID of the OpsGenie service.
 - `remote_use_alerts` (Boolean) Use OpsGenie Alerts instead of Incidents
 
 

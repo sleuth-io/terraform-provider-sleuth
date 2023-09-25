@@ -275,7 +275,7 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 						"remote_service": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "Only taken into consideration when using OpsGenie Incidents",
+							Description: "Only taken into consideration when using OpsGenie Incidents. This value should be the Unique ID of the OpsGenie service.",
 						},
 						"remote_use_alerts": {
 							Type:        schema.TypeBool,
