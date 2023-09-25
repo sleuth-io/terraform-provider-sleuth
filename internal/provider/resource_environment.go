@@ -3,11 +3,13 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 )
 
 func resourceEnvironment() *schema.Resource {
@@ -159,7 +161,7 @@ func resourceEnvironmentDelete(ctx context.Context, d *schema.ResourceData, meta
 	projectSlug := parsed[0]
 	environmentSlug := parsed[1]
 
-	err := c.DeleteEnvironment(&projectSlug, &environmentSlug)
+	err := c.DeleteEnvironment(ctx, &projectSlug, &environmentSlug)
 	if err != nil {
 		return diag.FromErr(err)
 	}

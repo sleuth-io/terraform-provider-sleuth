@@ -60,6 +60,12 @@ When importing resources, all but the project slug are prefixed by the project s
 terraform import sleuth_environment.production PROJECT_SLUG/ENVIRONMENT_SLUG
 ```
 
+## Resources deletion caveats
+
+Due to the way Sleuth API works, there are some caveats when deleting resources. When a project resource is created, a default environment is created as well (called `Production`).
+If you want to delete the default environment, you will have to do it manually in the Sleuth UI. If you only delete environments in Terraform, the project will be left with a default environment (`Production`) even though the environment will not be present in the state.
+This can cause issues when you will try to create `code_change_source` and other resources.
+
 ## Schema
 
 ### Required

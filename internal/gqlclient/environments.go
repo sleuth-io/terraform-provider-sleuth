@@ -1,7 +1,11 @@
 package gqlclient
 
 import (
+	"context"
 	"errors"
+	"fmt"
+
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/shurcooL/graphql"
 )
 
@@ -106,11 +110,11 @@ func (c *Client) UpdateEnvironment(input UpdateEnvironmentMutationInput) (*Envir
 }
 
 // DeleteEnvironment - Deletes a environment
-func (c *Client) DeleteEnvironment(projectSlug *string, slug *string) error {
-
+func (c *Client) DeleteEnvironment(ctx context.Context, projectSlug *string, slug *string) error {
 	var m struct {
 		DeleteEnvironment struct {
 			Success graphql.Boolean
+			Errors  ErrorsType
 		} `graphql:"deleteEnvironment(input: $input)"`
 	}
 	variables := map[string]interface{}{
@@ -123,8 +127,17 @@ func (c *Client) DeleteEnvironment(projectSlug *string, slug *string) error {
 		return err
 	}
 
+	tflog.Info(ctx, "DeleteEnvironment result", map[string]interface{}{"errors": fmt.Sprintf("%+v", m.DeleteEnvironment.Errors)})
+
+	for _, err := range m.DeleteEnvironment.Errors {
+		// If the error is that the environment is the default environment, then we can ignore it
+		if err.Field == "slug" && err.Messages[0] == "You can not delete your default environment" {
+			return nil
+		}
+	}
+
 	if !m.DeleteEnvironment.Success {
-		return errors.New("Missing")
+		return errors.New("environment deletion failed")
 	} else {
 		return nil
 	}
