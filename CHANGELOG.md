@@ -1,4 +1,4 @@
-## 0.4.5
+## 0.4.5 (September 26, 2023)
 EHANCEMENTS:
 - [#140](https://github.com/sleuth-io/terraform-provider-sleuth/pull/140) Update OpsGenie Incident Impact Source docs
 
