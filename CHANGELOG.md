@@ -1,3 +1,7 @@
+## 0.4.6 (unreleased)
+FIXES:
+[#142](https://github.com/sleuth-io/terraform-provider-sleuth/pull/142) Fix provider value case from API
+
 ## 0.4.5 (September 26, 2023)
 EHANCEMENTS:
 - [#140](https://github.com/sleuth-io/terraform-provider-sleuth/pull/140) Update OpsGenie Incident Impact Source docs
