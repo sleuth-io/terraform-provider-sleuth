@@ -2,6 +2,7 @@ package gqlclient
 
 import (
 	"errors"
+
 	"github.com/shurcooL/graphql"
 )
 
