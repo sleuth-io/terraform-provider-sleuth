@@ -82,3 +82,14 @@ resource "sleuth_incident_impact_source" "firehydrant" {
     remote_mitigated_is_healthy = true
   }
 }
+
+resource "sleuth_incident_impact_source" "clubhouse" {
+  project_slug     = "project_slug"
+  name             = "Clubhouse TF incident impact"
+  environment_name = "environment_name"
+  provider_name    = "CLUBHOUSE"
+  clubhouse_input {
+    remote_query     = "id:135"
+    integration_slug = "optional_integration_slug"
+  }
+}
