@@ -261,6 +261,10 @@ type FireHydrantProviderData struct {
 	RemoteMitigatedIsHealthy bool   `json:"remoteMitigatedIsHealthy"`
 }
 
+type ClubhouseProviderData struct {
+	RemoteQuery string `json:"remoteQuery"`
+}
+
 type ProviderData struct {
 	PagerDutyProviderData   PagerDutyProviderData   `json:"pagerDutyProviderData" graphql:"... on PagerDutyProviderData"`
 	DataDogProviderData     DataDogProviderData     `json:"dataDogProviderData" graphql:"... on DataDogProviderData"`
@@ -269,6 +273,7 @@ type ProviderData struct {
 	StatuspageProviderData  StatuspageProviderData  `json:"statuspageProviderData" graphql:"... on StatuspageProviderData"`
 	OpsGenieProviderData    OpsGenieProviderData    `json:"opsgenieProviderData" graphql:"... on OpsgenieProviderData"`
 	FireHydrantProviderData FireHydrantProviderData `json:"firehydrantProviderData" graphql:"... on FireHydrantProviderData"`
+	ClubhouseProviderData   ClubhouseProviderData   `json:"ClubhouseProviderData" graphql:"... on ClubhouseProviderData"`
 }
 
 type IncidentImpactSource struct {
@@ -310,6 +315,11 @@ type FireHydrantInputType struct {
 	IntegrationSlug string `json:"integrationSlug"`
 }
 
+type ClubhouseInputType struct {
+	ClubhouseProviderData
+	IntegrationSlug string `json:"integrationSlug"`
+}
+
 type OpsGenieInputType struct {
 	OpsGenieProviderData
 	IntegrationSlug string `json:"integrationSlug"`
@@ -327,6 +337,7 @@ type IncidentImpactSourceInputType struct {
 	StatuspageInputType  *StatuspageInputType  `json:"statuspageInput"`
 	OpsGenieInputType    *OpsGenieInputType    `json:"opsgenieInput"`
 	FireHydrantInputType *FireHydrantInputType `json:"firehydrantInput"`
+	ClubhouseInputType   *ClubhouseInputType   `json:"clubhouseInput"`
 }
 
 type IncidentImpactSourceInputUpdateType struct {

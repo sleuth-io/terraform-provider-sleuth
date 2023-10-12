@@ -24,6 +24,7 @@ const (
 	Statuspage
 	OpsGenie
 	FireHydrant
+	Clubhouse
 )
 
 func ImpactProviderFromString(s string) ImpactProvider {
@@ -44,6 +45,8 @@ func ImpactProviderFromString(s string) ImpactProvider {
 		return OpsGenie
 	case "FIREHYDRANT":
 		return FireHydrant
+	case "CLUBHOUSE":
+		return Clubhouse
 	}
 	return Unknown
 }
@@ -66,6 +69,8 @@ func (s ImpactProvider) String() string {
 		return "OPSGENIE"
 	case FireHydrant:
 		return "FIREHYDRANT"
+	case Clubhouse:
+		return "CLUBHOUSE"
 	}
 	return "unknown"
 }
@@ -155,7 +160,7 @@ See [DataDog documentation](https://docs.datadoghq.com/monitors/manage/search/) 
 							Type:     schema.TypeString,
 							Optional: true,
 							Default:  "ALL",
-							Description: `Monitor states with matching or higher priorities will be considered a failure in Sleuth. 
+							Description: `Monitor states with matching or higher priorities will be considered a failure in Sleuth.
 Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 						},
 						"integration_slug": {
@@ -317,6 +322,26 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 					},
 				},
 			},
+			"clubhouse_input": {
+				Description: "Clubhouse input",
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"remote_query": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: `Need help finding query expression? See the [documentation](https://help.shortcut.com/hc/en-us/articles/360000046646-Searching-in-Shortcut-Using-Search-Operators) for more information.`,
+						},
+						"integration_slug": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "IntegrationAuthentication slug used",
+						},
+					},
+				},
+			},
 			"slug": {
 				Description: "Impact source slug",
 				Type:        schema.TypeString,
@@ -403,6 +428,12 @@ func getProviderData(d *schema.ResourceData, i gqlclient.IncidentImpactSourceInp
 				RemoteEnvironments:       d.Get("firehydrant_input.0.remote_environments").(string),
 				RemoteServices:           d.Get("firehydrant_input.0.remote_services").(string),
 				RemoteMitigatedIsHealthy: d.Get("firehydrant_input.0.remote_mitigated_is_healthy").(bool),
+			},
+		}
+	case Clubhouse:
+		i.ClubhouseInputType = &gqlclient.ClubhouseInputType{
+			ClubhouseProviderData: gqlclient.ClubhouseProviderData{
+				RemoteQuery: d.Get("clubhouse_input.0.remote_query").(string),
 			},
 		}
 	}
@@ -561,6 +592,12 @@ func setProviderDetailsData(ctx context.Context, d *schema.ResourceData, is *gql
 		fireHydrantInput["remote_mitigated_is_healthy"] = is.ProviderData.FireHydrantProviderData.RemoteMitigatedIsHealthy
 
 		d.Set("firehydrant_input", []map[string]interface{}{fireHydrantInput})
+	case Clubhouse:
+		clubhouseInput := make(map[string]interface{})
+		clubhouseInput["remote_query"] = is.ProviderData.ClubhouseProviderData.RemoteQuery
+		clubhouseInput["integration_auth"] = is.IntegrationAuthSlug
+
+		d.Set("clubhouse_input", []map[string]interface{}{clubhouseInput})
 	}
 }
 

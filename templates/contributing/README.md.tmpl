@@ -1,6 +1,12 @@
 # Developing the Provider
 
-Preferably use [Devbox](https://www.jetpack.io/devbox/docs/installing_devbox/) for dependencies and development. If you wish to install dependencies manually, see [Requirements](../../README.md).
+Either:
+
+- [Devbox](https://www.jetpack.io/devbox/docs/installing_devbox/) for dependencies and development
+- install dependencies manually, see [Requirements](../../README.md).
+- GitHub's Codespaces which comes with `go` preinstalled out of the box
+    - you'll need to install Terraform via `sudo apt update && sudo apt install terraform` and run tunnel to your Django (dev.sleuth.io) server locally
+    - to run in Codespaces open this repo on GitHub, find green `<> Code` dropdown button and select `Codespaces` tab
 
 ## Getting dependencies
 
@@ -15,6 +21,7 @@ You have 2 options to run the provider locally:
 1. Use development overrides (preferred):
     1. copy `dev.tfrc.example` to `dev.tfrc`
     1. update `dev.tfrc` with `echo $GOBIN`
+        - if `GOBIN` is empty, try `echo $GOPATH` and append it with `/bin/`. e.g.: `echo $GOPATH` is `/go`, update `dev.tfrc` to `"sleuth.io/core/sleuth" = "/go/bin/"`
     1. run `export TF_CLI_CONFIG_FILE=dev.tfrc`
     1. check that overrides are successfully applied with `terraform apply` -> you should see `Provider development overrides are in effect` in the output
     1. run `make install` to build the provider and install it to `$GOBIN`
