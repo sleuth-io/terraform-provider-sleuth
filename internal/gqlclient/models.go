@@ -1,14 +1,21 @@
 package gqlclient
 
+type CLTStartStates struct {
+	ID string `json:"id,omitempty"`
+}
+
 type Project struct {
-	Slug                      string `json:"slug"`
-	Name                      string `json:"name"`
-	Description               string `json:"description,omitempty"`
-	IssueTrackerProvider      string `json:"issueTrackerProvider,omitempty"`
-	BuildProvider             string `json:"buildProvider,omitempty"`
-	ChangeFailureRateBoundary string `json:"changeFailureRateBoundary,omitempty"`
-	ImpactSensitivity         string `json:"impactSensitivity,omitempty"`
-	FailureSensitivity        int    `json:"failureSensitivity,omitempty"`
+	Slug                      string           `json:"slug"`
+	Name                      string           `json:"name"`
+	Description               string           `json:"description,omitempty"`
+	IssueTrackerProvider      string           `json:"issueTrackerProvider,omitempty"`
+	BuildProvider             string           `json:"buildProvider,omitempty"`
+	ChangeFailureRateBoundary string           `json:"changeFailureRateBoundary,omitempty"`
+	ImpactSensitivity         string           `json:"impactSensitivity,omitempty"`
+	FailureSensitivity        int              `json:"failureSensitivity,omitempty"`
+	CltStartDefinition        string           `json:"cltStartDefinition,omitempty"`
+	CltStartStates            []CLTStartStates `json:"cltStartStates,omitempty"`
+	StrictIssueMatching       bool             `json:"strictIssueMatching,omitempty"`
 }
 
 type Environment struct {
@@ -80,6 +87,9 @@ type MutableProject struct {
 	ChangeFailureRateBoundary string `json:"changeFailureRateBoundary,omitempty"`
 	ImpactSensitivity         string `json:"impactSensitivity,omitempty"`
 	FailureSensitivity        int    `json:"failureSensitivity,omitempty"`
+	CltStartDefinition        string `json:"cltStartDefinition,omitempty"`
+	CltStartStates            []int  `json:"cltStartStates,omitempty"`
+	StrictIssueMatching       bool   `json:"strictIssueMatching,omitempty"`
 }
 
 type CreateProjectMutationInput struct {
