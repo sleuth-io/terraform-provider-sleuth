@@ -5,6 +5,7 @@ FIXES:
 EHANCEMENTS:
 [#143](https://github.com/sleuth-io/terraform-provider-sleuth/pull/143) Add Shortcut (ex Clubhouse) as Incident Impact Source
 [#144](https://github.com/sleuth-io/terraform-provider-sleuth/pull/144) Add CLT specific fields into Project resource
+[#145](https://github.com/sleuth-io/terraform-provider-sleuth/pull/145) Store repository integration authentication value in state
 
 ## 0.4.5 (September 26, 2023)
 EHANCEMENTS:
