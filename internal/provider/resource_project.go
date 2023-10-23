@@ -2,10 +2,14 @@ package provider
 
 import (
 	"context"
+	"strconv"
+	"time"
+
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
-	"time"
 )
 
 func resourceProject() *schema.Resource {
@@ -66,6 +70,26 @@ func resourceProject() *schema.Resource {
 				Optional:    true,
 				Default:     420,
 			},
+			"change_lead_time_start_definition": {
+				Description: "The event that will be taken as a start definition (first commit, issue transition or whichever comes first) - options: COMMIT (default), ISSUE, FIRST_EVENT.",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "COMMIT",
+			},
+			"change_lead_time_issue_states": {
+				Description: "Issue state IDs used for start definition (only used if change_lead_time_start_definition is ISSUE or FIRST_EVENT.",
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeInt,
+				},
+			},
+			"change_lead_time_strict_matching": {
+				Description: "When enabled Sleuth will only look for issue references in PR titles and PR branch names. If strict issue matching is disabled, Sleuth will expand the search for issue references to PR descriptions and commit messages.",
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -90,7 +114,7 @@ func resourceProjectCreate(ctx context.Context, d *schema.ResourceData, meta int
 	}
 
 	d.SetId(proj.Slug)
-	setProjectFields(d, proj)
+	setProjectFields(ctx, d, proj)
 
 	return diags
 }
@@ -114,7 +138,7 @@ func resourceProjectUpdate(ctx context.Context, d *schema.ResourceData, meta int
 		return diag.FromErr(err)
 	}
 	d.Set("last_updated", time.Now().Format(time.RFC850))
-	setProjectFields(d, proj)
+	setProjectFields(ctx, d, proj)
 
 	return diags
 }
@@ -135,15 +159,14 @@ func resourceProjectRead(ctx context.Context, d *schema.ResourceData, meta inter
 	if proj == nil {
 		d.SetId("")
 	} else {
-		setProjectFields(d, proj)
+		setProjectFields(ctx, d, proj)
 	}
 
 	return diags
 
 }
 
-func setProjectFields(d *schema.ResourceData, proj *gqlclient.Project) {
-
+func setProjectFields(ctx context.Context, d *schema.ResourceData, proj *gqlclient.Project) {
 	d.Set("name", proj.Name)
 	d.Set("slug", proj.Slug)
 	d.Set("description", proj.Description)
@@ -152,6 +175,19 @@ func setProjectFields(d *schema.ResourceData, proj *gqlclient.Project) {
 	d.Set("change_failure_rate_boundary", proj.ChangeFailureRateBoundary)
 	d.Set("impact_sensitivity", proj.ImpactSensitivity)
 	d.Set("failure_sensitivity", proj.FailureSensitivity)
+	d.Set("change_lead_time_start_definition", proj.CltStartDefinition)
+	d.Set("change_lead_time_strict_matching", proj.StrictIssueMatching)
+
+	cltStateInts := []int{}
+	for _, val := range proj.CltStartStates {
+		x, err := strconv.Atoi(val.ID)
+		if err != nil {
+			tflog.Error(ctx, "Error converting ID to int")
+			continue
+		}
+		cltStateInts = append(cltStateInts, x)
+	}
+	d.Set("change_lead_time_issue_states", cltStateInts)
 }
 
 func populateProjectInput(d *schema.ResourceData, input *gqlclient.MutableProject) bool {
@@ -162,6 +198,18 @@ func populateProjectInput(d *schema.ResourceData, input *gqlclient.MutableProjec
 	input.ChangeFailureRateBoundary = d.Get("change_failure_rate_boundary").(string)
 	input.ImpactSensitivity = d.Get("impact_sensitivity").(string)
 	input.FailureSensitivity = d.Get("failure_sensitivity").(int)
+	input.CltStartDefinition = d.Get("change_lead_time_start_definition").(string)
+
+	input.StrictIssueMatching = d.Get("change_lead_time_strict_matching").(bool)
+
+	cltStates := d.Get("change_lead_time_issue_states").(*schema.Set)
+	cltStatesList := cltStates.List()
+	cltStatesInts := make([]int, len(cltStatesList))
+	for i := range cltStatesList {
+		cltStatesInts[i] = cltStatesList[i].(int)
+	}
+	input.CltStartStates = cltStatesInts
+
 	return true
 }
 
