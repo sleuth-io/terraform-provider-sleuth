@@ -287,6 +287,10 @@ func setCodeChangeSourceFields(ctx context.Context, d *schema.ResourceData, proj
 	repository["url"] = source.Repository.Url
 	repository["repo_uid"] = source.Repository.RepoUID
 	repository["project_uid"] = source.Repository.ProjectUID
+
+	if source.Repository.IntegrationAuth != nil {
+		repository["integration_slug"] = source.Repository.IntegrationAuth.Slug
+	}
 	var repositoryList [1]map[string]interface{}
 	repositoryList[0] = repository
 
@@ -308,6 +312,7 @@ func setCodeChangeSourceFields(ctx context.Context, d *schema.ResourceData, proj
 		m["project_key"] = v.BuildProjectKey
 		m["match_branch_to_environment"] = v.MatchBranchToEnvironment
 		m["environment_slug"] = v.Environment.Slug
+
 		buildMappings[idx] = m
 	}
 
