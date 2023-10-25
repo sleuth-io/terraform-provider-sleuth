@@ -5,7 +5,6 @@ Either:
 - [Devbox](https://www.jetpack.io/devbox/docs/installing_devbox/) for dependencies and development
 - install dependencies manually, see [Requirements](../../README.md).
 - GitHub's Codespaces which comes with `go` preinstalled out of the box
-    - you'll need to install Terraform via `sudo apt update && sudo apt install terraform` and run tunnel to your Django (dev.sleuth.io) server locally
     - to run in Codespaces open this repo on GitHub, find green `<> Code` dropdown button and select `Codespaces` tab
 
 ## Getting dependencies
