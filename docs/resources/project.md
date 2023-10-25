@@ -29,6 +29,9 @@ resource "sleuth_project" "example_tf_app" {
 
 - `build_provider` (String) Where to find builds related to changes
 - `change_failure_rate_boundary` (String) The health rating at which point it will be considered a failure
+- `change_lead_time_issue_states` (Set of Number) Issue state IDs used for start definition (only used if change_lead_time_start_definition is ISSUE or FIRST_EVENT.
+- `change_lead_time_start_definition` (String) The event that will be taken as a start definition (first commit, issue transition or whichever comes first) - options: COMMIT (default), ISSUE, FIRST_EVENT.
+- `change_lead_time_strict_matching` (Boolean) When enabled Sleuth will only look for issue references in PR titles and PR branch names. If strict issue matching is disabled, Sleuth will expand the search for issue references to PR descriptions and commit messages.
 - `description` (String, Deprecated) Project description
 - `failure_sensitivity` (Number) The amount of time (in seconds) a deploy must spend in a failure status (Unhealthy, Incident, etc.) before it is determined a failure. Setting this value to a longer time means that less deploys will be classified.
 - `impact_sensitivity` (String) How many impact measures Sleuth takes into account when auto-determining a deploys health.

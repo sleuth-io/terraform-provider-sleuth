@@ -107,6 +107,7 @@ Optional:
 - `integration_slug` (String) The integration slug
 - `job_name` (String) The job or stage within the build or pipeline, if supported
 - `match_branch_to_environment` (Boolean) Whether only builds performed on the branch mapped from the environment are tracked or not. Basically if you only want Sleuth to find builds that were triggeredby a change on the branch that is configured for the environment, set this to false. Defaults to true
+- `order` (Number) Internal order of build mappings, used to sort them to avoid Terraform plan changes
 - `project_key` (String) The build project key
 
 
