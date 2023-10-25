@@ -189,6 +189,7 @@ type BuildMapping struct {
 	IntegrationSlug          string `json:"integrationSlug"`
 	BuildBranch              string `json:"buildBranch"`
 	MatchBranchToEnvironment bool   `json:"matchBranchToEnvironment,omitempty"`
+	Order                    int    `json:"order,omitempty"`
 }
 
 // This represents the build mapping as retrieved from a query
@@ -199,6 +200,7 @@ type DeployTrackingBuildMapping struct {
 	JobName                  string      `json:"jobName,omitempty"`
 	BuildProjectKey          string      `json:"buildProjectKey"`
 	MatchBranchToEnvironment bool        `json:"matchBranchToEnvironment"`
+	Order                    int         `json:"order,omitempty"`
 }
 
 type MutableCodeChangeSource struct {

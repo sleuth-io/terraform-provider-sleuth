@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/shurcooL/graphql"
@@ -32,6 +33,10 @@ func (c *Client) GetCodeChangeSource(ctx context.Context, projectSlug *string, s
 		if src.Type == "CODE" {
 			if src.ChangeSource.Slug == *slug {
 				src.ChangeSource.Repository.Provider = strings.ToUpper(src.ChangeSource.Repository.Provider)
+				// Sort mappings based on order passed to have consistent results in state
+				sort.Slice(src.ChangeSource.DeployTrackingBuildMappings, func(i, j int) bool {
+					return src.ChangeSource.DeployTrackingBuildMappings[i].Order < src.ChangeSource.DeployTrackingBuildMappings[j].Order
+				})
 				// TODO: this should not be done here but we want to be consistent for now
 				for idx, buildMapping := range src.ChangeSource.DeployTrackingBuildMappings {
 					src.ChangeSource.DeployTrackingBuildMappings[idx].Provider = strings.ToUpper(buildMapping.Provider)
@@ -40,6 +45,7 @@ func (c *Client) GetCodeChangeSource(ctx context.Context, projectSlug *string, s
 			}
 		}
 	}
+
 	return nil, nil
 }
 

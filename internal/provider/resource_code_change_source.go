@@ -145,6 +145,12 @@ func resourceCodeChangeSource() *schema.Resource {
 								"Defaults to true",
 							Default: true,
 						},
+						"order": {
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Computed:    true,
+							Description: "Internal order of build mappings, used to sort them to avoid Terraform plan changes",
+						},
 					},
 				},
 			},
@@ -312,6 +318,7 @@ func setCodeChangeSourceFields(ctx context.Context, d *schema.ResourceData, proj
 		m["project_key"] = v.BuildProjectKey
 		m["match_branch_to_environment"] = v.MatchBranchToEnvironment
 		m["environment_slug"] = v.Environment.Slug
+		m["order"] = v.Order
 
 		buildMappings[idx] = m
 	}
@@ -373,6 +380,7 @@ func populateCodeChangeSource(d *schema.ResourceData, input *gqlclient.MutableCo
 					MatchBranchToEnvironment: m["match_branch_to_environment"].(bool),
 					IntegrationSlug:          m["integration_slug"].(string),
 					BuildBranch:              v2.Branch,
+					Order:                    m["order"].(int),
 				}
 				buildMappings[idx] = mapping
 				break
