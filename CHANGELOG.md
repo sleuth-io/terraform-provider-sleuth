@@ -1,3 +1,7 @@
+## 0.4.7 (unreleased)
+EHANCEMENTS:
+[#147](https://github.com/sleuth-io/terraform-provider-sleuth/pull/147) Add .devcontainer config file for GitHub Codespaces
+
 ## 0.4.6 (October 23, 2023)
 FIXES:
 [#142](https://github.com/sleuth-io/terraform-provider-sleuth/pull/142) Fix provider value case from API
