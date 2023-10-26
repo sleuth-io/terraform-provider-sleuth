@@ -102,8 +102,9 @@ func resourceCodeChangeSource() *schema.Resource {
 				},
 			},
 			"build_mappings": {
-				Type:     schema.TypeList,
-				Optional: true,
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: "Build mappings of the environment. They must be ordered by environment_slug ascending to avoid Terraform plan changes.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"environment_slug": {

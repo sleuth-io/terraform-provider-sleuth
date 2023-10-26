@@ -53,7 +53,7 @@ resource "sleuth_code_change_source" "sleuth-terraform-provider" {
 ### Optional
 
 - `auto_tracking_delay` (Number) The delay to add to a deployment event
-- `build_mappings` (Block List) (see [below for nested schema](#nestedblock--build_mappings))
+- `build_mappings` (Block List) Build mappings of the environment. They must be ordered by environment_slug ascending to avoid Terraform plan changes. (see [below for nested schema](#nestedblock--build_mappings))
 - `collect_impact` (Boolean) Whether to collect impact for its deploys
 - `include_in_dashboard` (Boolean) Whether to include deploys from this change source in the metrics dashboard
 - `notify_in_slack` (Boolean) Whether to send Slack notifications for deploys or not
