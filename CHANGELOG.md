@@ -1,4 +1,4 @@
-## 0.4.7 (unreleased)
+## 0.4.7 (October 26, 2023)
 EHANCEMENTS:
 - [#147](https://github.com/sleuth-io/terraform-provider-sleuth/pull/147) Add .devcontainer config file for GitHub Codespaces
 - [#149](https://github.com/sleuth-io/terraform-provider-sleuth/pull/149/files) Update build_mappings documentation
