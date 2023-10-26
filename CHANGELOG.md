@@ -1,15 +1,16 @@
 ## 0.4.7 (unreleased)
 EHANCEMENTS:
-[#147](https://github.com/sleuth-io/terraform-provider-sleuth/pull/147) Add .devcontainer config file for GitHub Codespaces
+- [#147](https://github.com/sleuth-io/terraform-provider-sleuth/pull/147) Add .devcontainer config file for GitHub Codespaces
+- [#149](https://github.com/sleuth-io/terraform-provider-sleuth/pull/149/files) Update build_mappings documentation
 
 ## 0.4.6 (October 23, 2023)
 FIXES:
-[#142](https://github.com/sleuth-io/terraform-provider-sleuth/pull/142) Fix provider value case from API
+- [#142](https://github.com/sleuth-io/terraform-provider-sleuth/pull/142) Fix provider value case from API
 
 EHANCEMENTS:
-[#143](https://github.com/sleuth-io/terraform-provider-sleuth/pull/143) Add Shortcut (ex Clubhouse) as Incident Impact Source
-[#144](https://github.com/sleuth-io/terraform-provider-sleuth/pull/144) Add CLT specific fields into Project resource
-[#145](https://github.com/sleuth-io/terraform-provider-sleuth/pull/145) Store repository integration authentication value in state
+- [#143](https://github.com/sleuth-io/terraform-provider-sleuth/pull/143) Add Shortcut (ex Clubhouse) as Incident Impact Source
+- [#144](https://github.com/sleuth-io/terraform-provider-sleuth/pull/144) Add CLT specific fields into Project resource
+- [#145](https://github.com/sleuth-io/terraform-provider-sleuth/pull/145) Store repository integration authentication value in state
 
 ## 0.4.5 (September 26, 2023)
 EHANCEMENTS:
