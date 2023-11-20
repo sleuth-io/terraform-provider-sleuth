@@ -219,7 +219,7 @@ func (p *environmentResource) Delete(ctx context.Context, req resource.DeleteReq
 
 	tflog.Info(ctx, "Deleting Environment resource", map[string]any{"state": fmt.Sprintf("%+v", state)})
 	projectSlug := state.ProjectSlug.ValueStringPointer()
-	err := p.c.DeleteEnvironment(projectSlug, state.Slug.ValueStringPointer())
+	err := p.c.DeleteEnvironment(ctx, projectSlug, state.Slug.ValueStringPointer())
 	if err != nil {
 		tflog.Error(ctx, "Unexpected error deleting environment", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError("Unexpected error deleting environment", err.Error())

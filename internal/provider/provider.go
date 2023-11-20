@@ -39,7 +39,7 @@ func New(version string) func() *schema.Provider {
 				"api_key": &schema.Schema{
 					Type:        schema.TypeString,
 					Description: "The Sleuth organization's Api key",
-					Required:    true,
+					Optional:    true,
 					DefaultFunc: schema.EnvDefaultFunc("SLEUTH_API_KEY", nil),
 				},
 			},
@@ -52,7 +52,7 @@ func New(version string) func() *schema.Provider {
 				//"sleuth_error_impact_source": resourceErrorImpactSource(),
 				//"sleuth_metric_impact_source": resourceMetricImpactSource(),
 				//"sleuth_code_change_source":     resourceCodeChangeSource(),
-				"sleuth_incident_impact_source": resourceIncidentImpactSource(),
+				//"sleuth_incident_impact_source": resourceIncidentImpactSource(),
 			},
 		}
 
