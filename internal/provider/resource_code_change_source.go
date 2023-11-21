@@ -335,7 +335,7 @@ func populateCodeChangeSource(d *schema.ResourceData, input *gqlclient.MutableCo
 	repoData := repoList[0].(map[string]interface{})
 	repo := gqlclient.MutableRepository{
 		IntegrationSlug: repoData["integration_slug"].(string),
-		Repository: gqlclient.Repository{
+		RepositoryBase: gqlclient.RepositoryBase{
 			Owner:      repoData["owner"].(string),
 			Name:       repoData["name"].(string),
 			Provider:   repoData["provider"].(string),
