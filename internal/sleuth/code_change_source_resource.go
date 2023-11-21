@@ -349,6 +349,13 @@ func (ccsr *codeChangeSourceResource) Read(ctx context.Context, req resource.Rea
 	tflog.Info(ctx, "Reading CodeChangeSource resource", map[string]any{"state": state})
 	projectSlug := state.ProjectSlug.ValueString()
 	slug := state.Slug.ValueString()
+	// when importing a resource, only ID will be set with project slug & slug
+	if projectSlug == "" {
+		id := state.ID.ValueString()
+		splits := strings.Split(id, "/")
+		projectSlug = splits[0]
+		slug = splits[1]
+	}
 
 	ccs, err := ccsr.c.GetCodeChangeSource(ctx, &projectSlug, &slug)
 	if err != nil {
@@ -462,7 +469,7 @@ func (ccsr *codeChangeSourceResource) Delete(ctx context.Context, req resource.D
 }
 
 func (ccsr *codeChangeSourceResource) ImportState(ctx context.Context, req resource.ImportStateRequest, res *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("slug"), req, res)
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, res)
 }
 
 func validateCodeChangeInput(ccs gqlclient.MutableCodeChangeSource) error {

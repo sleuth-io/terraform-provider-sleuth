@@ -161,6 +161,14 @@ func (misr *metricImpactSourceResource) Read(ctx context.Context, req resource.R
 	projectSlug := state.ProjectSlug.ValueString()
 	slug := state.Slug.ValueString()
 
+	// when importing a resource, only ID will be set with project slug & slug
+	if projectSlug == "" {
+		id := state.ID.ValueString()
+		splits := strings.Split(id, "/")
+		projectSlug = splits[0]
+		slug = splits[1]
+	}
+
 	ccs, err := misr.c.GetMetricImpactSource(&projectSlug, &slug)
 	if err != nil {
 		tflog.Error(ctx, "Error reading MetricImpactSource", map[string]any{"error": err.Error()})
@@ -243,7 +251,7 @@ func (misr *metricImpactSourceResource) Delete(ctx context.Context, req resource
 }
 
 func (misr *metricImpactSourceResource) ImportState(ctx context.Context, req resource.ImportStateRequest, res *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("slug"), req, res)
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, res)
 }
 
 func getNewStateFromMetricImpactSource(ccs *gqlclient.MetricImpactSource, projectSlug string) metricImpactResourceModel {
