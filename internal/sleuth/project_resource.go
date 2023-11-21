@@ -3,13 +3,18 @@ package sleuth
 import (
 	"context"
 	"fmt"
+	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
@@ -22,15 +27,18 @@ var (
 )
 
 type projectResourceModel struct {
-	ID                        types.String `tfsdk:"id"`
-	Name                      types.String `tfsdk:"name"`
-	Slug                      types.String `tfsdk:"slug"`
-	Description               types.String `tfsdk:"description"`
-	IssueTrackerProviderType  types.String `tfsdk:"issue_tracker_provider_type"`
-	BuildProvider             types.String `tfsdk:"build_provider"`
-	ChangeFailureRateBoundary types.String `tfsdk:"change_failure_rate_boundary"`
-	ImpactSensitivity         types.String `tfsdk:"impact_sensitivity"`
-	FailureSensitivity        types.Int64  `tfsdk:"failure_sensitivity"`
+	ID                            types.String `tfsdk:"id"`
+	Name                          types.String `tfsdk:"name"`
+	Slug                          types.String `tfsdk:"slug"`
+	Description                   types.String `tfsdk:"description"`
+	IssueTrackerProviderType      types.String `tfsdk:"issue_tracker_provider_type"`
+	BuildProvider                 types.String `tfsdk:"build_provider"`
+	ChangeFailureRateBoundary     types.String `tfsdk:"change_failure_rate_boundary"`
+	ImpactSensitivity             types.String `tfsdk:"impact_sensitivity"`
+	FailureSensitivity            types.Int64  `tfsdk:"failure_sensitivity"`
+	ChangeLeadTimeStartDefinition types.String `tfsdk:"change_lead_time_start_definition"`
+	ChangeLeadTimeIssueStates     types.Set    `tfsdk:"change_lead_time_issue_states"`
+	ChangeLeadTimeStrictMatching  types.Bool   `tfsdk:"change_lead_time_strict_matching"`
 }
 
 type projectResource struct {
@@ -94,6 +102,24 @@ func (p *projectResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Computed:            true,
 				Default:             int64default.StaticInt64(420),
 			},
+			"change_lead_time_start_definition": schema.StringAttribute{
+				Description: "The event that will be taken as a start definition (first commit, issue transition or whichever comes first) - options: COMMIT (default), ISSUE, FIRST_EVENT.",
+				Optional:    true,
+				Computed:    true,
+				Default:     stringdefault.StaticString("COMMIT"),
+			},
+			"change_lead_time_issue_states": schema.SetAttribute{
+				Description: "Issue state IDs used for start definition (only used if change_lead_time_start_definition is ISSUE or FIRST_EVENT.",
+				ElementType: basetypes.Int64Type{},
+				Computed:    true,
+				Optional:    true,
+			},
+			"change_lead_time_strict_matching": schema.BoolAttribute{
+				Description: "When enabled Sleuth will only look for issue references in PR titles and PR branch names. If strict issue matching is disabled, Sleuth will expand the search for issue references to PR descriptions and commit messages.",
+				Optional:    true,
+				Computed:    true,
+				Default:     booldefault.StaticBool(false),
+			},
 		},
 	}
 }
@@ -120,7 +146,7 @@ func (p *projectResource) Create(ctx context.Context, req resource.CreateRequest
 
 	tflog.Info(ctx, "Creating Project resource", map[string]any{"plan": plan})
 
-	inputFields := getMutableProjectStruct(plan)
+	inputFields := getMutableProjectStruct(ctx, plan)
 
 	input := gqlclient.CreateProjectMutationInput{MutableProject: &inputFields}
 
@@ -136,7 +162,8 @@ func (p *projectResource) Create(ctx context.Context, req resource.CreateRequest
 
 	tflog.Info(ctx, "Created Project", map[string]any{"project": proj})
 
-	state := getNewStateFromProject(proj)
+	state, diags := getNewStateFromProject(ctx, proj)
+	res.Diagnostics.Append(diags...)
 
 	diags = res.State.Set(ctx, state)
 	res.Diagnostics.Append(diags...)
@@ -169,7 +196,8 @@ func (p *projectResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	newState := getNewStateFromProject(proj)
+	newState, diags := getNewStateFromProject(ctx, proj)
+	res.Diagnostics.Append(diags...)
 
 	diags = res.State.Set(ctx, &newState)
 	res.Diagnostics.Append(diags...)
@@ -190,7 +218,7 @@ func (p *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 
 	tflog.Info(ctx, "Updating Project resource", map[string]any{"plan": plan, "state": state})
 
-	inputFields := getMutableProjectStruct(plan)
+	inputFields := getMutableProjectStruct(ctx, plan)
 
 	input := gqlclient.UpdateProjectMutationInput{Slug: state.Slug.ValueString(), MutableProject: &inputFields}
 
@@ -203,7 +231,8 @@ func (p *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 
 	tflog.Info(ctx, "Updated Project", map[string]any{"project": proj})
 
-	newState := getNewStateFromProject(proj)
+	newState, diags := getNewStateFromProject(ctx, proj)
+	res.Diagnostics.Append(diags...)
 
 	diags = res.State.Set(ctx, newState)
 	res.Diagnostics.Append(diags...)
@@ -235,21 +264,45 @@ func (p *projectResource) ImportState(ctx context.Context, req resource.ImportSt
 	resource.ImportStatePassthroughID(ctx, path.Root("slug"), req, res)
 }
 
-func getNewStateFromProject(proj *gqlclient.Project) projectResourceModel {
-	return projectResourceModel{
-		ID:                        types.StringValue(proj.Slug),
-		Name:                      types.StringValue(proj.Name),
-		Slug:                      types.StringValue(proj.Slug),
-		Description:               types.StringValue(proj.Description),
-		IssueTrackerProviderType:  types.StringValue(proj.IssueTrackerProvider),
-		BuildProvider:             types.StringValue(proj.BuildProvider),
-		ChangeFailureRateBoundary: types.StringValue(proj.ChangeFailureRateBoundary),
-		ImpactSensitivity:         types.StringValue(proj.ImpactSensitivity),
-		FailureSensitivity:        types.Int64Value(int64(proj.FailureSensitivity)),
+func getNewStateFromProject(ctx context.Context, proj *gqlclient.Project) (projectResourceModel, diag.Diagnostics) {
+	var cltStateInts []attr.Value
+	for _, cltState := range proj.CltStartStates {
+		x, err := strconv.Atoi(cltState.ID)
+		if err != nil {
+			tflog.Error(ctx, "Error converting ID to int")
+			continue
+		}
+		typ := types.Int64Value(int64(x))
+		cltStateInts = append(cltStateInts, typ)
 	}
+
+	setValue, errDiag := types.SetValue(basetypes.Int64Type{}, cltStateInts)
+
+	prm := projectResourceModel{
+		ID:                            types.StringValue(proj.Slug),
+		Name:                          types.StringValue(proj.Name),
+		Slug:                          types.StringValue(proj.Slug),
+		Description:                   types.StringValue(proj.Description),
+		IssueTrackerProviderType:      types.StringValue(proj.IssueTrackerProvider),
+		BuildProvider:                 types.StringValue(proj.BuildProvider),
+		ChangeFailureRateBoundary:     types.StringValue(proj.ChangeFailureRateBoundary),
+		ImpactSensitivity:             types.StringValue(proj.ImpactSensitivity),
+		FailureSensitivity:            types.Int64Value(int64(proj.FailureSensitivity)),
+		ChangeLeadTimeStartDefinition: types.StringValue(proj.CltStartDefinition),
+		ChangeLeadTimeIssueStates:     types.SetNull(types.Int64Type),
+		ChangeLeadTimeStrictMatching:  types.BoolValue(proj.StrictIssueMatching),
+	}
+	if len(proj.CltStartStates) > 0 {
+		prm.ChangeLeadTimeIssueStates = setValue
+	}
+
+	return prm, errDiag
 }
 
-func getMutableProjectStruct(plan projectResourceModel) gqlclient.MutableProject {
+func getMutableProjectStruct(ctx context.Context, plan projectResourceModel) gqlclient.MutableProject {
+	var cltStartStates []int
+	plan.ChangeLeadTimeIssueStates.ElementsAs(ctx, &cltStartStates, false)
+
 	return gqlclient.MutableProject{
 		Name:                      plan.Name.ValueString(),
 		Description:               plan.Description.ValueString(),
@@ -258,5 +311,8 @@ func getMutableProjectStruct(plan projectResourceModel) gqlclient.MutableProject
 		ChangeFailureRateBoundary: plan.ChangeFailureRateBoundary.ValueString(),
 		ImpactSensitivity:         plan.ImpactSensitivity.ValueString(),
 		FailureSensitivity:        int(plan.FailureSensitivity.ValueInt64()),
+		CltStartDefinition:        plan.ChangeLeadTimeStartDefinition.ValueString(),
+		CltStartStates:            cltStartStates,
+		StrictIssueMatching:       plan.ChangeLeadTimeStrictMatching.ValueBool(),
 	}
 }
