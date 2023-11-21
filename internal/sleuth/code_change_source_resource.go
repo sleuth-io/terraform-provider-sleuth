@@ -135,6 +135,10 @@ func (ccsr *codeChangeSourceResource) Schema(_ context.Context, _ resource.Schem
 					"integration_slug": schema.StringAttribute{
 						MarkdownDescription: "IntegrationAuthentication slug used",
 						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
+						},
 					},
 					"repo_uid": schema.StringAttribute{
 						MarkdownDescription: "Repository UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)",
@@ -550,8 +554,11 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 		ProjectUID:      types.StringNull(),
 	}
 
-	if strings.ToLower(ccs.Repository.Provider) == azureProvider {
+	if ccs.Repository.IntegrationAuth != nil {
 		r.IntegrationSlug = types.StringValue(ccs.Repository.IntegrationAuth.Slug)
+	}
+
+	if strings.ToLower(ccs.Repository.Provider) == azureProvider {
 		r.RepoUID = types.StringValue(ccs.Repository.RepoUID)
 		r.ProjectUID = types.StringValue(ccs.Repository.ProjectUID)
 	}
