@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
+
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/provider"
 )
 
@@ -37,7 +38,7 @@ func main() {
 	opts := &plugin.ServeOpts{ProviderFunc: provider.New(version)}
 
 	if debugMode {
-		err := plugin.Debug(context.Background(), "registry.terraform.io/sleuth-io/sleuth", opts)
+		err := plugin.Debug(context.Background(), "sleuth.io/core/sleuth", opts)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
