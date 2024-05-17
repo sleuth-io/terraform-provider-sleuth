@@ -1,4 +1,4 @@
-## unreleased
+## 0.4.8 (May 17, 2024)
 ENHANCEMENTS:
 - [#165](https://github.com/sleuth-io/terraform-provider-sleuth/pull/165) Fix provider name in main.go
 
