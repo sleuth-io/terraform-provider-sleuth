@@ -178,16 +178,16 @@ func setProjectFields(ctx context.Context, d *schema.ResourceData, proj *gqlclie
 	d.Set("change_lead_time_start_definition", proj.CltStartDefinition)
 	d.Set("change_lead_time_strict_matching", proj.StrictIssueMatching)
 
-	cltStateInts := []int{}
+	cltStateIDs := []int{}
 	for _, val := range proj.CltStartStates {
 		x, err := strconv.Atoi(val.ID)
 		if err != nil {
 			tflog.Error(ctx, "Error converting ID to int")
 			continue
 		}
-		cltStateInts = append(cltStateInts, x)
+		cltStateIDs = append(cltStateIDs, x)
 	}
-	d.Set("change_lead_time_issue_states", cltStateInts)
+	d.Set("change_lead_time_issue_states", cltStateIDs)
 }
 
 func populateProjectInput(d *schema.ResourceData, input *gqlclient.MutableProject) bool {
