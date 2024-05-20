@@ -3,12 +3,12 @@
 page_title: "sleuth_environment Resource - terraform-provider-sleuth"
 subcategory: ""
 description: |-
-  Sleuth environment.
+  Project resource manages Sleuth project.
 ---
 
 # sleuth_environment (Resource)
 
-Sleuth environment.
+Project resource manages Sleuth project.
 
 ## Example Usage
 

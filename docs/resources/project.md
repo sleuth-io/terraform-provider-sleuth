@@ -39,6 +39,7 @@ resource "sleuth_project" "example_tf_app" {
 
 ### Read-Only
 
+- `id` (String) The ID of this resource.
 - `slug` (String) Project slug
 
 
