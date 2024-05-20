@@ -1,3 +1,7 @@
+## unreleased
+ENHANCEMENTS:
+- [#168](https://github.com/sleuth-io/terraform-provider-sleuth/pull/168) Update tooling
+
 ## 0.5.0 (May 20, 2024)
 ENHANCEMENTS:
 - [#121](https://github.com/sleuth-io/terraform-provider-sleuth/pull/121) Rewrite the provider to use the new Framework using muxing
