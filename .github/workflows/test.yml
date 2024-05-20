@@ -85,5 +85,8 @@ jobs:
       - run: go mod download
       - env:
           TF_ACC: "1"
+          TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
+          SLEUTH_BASEURL: ${{ secrets.SLEUTH_BASEURL }}
+          SLEUTH_API_KEY: ${{ secrets.SLEUTH_API_KEY }}
         run: go test -v -cover ./internal/...
         timeout-minutes: 10
