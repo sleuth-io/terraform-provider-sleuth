@@ -14,11 +14,11 @@ Sleuth error impact source.
 
 ```terraform
 resource "sleuth_error_impact_source" "sentry_production" {
-  project_slug = "example_tf_app"
-  environment_slug = "prod"
-  name = "Sentry errors"
-  provider_type = "sentry"
-  error_org_key = "my-sentry-org-key"
+  project_slug      = "example_tf_app"
+  environment_slug  = "prod"
+  name              = "Sentry errors"
+  provider_type     = "sentry"
+  error_org_key     = "my-sentry-org-key"
   error_project_key = "my-sentry-project-key"
   error_environment = "my-sentry-environment"
 }
@@ -29,20 +29,22 @@ resource "sleuth_error_impact_source" "sentry_production" {
 
 ### Required
 
-- `environment_slug` (String) The environment slug
+- `environment_slug` (String) The slug of the environment that this error impact source belongs to.
 - `error_environment` (String) The environment of the integration provider
 - `error_org_key` (String) The organization key of the integration provider
 - `error_project_key` (String) The project key of the integration provider
-- `name` (String) Impact source name
-- `project_slug` (String) The project for this impact source
+- `name` (String) Error impact source name
+- `project_slug` (String) The slug of the project that this error impact source belongs to.
 - `provider_type` (String) Integration provider type
 
 ### Optional
 
+- `integration_slug` (String) The integration slug
 - `manually_set_health_threshold` (Number) The manually set threshold to start marking failed values
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+- `slug` (String)
 
 

@@ -3,12 +3,12 @@
 page_title: "sleuth_incident_impact_source Resource - terraform-provider-sleuth"
 subcategory: ""
 description: |-
-  Sleuth incident impact source
+  Sleuth code change source.
 ---
 
 # sleuth_incident_impact_source (Resource)
 
-Sleuth incident impact source
+Sleuth code change source.
 
 ## Example Usage
 
@@ -117,25 +117,24 @@ resource "sleuth_incident_impact_source" "clubhouse" {
 
 - `environment_name` (String) Impact source environment name
 - `name` (String) Impact source name
-- `project_slug` (String) Project slug
-- `provider_name` (String) Impact source provider (options: PAGERDUTY, CUSTOM_INCIDENT)
+- `project_slug` (String) The slug of the project that this incident impact source belongs to.
+- `provider_name` (String) Impact source provider (options: PAGERDUTY)
 
 ### Optional
 
-- `blameless_input` (Block List, Max: 1) Blameless input (see [below for nested schema](#nestedblock--blameless_input))
-- `clubhouse_input` (Block List, Max: 1) Clubhouse input (see [below for nested schema](#nestedblock--clubhouse_input))
-- `datadog_input` (Block List, Max: 1) DataDog input (see [below for nested schema](#nestedblock--datadog_input))
-- `firehydrant_input` (Block List, Max: 1) FireHydrant input (see [below for nested schema](#nestedblock--firehydrant_input))
-- `jira_input` (Block List, Max: 1) JIRA input (see [below for nested schema](#nestedblock--jira_input))
-- `opsgenie_input` (Block List, Max: 1) OpsGenie input (see [below for nested schema](#nestedblock--opsgenie_input))
-- `pagerduty_input` (Block List, Max: 1) PagerDuty input (see [below for nested schema](#nestedblock--pagerduty_input))
-- `statuspage_input` (Block List, Max: 1) Statuspage input (see [below for nested schema](#nestedblock--statuspage_input))
+- `blameless_input` (Block, Optional) Blameless input (see [below for nested schema](#nestedblock--blameless_input))
+- `clubhouse_input` (Block, Optional) Clubhouse input (see [below for nested schema](#nestedblock--clubhouse_input))
+- `datadog_input` (Block, Optional) DataDog input (see [below for nested schema](#nestedblock--datadog_input))
+- `firehydrant_input` (Block, Optional) FireHydrant input (see [below for nested schema](#nestedblock--firehydrant_input))
+- `jira_input` (Block, Optional) JIRA input (see [below for nested schema](#nestedblock--jira_input))
+- `opsgenie_input` (Block, Optional) OpsGenie input (see [below for nested schema](#nestedblock--opsgenie_input))
+- `pagerduty_input` (Block, Optional) PagerDuty input (see [below for nested schema](#nestedblock--pagerduty_input))
+- `statuspage_input` (Block, Optional) Statuspage input (see [below for nested schema](#nestedblock--statuspage_input))
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `register_impact_link` (String) Impact source webhook registration link (for CUSTOM_INCIDENT only)
-- `slug` (String) Impact source slug
+- `slug` (String)
 
 <a id="nestedblock--blameless_input"></a>
 ### Nested Schema for `blameless_input`
@@ -150,13 +149,10 @@ Optional:
 <a id="nestedblock--clubhouse_input"></a>
 ### Nested Schema for `clubhouse_input`
 
-Required:
-
-- `remote_query` (String) Need help finding query expression? See the [documentation](https://help.shortcut.com/hc/en-us/articles/360000046646-Searching-in-Shortcut-Using-Search-Operators) for more information.
-
 Optional:
 
 - `integration_slug` (String) IntegrationAuthentication slug used
+- `remote_query` (String) Need help finding query expression? See the [documentation](https://help.shortcut.com/hc/en-us/articles/360000046646-Searching-in-Shortcut-Using-Search-Operators) for more information.
 
 
 <a id="nestedblock--datadog_input"></a>
@@ -177,8 +173,11 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL
 Optional:
 
 - `remote_environments` (String) The environment defined in FireHydrant to monitor
-- `remote_mitigated_is_healthy` (Boolean) If true, incident considered to have ended once reaching mitigated Milestone or it is resolved
 - `remote_services` (String) The service defined in FireHydrant to monitor
+
+Read-Only:
+
+- `remote_mitigated_is_healthy` (Boolean) If true, incident considered to have ended once reaching mitigated Milestone or it is resolved
 
 
 <a id="nestedblock--jira_input"></a>
@@ -208,7 +207,6 @@ Optional:
 
 Optional:
 
-- `historic_init` (String) Populate with data from the last 30 days
 - `integration_slug` (String) IntegrationAuthentication slug used
 - `remote_services` (String) List of remote services, empty string means all
 - `remote_urgency` (String) PagerDuty remote urgency, options: HIGH, LOW, ANY

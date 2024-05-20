@@ -4,6 +4,16 @@ The Sleuth provider is used to interact with [Sleuth](https://sleuth.io) resourc
 The provider allows you to manage your Sleuth organization's projects, environments, change sources, and impact sources easily.
 It needs to be configured with the proper credentials before it can be used.
 
+## Versions explained:
+Since there are different versions it make sense to explain the differences between them.
+
+Terraform provider version 0.4.* is meant to be used by older Terraform versions (0.12.* and on). It is feature complete and will only receive bug fixes.
+Terraform provider version 0.5.* is a first step towards rewrite of a provider. It has the same features as 0.4.* but there might be a few missing pieces.
+Terraform provider version 0.6.* is a final rewrite of a provider. It has the same features as 0.4.* and will receive new features and bug fixes. It is written in Terraform plugin framework and only works with newer versions of Terraform (1.* and on).
+
+If you are using older terraform version, you should use 0.4 version, if you are using newer terraform version, you should use 0.6 version. Version 0.5 is just a transition version and should not be used regularly.
+
+
 ## Example Usage
 
 Terraform 0.13 and later:
