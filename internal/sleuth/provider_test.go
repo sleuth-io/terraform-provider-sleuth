@@ -2,7 +2,6 @@ package sleuth
 
 import (
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/hashicorp/terraform-plugin-go/tfprotov5"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 )
 
@@ -13,8 +12,5 @@ var (
 	// reattach.
 	testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
 		"sleuth": providerserver.NewProtocol6WithError(New("test")),
-	}
-	testAccProtoV5ProviderFactories = map[string]func() (tfprotov5.ProviderServer, error){
-		"sleuth": providerserver.NewProtocol5WithError(New("dev")),
 	}
 )
