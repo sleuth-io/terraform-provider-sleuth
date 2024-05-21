@@ -37,14 +37,14 @@ type incidentImpactResourceModel struct {
 	Name         types.String `tfsdk:"name"`
 	ProviderName types.String `tfsdk:"provider_name"`
 
-	PagerDutyInput   types.Object `tfsdk:"pagerduty_input"`
-	DataDogInput     types.Object `tfsdk:"datadog_input"`
-	JiraInput        types.Object `tfsdk:"jira_input"`
-	BlamelessInput   types.Object `tfsdk:"blameless_input"`
-	StatusPageInput  types.Object `tfsdk:"statuspage_input"`
-	OpsGenieInput    types.Object `tfsdk:"opsgenie_input"`
-	FireHydrantInput types.Object `tfsdk:"firehydrant_input"`
-	ClubhouseInput   types.Object `tfsdk:"clubhouse_input"`
+	PagerDutyInput   *pagerDutyInputResourceModel   `tfsdk:"pagerduty_input"`
+	DataDogInput     *dataDogInputResourceModel     `tfsdk:"datadog_input"`
+	JiraInput        *jiraInputResourceModel        `tfsdk:"jira_input"`
+	BlamelessInput   *blamelessInputResourceModel   `tfsdk:"blameless_input"`
+	StatusPageInput  *statuspageInputResourceModel  `tfsdk:"statuspage_input"`
+	OpsGenieInput    *opsgenieInputResourceModel    `tfsdk:"opsgenie_input"`
+	FireHydrantInput *firehydrantInputResourceModel `tfsdk:"firehydrant_input"`
+	ClubhouseInput   *clubhouseInputResourceModel   `tfsdk:"clubhouse_input"`
 }
 
 type pagerDutyInputResourceModel struct {
@@ -162,8 +162,205 @@ func NewIncidentImpactSourceResource() resource.Resource {
 func (iisr *incidentImpactSourceResource) Schema(_ context.Context, _ resource.SchemaRequest, res *resource.SchemaResponse) {
 	res.Schema = schema.Schema{
 		MarkdownDescription: "Sleuth incident impact source.",
-		Blocks: map[string]schema.Block{
-			"pagerduty_input": schema.SingleNestedBlock{
+		Blocks:              map[string]schema.Block{
+			//"pagerduty_input": schema.SingleNestedBlock{
+			//	MarkdownDescription: "PagerDuty input",
+			//	Attributes: map[string]schema.Attribute{
+			//		"remote_services": schema.StringAttribute{
+			//			MarkdownDescription: "List of remote services, empty string means all",
+			//			Optional:            true,
+			//			Computed:            true,
+			//			Default:             stringdefault.StaticString(""),
+			//		},
+			//		"remote_urgency": schema.StringAttribute{
+			//			MarkdownDescription: "PagerDuty remote urgency, options: HIGH, LOW, ANY",
+			//			Optional:            true,
+			//			Computed:            true,
+			//		},
+			//		"integration_slug": schema.StringAttribute{
+			//			MarkdownDescription: "IntegrationAuthentication slug used",
+			//			Optional:            true,
+			//		},
+			//	},
+			//},
+			//			"datadog_input": schema.SingleNestedBlock{
+			//				MarkdownDescription: "DataDog input",
+			//				Attributes: map[string]schema.Attribute{
+			//					"query": schema.StringAttribute{
+			//						MarkdownDescription: `The query to scope the monitors to track. If you are using a custom facet you would need to add @ to the beginning of the facet name. If empty, all monitors in Datadog will be matched regardless of environment or service.
+			//See [DataDog documentation](https://docs.datadoghq.com/monitors/manage/search/) for more information.`,
+			//						Optional: true,
+			//						Computed: true,
+			//						Default:  stringdefault.StaticString(""),
+			//					},
+			//					"remote_priority_threshold": schema.StringAttribute{
+			//						Optional: true,
+			//						Computed: true,
+			//						Default:  stringdefault.StaticString("ALL"),
+			//						Description: `Monitor states with matching or higher priorities will be considered a failure in Sleuth.
+			//Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
+			//					},
+			//					"integration_slug": schema.StringAttribute{
+			//						Optional:    true,
+			//						Description: "DataDog IntegrationAuthentication slug from app",
+			//					},
+			//				},
+			//			},
+			//			"jira_input": schema.SingleNestedBlock{
+			//				MarkdownDescription: "JIRA input",
+			//				Attributes: map[string]schema.Attribute{
+			//					"remote_jql": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "JIRA active incidents issues JQL",
+			//					},
+			//					"integration_slug": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "JIRA IntegrationAuthentication slug from app",
+			//					},
+			//				},
+			//			},
+			//			"blameless_input": schema.SingleNestedBlock{
+			//				MarkdownDescription: "Blameless input",
+			//				Attributes: map[string]schema.Attribute{
+			//					"remote_types": schema.SetAttribute{
+			//						Optional:            true,
+			//						ElementType:         basetypes.StringType{},
+			//						MarkdownDescription: "The types of incidents to the monitors should track",
+			//					},
+			//					"remote_severity_threshold": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "Incidents with matching or lower severities will be considered a failure in Sleuth",
+			//					},
+			//					"integration_slug": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "Blameless IntegrationAuthentication slug from app",
+			//					},
+			//				},
+			//			},
+			//			"statuspage_input": schema.SingleNestedBlock{
+			//				MarkdownDescription: "Statuspage input",
+			//				Attributes: map[string]schema.Attribute{
+			//					"remote_page": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "Statuspage page the incident impact source should monitor",
+			//					},
+			//					"remote_component": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "Statuspage component the incident impact source should monitor",
+			//					},
+			//					"remote_impact": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "Incidents with matching or lower severities will be considered a failure in Sleuth",
+			//					},
+			//					"ignore_maintenance_incidents": schema.BoolAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "Option to ignore maintenance incidents",
+			//					},
+			//					"integration_slug": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "Statuspage IntegrationAuthentication slug from app",
+			//					},
+			//				},
+			//			},
+			//			"opsgenie_input": schema.SingleNestedBlock{
+			//				MarkdownDescription: "OpsGenie input",
+			//				Attributes: map[string]schema.Attribute{
+			//					"remote_alert_tags": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "Optionally filter by alert tags",
+			//					},
+			//					"remote_incident_tags": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "Optionally filter by incident tags",
+			//					},
+			//					"remote_priority_threshold": schema.StringAttribute{
+			//						Optional:            true,
+			//						Computed:            true,
+			//						MarkdownDescription: "Monitor states with matching or higher priorities will be considered a failure in Sleuth",
+			//						Default:             stringdefault.StaticString("ALL"),
+			//					},
+			//					"remote_service": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "Only taken into consideration when using OpsGenie Incidents. This value should be the Unique ID of the OpsGenie service.",
+			//					},
+			//					"remote_use_alerts": schema.BoolAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "Use OpsGenie Alerts instead of Incidents",
+			//						Default:             booldefault.StaticBool(false),
+			//						Computed:            true,
+			//					},
+			//					"integration_slug": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "The slug for the integration",
+			//					},
+			//				},
+			//			},
+			//			"firehydrant_input": schema.SingleNestedBlock{
+			//				MarkdownDescription: "FireHydrant input",
+			//				Attributes: map[string]schema.Attribute{
+			//					"remote_environments": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "The environment defined in FireHydrant to monitor",
+			//					},
+			//					"remote_services": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "The service defined in FireHydrant to monitor",
+			//					},
+			//					"remote_mitigated_is_healthy": schema.BoolAttribute{
+			//						MarkdownDescription: "If true, incident considered to have ended once reaching mitigated Milestone or it is resolved",
+			//						Default:             booldefault.StaticBool(false),
+			//						Computed:            true,
+			//					},
+			//				},
+			//			},
+			//			"clubhouse_input": schema.SingleNestedBlock{
+			//				MarkdownDescription: "Clubhouse input",
+			//				Attributes: map[string]schema.Attribute{
+			//					"remote_query": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: `Need help finding query expression? See the [documentation](https://help.shortcut.com/hc/en-us/articles/360000046646-Searching-in-Shortcut-Using-Search-Operators) for more information.`,
+			//					},
+			//					"integration_slug": schema.StringAttribute{
+			//						Optional:            true,
+			//						MarkdownDescription: "IntegrationAuthentication slug used",
+			//					},
+			//				},
+			//			},
+		},
+		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"slug": schema.StringAttribute{
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"project_slug": schema.StringAttribute{
+				MarkdownDescription: "The slug of the project that this incident impact source belongs to.",
+				Required:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(), // ForceNew replacement
+				},
+			},
+			"name": schema.StringAttribute{
+				MarkdownDescription: "Impact source name",
+				Required:            true,
+			},
+			"provider_name": schema.StringAttribute{
+				MarkdownDescription: "Impact source provider in lowercase (options: pagerduty, datadog, jira, blameless, statuspage, opsgenie, firehydrant, clubhouse)",
+				Required:            true,
+			},
+			"environment_name": schema.StringAttribute{
+				MarkdownDescription: "Impact source environment name",
+				Required:            true,
+			},
+			"pagerduty_input": schema.SingleNestedAttribute{
+				Optional:            true,
 				MarkdownDescription: "PagerDuty input",
 				Attributes: map[string]schema.Attribute{
 					"remote_services": schema.StringAttribute{
@@ -183,7 +380,8 @@ func (iisr *incidentImpactSourceResource) Schema(_ context.Context, _ resource.S
 					},
 				},
 			},
-			"datadog_input": schema.SingleNestedBlock{
+			"datadog_input": schema.SingleNestedAttribute{
+				Optional:            true,
 				MarkdownDescription: "DataDog input",
 				Attributes: map[string]schema.Attribute{
 					"query": schema.StringAttribute{
@@ -206,7 +404,8 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 					},
 				},
 			},
-			"jira_input": schema.SingleNestedBlock{
+			"jira_input": schema.SingleNestedAttribute{
+				Optional:            true,
 				MarkdownDescription: "JIRA input",
 				Attributes: map[string]schema.Attribute{
 					"remote_jql": schema.StringAttribute{
@@ -219,7 +418,8 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 					},
 				},
 			},
-			"blameless_input": schema.SingleNestedBlock{
+			"blameless_input": schema.SingleNestedAttribute{
+				Optional:            true,
 				MarkdownDescription: "Blameless input",
 				Attributes: map[string]schema.Attribute{
 					"remote_types": schema.SetAttribute{
@@ -237,7 +437,8 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 					},
 				},
 			},
-			"statuspage_input": schema.SingleNestedBlock{
+			"statuspage_input": schema.SingleNestedAttribute{
+				Optional:            true,
 				MarkdownDescription: "Statuspage input",
 				Attributes: map[string]schema.Attribute{
 					"remote_page": schema.StringAttribute{
@@ -262,7 +463,8 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 					},
 				},
 			},
-			"opsgenie_input": schema.SingleNestedBlock{
+			"opsgenie_input": schema.SingleNestedAttribute{
+				Optional:            true,
 				MarkdownDescription: "OpsGenie input",
 				Attributes: map[string]schema.Attribute{
 					"remote_alert_tags": schema.StringAttribute{
@@ -295,7 +497,8 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 					},
 				},
 			},
-			"firehydrant_input": schema.SingleNestedBlock{
+			"firehydrant_input": schema.SingleNestedAttribute{
+				Optional:            true,
 				MarkdownDescription: "FireHydrant input",
 				Attributes: map[string]schema.Attribute{
 					"remote_environments": schema.StringAttribute{
@@ -313,7 +516,8 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 					},
 				},
 			},
-			"clubhouse_input": schema.SingleNestedBlock{
+			"clubhouse_input": schema.SingleNestedAttribute{
+				Optional:            true,
 				MarkdownDescription: "Clubhouse input",
 				Attributes: map[string]schema.Attribute{
 					"remote_query": schema.StringAttribute{
@@ -325,39 +529,6 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 						MarkdownDescription: "IntegrationAuthentication slug used",
 					},
 				},
-			},
-		},
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"slug": schema.StringAttribute{
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"project_slug": schema.StringAttribute{
-				MarkdownDescription: "The slug of the project that this incident impact source belongs to.",
-				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(), // ForceNew replacement
-				},
-			},
-			"name": schema.StringAttribute{
-				MarkdownDescription: "Impact source name",
-				Required:            true,
-			},
-			"provider_name": schema.StringAttribute{
-				MarkdownDescription: "Impact source provider (options: PAGERDUTY)",
-				Required:            true,
-			},
-			"environment_name": schema.StringAttribute{
-				MarkdownDescription: "Impact source environment name",
-				Required:            true,
 			},
 		},
 	}
@@ -389,48 +560,43 @@ type providerData struct {
 // we have to manually parse the provider data because the TF protocol v5 doesn't support nested objects
 func parseProviderData(ctx context.Context, plan incidentImpactResourceModel) (providerData, diag.Diagnostics) {
 	diags := diag.Diagnostics{}
-
-	var pdInput *pagerDutyInputResourceModel
-	asDiags := plan.PagerDutyInput.As(ctx, &pdInput, basetypes.ObjectAsOptions{})
-	diags.Append(asDiags...)
-
-	var ddInput *dataDogInputResourceModel
-	asDiags = plan.DataDogInput.As(ctx, &ddInput, basetypes.ObjectAsOptions{})
-	diags.Append(asDiags...)
-
-	var jiraInput *jiraInputResourceModel
-	asDiags = plan.JiraInput.As(ctx, &jiraInput, basetypes.ObjectAsOptions{})
-	diags.Append(asDiags...)
-
-	var blamelessInput *blamelessInputResourceModel
-	asDiags = plan.BlamelessInput.As(ctx, &blamelessInput, basetypes.ObjectAsOptions{})
-	diags.Append(asDiags...)
-
-	var statuspageInput *statuspageInputResourceModel
-	asDiags = plan.StatusPageInput.As(ctx, &statuspageInput, basetypes.ObjectAsOptions{})
-	diags.Append(asDiags...)
-
-	var opsgenieInput *opsgenieInputResourceModel
-	asDiags = plan.OpsGenieInput.As(ctx, &opsgenieInput, basetypes.ObjectAsOptions{})
-	diags.Append(asDiags...)
-
-	var firehydrantInput *firehydrantInputResourceModel
-	asDiags = plan.FireHydrantInput.As(ctx, &firehydrantInput, basetypes.ObjectAsOptions{})
-	diags.Append(asDiags...)
-
-	var clubhouseInput *clubhouseInputResourceModel
-	asDiags = plan.ClubhouseInput.As(ctx, &clubhouseInput, basetypes.ObjectAsOptions{})
-	diags.Append(asDiags...)
+	//var ddInput *dataDogInputResourceModel
+	//asDiags := plan.DataDogInput.As(ctx, &ddInput, basetypes.ObjectAsOptions{})
+	//diags.Append(asDiags...)
+	//
+	//var jiraInput *jiraInputResourceModel
+	//asDiags = plan.JiraInput.As(ctx, &jiraInput, basetypes.ObjectAsOptions{})
+	//diags.Append(asDiags...)
+	//
+	//var blamelessInput *blamelessInputResourceModel
+	//asDiags = plan.BlamelessInput.As(ctx, &blamelessInput, basetypes.ObjectAsOptions{})
+	//diags.Append(asDiags...)
+	//
+	//var statuspageInput *statuspageInputResourceModel
+	//asDiags = plan.StatusPageInput.As(ctx, &statuspageInput, basetypes.ObjectAsOptions{})
+	//diags.Append(asDiags...)
+	//
+	//var opsgenieInput *opsgenieInputResourceModel
+	//asDiags = plan.OpsGenieInput.As(ctx, &opsgenieInput, basetypes.ObjectAsOptions{})
+	//diags.Append(asDiags...)
+	//
+	//var firehydrantInput *firehydrantInputResourceModel
+	//asDiags = plan.FireHydrantInput.As(ctx, &firehydrantInput, basetypes.ObjectAsOptions{})
+	//diags.Append(asDiags...)
+	//
+	//var clubhouseInput *clubhouseInputResourceModel
+	//asDiags = plan.ClubhouseInput.As(ctx, &clubhouseInput, basetypes.ObjectAsOptions{})
+	//diags.Append(asDiags...)
 
 	return providerData{
-		pagerduty:   pdInput,
-		datadog:     ddInput,
-		jira:        jiraInput,
-		blameless:   blamelessInput,
-		statuspage:  statuspageInput,
-		opsgenie:    opsgenieInput,
-		firehydrant: firehydrantInput,
-		clubhouse:   clubhouseInput,
+		pagerduty:   plan.PagerDutyInput,
+		datadog:     plan.DataDogInput,
+		jira:        plan.JiraInput,
+		blameless:   plan.BlamelessInput,
+		statuspage:  plan.StatusPageInput,
+		opsgenie:    plan.OpsGenieInput,
+		firehydrant: plan.FireHydrantInput,
+		clubhouse:   plan.ClubhouseInput,
 	}, diags
 
 }
@@ -444,12 +610,6 @@ func (iisr *incidentImpactSourceResource) Create(ctx context.Context, req resour
 	res.Diagnostics.Append(diags...)
 
 	tflog.Info(ctx, "Creating IncidentImpactSource resource", map[string]any{"name": plan.Name.ValueString(), "projectSlug": plan.ProjectSlug.ValueString()})
-	var pdInput *pagerDutyInputResourceModel
-
-	tflog.Error(ctx, fmt.Sprintf("REMOVE ME! %+v", plan.PagerDutyInput.IsNull()))
-
-	diags = plan.PagerDutyInput.As(ctx, &pdInput, basetypes.ObjectAsOptions{})
-	res.Diagnostics.Append(diags...)
 
 	pd, diags := parseProviderData(ctx, plan)
 
@@ -532,12 +692,6 @@ func (iisr *incidentImpactSourceResource) Update(ctx context.Context, req resour
 
 	pd, diags := parseProviderData(ctx, plan)
 
-	tflog.Info(ctx, "Creating IncidentImpactSource resource", map[string]any{"name": plan.Name.ValueString(), "projectSlug": plan.ProjectSlug.ValueString()})
-
-	var pdInput *pagerDutyInputResourceModel
-	diags = plan.PagerDutyInput.As(ctx, &pdInput, basetypes.ObjectAsOptions{})
-	res.Diagnostics.Append(diags...)
-
 	tflog.Info(ctx, "Updating IncidentImpactSource resource", map[string]any{"plan": plan})
 
 	if res.Diagnostics.HasError() {
@@ -607,14 +761,14 @@ func getNewStateFromIncidentImpactSource(ctx context.Context, iis *gqlclient.Inc
 		EnvironmentName:  types.StringValue(iis.Environment.Name),
 		Name:             types.StringValue(iis.Name),
 		ProviderName:     types.StringValue(strings.ToLower(iis.Provider)),
-		PagerDutyInput:   types.ObjectNull(pagerDutyInputResourceTFTypes),
-		DataDogInput:     types.ObjectNull(dataDogInputResourceTFTypes),
-		JiraInput:        types.ObjectNull(jiraInputResourceTFTypes),
-		BlamelessInput:   types.ObjectNull(blamelessInputResourceTFTypes),
-		StatusPageInput:  types.ObjectNull(statuspageInputResourceTFTypes),
-		OpsGenieInput:    types.ObjectNull(opsgenieInputResourceTFTypes),
-		FireHydrantInput: types.ObjectNull(firehydrantInputResourceTFTypes),
-		ClubhouseInput:   types.ObjectNull(clubhouseInputResourceTFTypes),
+		PagerDutyInput:   nil,
+		DataDogInput:     nil,
+		JiraInput:        nil,
+		BlamelessInput:   nil,
+		StatusPageInput:  nil,
+		OpsGenieInput:    nil,
+		FireHydrantInput: nil,
+		ClubhouseInput:   nil,
 	}
 
 	return getProviderSpecificStateValue(ctx, iis, iirm, data)
@@ -622,7 +776,7 @@ func getNewStateFromIncidentImpactSource(ctx context.Context, iis *gqlclient.Inc
 
 func getProviderSpecificStateValue(ctx context.Context, iis *gqlclient.IncidentImpactSource, stateObj incidentImpactResourceModel, data providerData) (incidentImpactResourceModel, diag.Diagnostics) {
 	diags := diag.Diagnostics{}
-	pd := pagerDutyInputResourceModel{
+	pd := &pagerDutyInputResourceModel{
 		RemoteUrgency:   types.StringValue(iis.ProviderData.PagerDutyProviderData.RemoteUrgency),
 		RemoteServices:  types.StringValue(iis.ProviderData.PagerDutyProviderData.RemoteServices),
 		IntegrationSlug: types.StringNull(),
@@ -632,7 +786,7 @@ func getProviderSpecificStateValue(ctx context.Context, iis *gqlclient.IncidentI
 		pd.IntegrationSlug = types.StringValue(iis.IntegrationAuthSlug)
 	}
 
-	dd := dataDogInputResourceModel{
+	dd := &dataDogInputResourceModel{
 		Query:                   types.StringValue(iis.ProviderData.DataDogProviderData.Query),
 		RemotePriorityThreshold: types.StringValue(iis.ProviderData.DataDogProviderData.RemotePriorityThreshold),
 		IntegrationSlug:         types.StringNull(),
@@ -643,7 +797,7 @@ func getProviderSpecificStateValue(ctx context.Context, iis *gqlclient.IncidentI
 
 	}
 
-	jira := jiraInputResourceModel{
+	jira := &jiraInputResourceModel{
 		RemoteJQL:       types.StringValue(iis.ProviderData.JiraProviderData.RemoteJql),
 		IntegrationSlug: types.StringNull(),
 	}
@@ -660,12 +814,12 @@ func getProviderSpecificStateValue(ctx context.Context, iis *gqlclient.IncidentI
 
 	diags.Append(errDiag...)
 
-	blameless := blamelessInputResourceModel{
+	blameless := &blamelessInputResourceModel{
 		RemoteSeverityThreshold: types.StringValue(iis.ProviderData.BlamelessProviderData.RemoteSeverityThreshold),
 		RemoteTypes:             sv,
 	}
 
-	statuspage := statuspageInputResourceModel{
+	statuspage := &statuspageInputResourceModel{
 		RemotePage:                 types.StringValue(iis.ProviderData.StatuspageProviderData.RemotePage),
 		RemoteComponent:            types.StringValue(iis.ProviderData.StatuspageProviderData.RemoteComponent),
 		RemoteImpact:               types.StringValue(iis.ProviderData.StatuspageProviderData.RemoteImpact),
@@ -676,7 +830,7 @@ func getProviderSpecificStateValue(ctx context.Context, iis *gqlclient.IncidentI
 		statuspage.IntegrationSlug = types.StringValue(iis.IntegrationAuthSlug)
 	}
 
-	opsgenie := opsgenieInputResourceModel{
+	opsgenie := &opsgenieInputResourceModel{
 		RemoteAlertTags:         types.StringValue(iis.ProviderData.OpsGenieProviderData.RemoteAlertTags),
 		RemoteIncidentTags:      types.StringValue(iis.ProviderData.OpsGenieProviderData.RemoteIncidentTags),
 		RemotePriorityThreshold: types.StringValue(iis.ProviderData.OpsGenieProviderData.RemotePriorityThreshold),
@@ -688,13 +842,13 @@ func getProviderSpecificStateValue(ctx context.Context, iis *gqlclient.IncidentI
 		opsgenie.IntegrationSlug = types.StringValue(iis.IntegrationAuthSlug)
 	}
 
-	firehydrant := firehydrantInputResourceModel{
+	firehydrant := &firehydrantInputResourceModel{
 		RemoteEnvironments:       types.StringValue(iis.ProviderData.FireHydrantProviderData.RemoteEnvironments),
 		RemoteServices:           types.StringValue(iis.ProviderData.FireHydrantProviderData.RemoteServices),
 		RemoteMitigatedIsHealthy: types.BoolValue(iis.ProviderData.FireHydrantProviderData.RemoteMitigatedIsHealthy),
 	}
 
-	clubhouse := clubhouseInputResourceModel{
+	clubhouse := &clubhouseInputResourceModel{
 		RemoteQuery:     types.StringValue(iis.ProviderData.ClubhouseProviderData.RemoteQuery),
 		IntegrationSlug: types.StringNull(),
 	}
@@ -702,53 +856,29 @@ func getProviderSpecificStateValue(ctx context.Context, iis *gqlclient.IncidentI
 		clubhouse.IntegrationSlug = types.StringValue(iis.IntegrationAuthSlug)
 	}
 
-	pdObj, errDiag := types.ObjectValueFrom(ctx, pagerDutyInputResourceTFTypes, pd)
-	diags.Append(errDiag...)
-
-	ddObj, errDiag := types.ObjectValueFrom(ctx, dataDogInputResourceTFTypes, dd)
-	diags.Append(errDiag...)
-
-	jiraObj, errDiag := types.ObjectValueFrom(ctx, jiraInputResourceTFTypes, jira)
-	diags.Append(errDiag...)
-
-	blamelessObj, errDiag := types.ObjectValueFrom(ctx, blamelessInputResourceTFTypes, blameless)
-	diags.Append(errDiag...)
-
-	statuspageObj, errDiag := types.ObjectValueFrom(ctx, statuspageInputResourceTFTypes, statuspage)
-	diags.Append(errDiag...)
-
-	opsgenieObj, errDiag := types.ObjectValueFrom(ctx, opsgenieInputResourceTFTypes, opsgenie)
-	diags.Append(errDiag...)
-
-	firehydrantObj, errDiag := types.ObjectValueFrom(ctx, firehydrantInputResourceTFTypes, firehydrant)
-	diags.Append(errDiag...)
-
-	clubhouseObj, errDiag := types.ObjectValueFrom(ctx, clubhouseInputResourceTFTypes, clubhouse)
-	diags.Append(errDiag...)
-
 	if data.pagerduty != nil {
-		stateObj.PagerDutyInput = pdObj
+		stateObj.PagerDutyInput = pd
 	}
 	if data.datadog != nil {
-		stateObj.DataDogInput = ddObj
+		stateObj.DataDogInput = dd
 	}
 	if data.jira != nil {
-		stateObj.JiraInput = jiraObj
+		stateObj.JiraInput = jira
 	}
 	if data.blameless != nil {
-		stateObj.BlamelessInput = blamelessObj
+		stateObj.BlamelessInput = blameless
 	}
 	if data.statuspage != nil {
-		stateObj.StatusPageInput = statuspageObj
+		stateObj.StatusPageInput = statuspage
 	}
 	if data.opsgenie != nil {
-		stateObj.OpsGenieInput = opsgenieObj
+		stateObj.OpsGenieInput = opsgenie
 	}
 	if data.firehydrant != nil {
-		stateObj.FireHydrantInput = firehydrantObj
+		stateObj.FireHydrantInput = firehydrant
 	}
 	if data.clubhouse != nil {
-		stateObj.ClubhouseInput = clubhouseObj
+		stateObj.ClubhouseInput = clubhouse
 	}
 
 	return stateObj, diags
