@@ -1,4 +1,4 @@
-## 0.5.0 (May 21, 2024)
+## 0.5.1 (May 21, 2024)
 ENHANCEMENTS:
 - [#168](https://github.com/sleuth-io/terraform-provider-sleuth/pull/168) Update tooling
 - [#169](https://github.com/sleuth-io/terraform-provider-sleuth/pull/169) Update documentation

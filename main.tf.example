@@ -35,35 +35,39 @@ resource "sleuth_environment" "staging" {
 resource "sleuth_code_change_source" "cd" {
   project_slug = sleuth_project.terraform_poc.slug
   name = "foo"
-  repository {
+  repository = {
     name = "terraform-provider-sleuth"
     owner = "sleuth-io"
     provider = "GITHUB"
     url = "https://github.com/sleuth-io/terraform-provider-sleuth"
   }
-  environment_mappings {
-    environment_slug = sleuth_environment.staging.slug
-    branch = "main"
-  }
-  environment_mappings {
-    environment_slug = sleuth_environment.prod.slug
-    branch = "main"
-  }
-  build_mappings {
-    environment_slug = sleuth_environment.prod.slug
-    build_name = "release"
-    project_key = "sleuth-io/terraform-provider-sleuth"
-    provider = "GITHUB"
-    match_branch_to_environment = false
-  }
-  build_mappings {
-    environment_slug = sleuth_environment.staging.slug
-    build_name = "Tests"
-    project_key = "sleuth-io/terraform-provider-sleuth"
-    provider = "GITHUB"
-    integration_slug = "github-app"
-    match_branch_to_environment = true
-  }
+  environment_mappings = [
+      {
+        environment_slug = sleuth_environment.staging.slug
+        branch = "main"
+      },
+      {
+        environment_slug = sleuth_environment.prod.slug
+        branch = "main"
+      }
+  ]
+  build_mappings = [
+      {
+        environment_slug = sleuth_environment.prod.slug
+        build_name = "release"
+        project_key = "sleuth-io/terraform-provider-sleuth"
+        provider = "GITHUB"
+        match_branch_to_environment = false
+      },
+      {
+        environment_slug = sleuth_environment.staging.slug
+        build_name = "Tests"
+        project_key = "sleuth-io/terraform-provider-sleuth"
+        provider = "GITHUB"
+        integration_slug = "github-app"
+        match_branch_to_environment = true
+      }
+  ]
   deploy_tracking_type = "build"
   collect_impact = true
 }

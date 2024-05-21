@@ -61,54 +61,6 @@ func TestAccErrorImpactSourceResource_v6(t *testing.T) {
 	})
 }
 
-func TestAccErrorImpactSourceResource_v5(t *testing.T) {
-	// tests are run in parallel both locally & on CI, so we need to generate a random name so slugs don't collide
-	randomStr := acctest.RandStringFromCharSet(5, acctest.CharSetAlpha)
-	projName := fmt.Sprintf("Terraform test project %s", randomStr)
-	slug := fmt.Sprintf("terraform-test-project-%s", randomStr)
-	resource.Test(t, resource.TestCase{
-		ProtoV5ProviderFactories: testAccProtoV5ProviderFactories,
-		Steps: []resource.TestStep{
-			// Create and Read testing
-			{
-				Config: createErrorImpactSourceConfig(projName),
-
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("sleuth_project.terraform_acc_test", "name", projName),
-					resource.TestCheckResourceAttr("sleuth_project.terraform_acc_test", "slug", slug),
-
-					resource.TestCheckResourceAttr("sleuth_environment.terraform_acc_test", "name", "Terraform test environment"),
-
-					resource.TestCheckResourceAttr("sleuth_error_impact_source.sentry_terraform_acc_test", "name", "Sentry errors"),
-					resource.TestCheckResourceAttr("sleuth_error_impact_source.sentry_terraform_acc_test", "provider_type", "SENTRY"),
-					resource.TestCheckResourceAttr("sleuth_error_impact_source.sentry_terraform_acc_test", "error_org_key", "sleuthio"),
-					resource.TestCheckResourceAttr("sleuth_error_impact_source.sentry_terraform_acc_test", "error_project_key", "sleuth-dev"),
-					resource.TestCheckResourceAttr("sleuth_error_impact_source.sentry_terraform_acc_test", "error_environment", "prod"),
-					resource.TestCheckNoResourceAttr("sleuth_error_impact_source.sentry_terraform_acc_test", "manually_set_health_threshold"),
-				),
-			},
-			// Update testing
-			{
-				Config: updateErrorImpactSourceConfig(projName),
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("sleuth_project.terraform_acc_test", "name", projName),
-					resource.TestCheckResourceAttr("sleuth_project.terraform_acc_test", "slug", slug),
-
-					resource.TestCheckResourceAttr("sleuth_environment.terraform_acc_test", "name", "Terraform test environment"),
-
-					resource.TestCheckResourceAttr("sleuth_error_impact_source.sentry_terraform_acc_test", "name", "Sentry errors update"),
-					resource.TestCheckResourceAttr("sleuth_error_impact_source.sentry_terraform_acc_test", "provider_type", "SENTRY"),
-					resource.TestCheckResourceAttr("sleuth_error_impact_source.sentry_terraform_acc_test", "error_org_key", "sleuthio"),
-					resource.TestCheckResourceAttr("sleuth_error_impact_source.sentry_terraform_acc_test", "error_project_key", "sleuth-dev"),
-					resource.TestCheckResourceAttr("sleuth_error_impact_source.sentry_terraform_acc_test", "error_environment", "staging"),
-					resource.TestCheckResourceAttr("sleuth_error_impact_source.sentry_terraform_acc_test", "manually_set_health_threshold", "5"),
-				),
-			},
-			// Delete testing automatically occurs in TestCase
-		},
-	})
-}
-
 func createErrorImpactSourceConfig(name string) string {
 	return fmt.Sprintf(`
 resource "sleuth_project" "terraform_acc_test" {
