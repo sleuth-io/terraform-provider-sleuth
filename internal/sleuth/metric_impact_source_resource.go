@@ -47,7 +47,7 @@ func NewMetricImpactSourceResource() resource.Resource {
 
 func (misr *metricImpactSourceResource) Schema(_ context.Context, _ resource.SchemaRequest, res *resource.SchemaResponse) {
 	res.Schema = schema.Schema{
-		MarkdownDescription: "Sleuth error impact source.",
+		MarkdownDescription: "Sleuth metric impact source.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,
@@ -76,7 +76,7 @@ func (misr *metricImpactSourceResource) Schema(_ context.Context, _ resource.Sch
 				Required:            true,
 			},
 			"integration_slug": schema.StringAttribute{
-				MarkdownDescription: "The integration slug",
+				MarkdownDescription: "Integration slug is generated automatically when an integration is set up in Sleuth. By default, it matches the `provider_type`. Any value specified in the integration's `Description label` field gets appended to the `integration_slug`, spaces replaced with dashes, e.g. `cloudwatch-test`",
 				Optional:            true,
 				Computed:            true,
 			},

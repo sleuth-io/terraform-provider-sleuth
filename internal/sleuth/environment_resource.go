@@ -40,7 +40,7 @@ func NewEnvironmentResource() resource.Resource {
 
 func (p *environmentResource) Schema(_ context.Context, _ resource.SchemaRequest, res *resource.SchemaResponse) {
 	res.Schema = schema.Schema{
-		Description: "Project resource manages Sleuth project.",
+		Description: "Environment resource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,

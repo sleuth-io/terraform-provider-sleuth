@@ -3,26 +3,26 @@
 page_title: "sleuth_environment Resource - terraform-provider-sleuth"
 subcategory: ""
 description: |-
-  Sleuth environment.
+  Environment resource.
 ---
 
 # sleuth_environment (Resource)
 
-Sleuth environment.
+Environment resource.
 
 ## Example Usage
 
 ```terraform
 resource "sleuth_environment" "prod" {
   project_slug = "example_tf_app"
-  name = "Production"
-  color = "#279694"
+  name         = "Production"
+  color        = "#279694"
 }
 
 resource "sleuth_environment" "stage" {
   project_slug = "example_tf_app"
-  name = "Staging"
-  color = "#58b94b"
+  name         = "Staging"
+  color        = "#58b94b"
 }
 ```
 

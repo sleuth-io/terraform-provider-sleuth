@@ -161,7 +161,7 @@ func NewIncidentImpactSourceResource() resource.Resource {
 
 func (iisr *incidentImpactSourceResource) Schema(_ context.Context, _ resource.SchemaRequest, res *resource.SchemaResponse) {
 	res.Schema = schema.Schema{
-		MarkdownDescription: "Sleuth code change source.",
+		MarkdownDescription: "Sleuth incident impact source.",
 		Blocks: map[string]schema.Block{
 			"pagerduty_input": schema.SingleNestedBlock{
 				MarkdownDescription: "PagerDuty input",
