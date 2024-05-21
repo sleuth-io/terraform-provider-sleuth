@@ -15,12 +15,9 @@ import (
 	"flag"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/hashicorp/terraform-plugin-go/tfprotov5"
-	"github.com/hashicorp/terraform-plugin-go/tfprotov5/tf5server"
-	"github.com/hashicorp/terraform-plugin-mux/tf5muxserver"
 
-	sdkProvider "github.com/sleuth-io/terraform-provider-sleuth/internal/provider"
 	frameworkProvider "github.com/sleuth-io/terraform-provider-sleuth/internal/sleuth"
 )
 
@@ -30,37 +27,23 @@ var (
 )
 
 func main() {
-	ctx := context.Background()
-
 	var debug bool
 
 	flag.BoolVar(&debug, "debug", false, "set to true to run the provider with support for debuggers like delve")
 	flag.Parse()
 
-	sdkGrpcProvider := sdkProvider.New(version)().GRPCProvider
-	providers := []func() tfprotov5.ProviderServer{
-		providerserver.NewProtocol5(frameworkProvider.New(version)),
-		sdkGrpcProvider,
+	opts := providerserver.ServeOpts{
+		Address: "sleuth.io/core/sleuth",
+		Debug:   debug,
 	}
 
-	muxServer, err := tf5muxserver.NewMuxServer(ctx, providers...)
+	sleuthProvider := func() provider.Provider {
+		return frameworkProvider.New(version)
+	}
+
+	err := providerserver.Serve(context.Background(), sleuthProvider, opts)
 
 	if err != nil {
-		log.Fatal(err)
-	}
-
-	var serveOpts []tf5server.ServeOpt
-
-	if debug {
-		serveOpts = append(serveOpts, tf5server.WithManagedDebug())
-	}
-	err = tf5server.Serve(
-		"sleuth.io/core/sleuth",
-		muxServer.ProviderServer,
-		serveOpts...,
-	)
-
-	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 }
