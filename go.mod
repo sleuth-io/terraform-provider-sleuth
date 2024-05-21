@@ -1,6 +1,8 @@
 module github.com/sleuth-io/terraform-provider-sleuth
 
-go 1.19
+go 1.21
+
+toolchain go1.22.3
 
 require (
 	github.com/hashicorp/terraform-plugin-docs v0.19.2
