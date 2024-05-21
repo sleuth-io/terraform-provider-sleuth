@@ -3,12 +3,12 @@
 page_title: "sleuth_incident_impact_source Resource - terraform-provider-sleuth"
 subcategory: ""
 description: |-
-  Sleuth code change source.
+  Sleuth incident impact source.
 ---
 
 # sleuth_incident_impact_source (Resource)
 
-Sleuth code change source.
+Sleuth incident impact source.
 
 ## Example Usage
 
