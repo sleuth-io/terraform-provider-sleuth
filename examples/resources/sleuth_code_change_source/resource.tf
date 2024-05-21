@@ -8,14 +8,14 @@ resource "sleuth_code_change_source" "sleuth-terraform-provider" {
     url      = "https://github.com/sleuth-io/terraform-provider-sleuth"
   }
   environment_mappings = [
-      {
-        environment_slug = "prod"
-        branch           = "main"
-      },
-      {
-        environment_slug = "stage"
-        branch           = "dev"
-      }
+    {
+      environment_slug = "prod"
+      branch           = "main"
+    },
+    {
+      environment_slug = "stage"
+      branch           = "dev"
+    }
   ]
   deploy_tracking_type = "manual"
   collect_impact       = true
