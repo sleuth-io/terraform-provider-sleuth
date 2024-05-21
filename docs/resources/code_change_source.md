@@ -109,5 +109,3 @@ Optional:
 - `integration_slug` (String) IntegrationAuthentication slug used
 - `project_uid` (String) Project UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)
 - `repo_uid` (String) Repository UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)
-
-

@@ -46,5 +46,3 @@ resource "sleuth_error_impact_source" "sentry_production" {
 
 - `id` (String) The ID of this resource.
 - `slug` (String)
-
-

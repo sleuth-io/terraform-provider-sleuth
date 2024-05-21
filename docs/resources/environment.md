@@ -43,5 +43,3 @@ resource "sleuth_environment" "stage" {
 
 - `id` (String) The ID of this resource.
 - `slug` (String) Environment slug
-
-
