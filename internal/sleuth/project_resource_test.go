@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/tfversion"
 )
 
-func TestAccTeamResource_v6(t *testing.T) {
+func TestAccProjectResource_v6(t *testing.T) {
 	// tests are run in parallel both locally & on CI, so we need to generate a random name so slugs don't collide
 	randomStr := acctest.RandStringFromCharSet(5, acctest.CharSetAlpha)
 	name := fmt.Sprintf("Terraform test project %s", randomStr)
