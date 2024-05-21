@@ -222,5 +222,3 @@ Optional:
 - `remote_component` (String) Statuspage component the incident impact source should monitor
 - `remote_impact` (String) Incidents with matching or lower severities will be considered a failure in Sleuth
 - `remote_page` (String) Statuspage page the incident impact source should monitor
-
-

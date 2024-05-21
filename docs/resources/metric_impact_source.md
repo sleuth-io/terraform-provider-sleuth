@@ -63,5 +63,3 @@ resource "sleuth_metric_impact_source" "cloudwatch_rds_cpu" {
 
 - `id` (String) The ID of this resource.
 - `slug` (String)
-
-

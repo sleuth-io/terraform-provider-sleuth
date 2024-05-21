@@ -43,12 +43,7 @@ You can provide the API key via `SLEUTH_API_KEY` environment variable. Note that
 ### How to generate an Organization API key
 
 1. Navigate to "Organization Settings" in Sleuth dashboard
-
-![first organization api key generation instructions](images/first-org-gen.png)
-
-2. Under the "Details" tab, there is an "Api Key" field that contains the desired key
-
-![second organization api key generation instructions](images/second-org-gen.png)
+1. Under the "Details" tab, there is an "Api Key" field that contains the desired key
 
 
 ## Slugs
