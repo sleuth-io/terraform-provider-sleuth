@@ -98,59 +98,6 @@ type clubhouseInputResourceModel struct {
 	IntegrationSlug types.String `tfsdk:"integration_slug"`
 }
 
-// Types for translating between TF blocks into resource models
-// removegst when we solely support TF protocol v6
-var pagerDutyInputResourceTFTypes = map[string]attr.Type{
-	"remote_services":  types.StringType,
-	"remote_urgency":   types.StringType,
-	"integration_slug": types.StringType,
-}
-
-var dataDogInputResourceTFTypes = map[string]attr.Type{
-	"query":                     types.StringType,
-	"remote_priority_threshold": types.StringType,
-	"integration_slug":          types.StringType,
-}
-
-var jiraInputResourceTFTypes = map[string]attr.Type{
-	"remote_jql":       types.StringType,
-	"integration_slug": types.StringType,
-}
-
-var blamelessInputResourceTFTypes = map[string]attr.Type{
-	"remote_types":              types.SetType{ElemType: types.StringType},
-	"remote_severity_threshold": types.StringType,
-	"integration_slug":          types.StringType,
-}
-
-var statuspageInputResourceTFTypes = map[string]attr.Type{
-	"remote_page":                  types.StringType,
-	"remote_component":             types.StringType,
-	"remote_impact":                types.StringType,
-	"ignore_maintenance_incidents": types.BoolType,
-	"integration_slug":             types.StringType,
-}
-
-var opsgenieInputResourceTFTypes = map[string]attr.Type{
-	"remote_alert_tags":         types.StringType,
-	"remote_incident_tags":      types.StringType,
-	"remote_priority_threshold": types.StringType,
-	"remote_service":            types.StringType,
-	"remote_use_alerts":         types.BoolType,
-	"integration_slug":          types.StringType,
-}
-
-var firehydrantInputResourceTFTypes = map[string]attr.Type{
-	"remote_environments":         types.StringType,
-	"remote_services":             types.StringType,
-	"remote_mitigated_is_healthy": types.BoolType,
-}
-
-var clubhouseInputResourceTFTypes = map[string]attr.Type{
-	"remote_query":     types.StringType,
-	"integration_slug": types.StringType,
-}
-
 type incidentImpactSourceResource struct {
 	c *gqlclient.Client
 }
@@ -162,171 +109,6 @@ func NewIncidentImpactSourceResource() resource.Resource {
 func (iisr *incidentImpactSourceResource) Schema(_ context.Context, _ resource.SchemaRequest, res *resource.SchemaResponse) {
 	res.Schema = schema.Schema{
 		MarkdownDescription: "Sleuth incident impact source.",
-		Blocks:              map[string]schema.Block{
-			//"pagerduty_input": schema.SingleNestedBlock{
-			//	MarkdownDescription: "PagerDuty input",
-			//	Attributes: map[string]schema.Attribute{
-			//		"remote_services": schema.StringAttribute{
-			//			MarkdownDescription: "List of remote services, empty string means all",
-			//			Optional:            true,
-			//			Computed:            true,
-			//			Default:             stringdefault.StaticString(""),
-			//		},
-			//		"remote_urgency": schema.StringAttribute{
-			//			MarkdownDescription: "PagerDuty remote urgency, options: HIGH, LOW, ANY",
-			//			Optional:            true,
-			//			Computed:            true,
-			//		},
-			//		"integration_slug": schema.StringAttribute{
-			//			MarkdownDescription: "IntegrationAuthentication slug used",
-			//			Optional:            true,
-			//		},
-			//	},
-			//},
-			//			"datadog_input": schema.SingleNestedBlock{
-			//				MarkdownDescription: "DataDog input",
-			//				Attributes: map[string]schema.Attribute{
-			//					"query": schema.StringAttribute{
-			//						MarkdownDescription: `The query to scope the monitors to track. If you are using a custom facet you would need to add @ to the beginning of the facet name. If empty, all monitors in Datadog will be matched regardless of environment or service.
-			//See [DataDog documentation](https://docs.datadoghq.com/monitors/manage/search/) for more information.`,
-			//						Optional: true,
-			//						Computed: true,
-			//						Default:  stringdefault.StaticString(""),
-			//					},
-			//					"remote_priority_threshold": schema.StringAttribute{
-			//						Optional: true,
-			//						Computed: true,
-			//						Default:  stringdefault.StaticString("ALL"),
-			//						Description: `Monitor states with matching or higher priorities will be considered a failure in Sleuth.
-			//Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
-			//					},
-			//					"integration_slug": schema.StringAttribute{
-			//						Optional:    true,
-			//						Description: "DataDog IntegrationAuthentication slug from app",
-			//					},
-			//				},
-			//			},
-			//			"jira_input": schema.SingleNestedBlock{
-			//				MarkdownDescription: "JIRA input",
-			//				Attributes: map[string]schema.Attribute{
-			//					"remote_jql": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "JIRA active incidents issues JQL",
-			//					},
-			//					"integration_slug": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "JIRA IntegrationAuthentication slug from app",
-			//					},
-			//				},
-			//			},
-			//			"blameless_input": schema.SingleNestedBlock{
-			//				MarkdownDescription: "Blameless input",
-			//				Attributes: map[string]schema.Attribute{
-			//					"remote_types": schema.SetAttribute{
-			//						Optional:            true,
-			//						ElementType:         basetypes.StringType{},
-			//						MarkdownDescription: "The types of incidents to the monitors should track",
-			//					},
-			//					"remote_severity_threshold": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "Incidents with matching or lower severities will be considered a failure in Sleuth",
-			//					},
-			//					"integration_slug": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "Blameless IntegrationAuthentication slug from app",
-			//					},
-			//				},
-			//			},
-			//			"statuspage_input": schema.SingleNestedBlock{
-			//				MarkdownDescription: "Statuspage input",
-			//				Attributes: map[string]schema.Attribute{
-			//					"remote_page": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "Statuspage page the incident impact source should monitor",
-			//					},
-			//					"remote_component": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "Statuspage component the incident impact source should monitor",
-			//					},
-			//					"remote_impact": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "Incidents with matching or lower severities will be considered a failure in Sleuth",
-			//					},
-			//					"ignore_maintenance_incidents": schema.BoolAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "Option to ignore maintenance incidents",
-			//					},
-			//					"integration_slug": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "Statuspage IntegrationAuthentication slug from app",
-			//					},
-			//				},
-			//			},
-			//			"opsgenie_input": schema.SingleNestedBlock{
-			//				MarkdownDescription: "OpsGenie input",
-			//				Attributes: map[string]schema.Attribute{
-			//					"remote_alert_tags": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "Optionally filter by alert tags",
-			//					},
-			//					"remote_incident_tags": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "Optionally filter by incident tags",
-			//					},
-			//					"remote_priority_threshold": schema.StringAttribute{
-			//						Optional:            true,
-			//						Computed:            true,
-			//						MarkdownDescription: "Monitor states with matching or higher priorities will be considered a failure in Sleuth",
-			//						Default:             stringdefault.StaticString("ALL"),
-			//					},
-			//					"remote_service": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "Only taken into consideration when using OpsGenie Incidents. This value should be the Unique ID of the OpsGenie service.",
-			//					},
-			//					"remote_use_alerts": schema.BoolAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "Use OpsGenie Alerts instead of Incidents",
-			//						Default:             booldefault.StaticBool(false),
-			//						Computed:            true,
-			//					},
-			//					"integration_slug": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "The slug for the integration",
-			//					},
-			//				},
-			//			},
-			//			"firehydrant_input": schema.SingleNestedBlock{
-			//				MarkdownDescription: "FireHydrant input",
-			//				Attributes: map[string]schema.Attribute{
-			//					"remote_environments": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "The environment defined in FireHydrant to monitor",
-			//					},
-			//					"remote_services": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "The service defined in FireHydrant to monitor",
-			//					},
-			//					"remote_mitigated_is_healthy": schema.BoolAttribute{
-			//						MarkdownDescription: "If true, incident considered to have ended once reaching mitigated Milestone or it is resolved",
-			//						Default:             booldefault.StaticBool(false),
-			//						Computed:            true,
-			//					},
-			//				},
-			//			},
-			//			"clubhouse_input": schema.SingleNestedBlock{
-			//				MarkdownDescription: "Clubhouse input",
-			//				Attributes: map[string]schema.Attribute{
-			//					"remote_query": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: `Need help finding query expression? See the [documentation](https://help.shortcut.com/hc/en-us/articles/360000046646-Searching-in-Shortcut-Using-Search-Operators) for more information.`,
-			//					},
-			//					"integration_slug": schema.StringAttribute{
-			//						Optional:            true,
-			//						MarkdownDescription: "IntegrationAuthentication slug used",
-			//					},
-			//				},
-			//			},
-		},
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,
@@ -558,36 +340,7 @@ type providerData struct {
 }
 
 // we have to manually parse the provider data because the TF protocol v5 doesn't support nested objects
-func parseProviderData(ctx context.Context, plan incidentImpactResourceModel) (providerData, diag.Diagnostics) {
-	diags := diag.Diagnostics{}
-	//var ddInput *dataDogInputResourceModel
-	//asDiags := plan.DataDogInput.As(ctx, &ddInput, basetypes.ObjectAsOptions{})
-	//diags.Append(asDiags...)
-	//
-	//var jiraInput *jiraInputResourceModel
-	//asDiags = plan.JiraInput.As(ctx, &jiraInput, basetypes.ObjectAsOptions{})
-	//diags.Append(asDiags...)
-	//
-	//var blamelessInput *blamelessInputResourceModel
-	//asDiags = plan.BlamelessInput.As(ctx, &blamelessInput, basetypes.ObjectAsOptions{})
-	//diags.Append(asDiags...)
-	//
-	//var statuspageInput *statuspageInputResourceModel
-	//asDiags = plan.StatusPageInput.As(ctx, &statuspageInput, basetypes.ObjectAsOptions{})
-	//diags.Append(asDiags...)
-	//
-	//var opsgenieInput *opsgenieInputResourceModel
-	//asDiags = plan.OpsGenieInput.As(ctx, &opsgenieInput, basetypes.ObjectAsOptions{})
-	//diags.Append(asDiags...)
-	//
-	//var firehydrantInput *firehydrantInputResourceModel
-	//asDiags = plan.FireHydrantInput.As(ctx, &firehydrantInput, basetypes.ObjectAsOptions{})
-	//diags.Append(asDiags...)
-	//
-	//var clubhouseInput *clubhouseInputResourceModel
-	//asDiags = plan.ClubhouseInput.As(ctx, &clubhouseInput, basetypes.ObjectAsOptions{})
-	//diags.Append(asDiags...)
-
+func parseProviderData(ctx context.Context, plan incidentImpactResourceModel) providerData {
 	return providerData{
 		pagerduty:   plan.PagerDutyInput,
 		datadog:     plan.DataDogInput,
@@ -597,7 +350,7 @@ func parseProviderData(ctx context.Context, plan incidentImpactResourceModel) (p
 		opsgenie:    plan.OpsGenieInput,
 		firehydrant: plan.FireHydrantInput,
 		clubhouse:   plan.ClubhouseInput,
-	}, diags
+	}
 
 }
 
@@ -611,7 +364,7 @@ func (iisr *incidentImpactSourceResource) Create(ctx context.Context, req resour
 
 	tflog.Info(ctx, "Creating IncidentImpactSource resource", map[string]any{"name": plan.Name.ValueString(), "projectSlug": plan.ProjectSlug.ValueString()})
 
-	pd, diags := parseProviderData(ctx, plan)
+	pd := parseProviderData(ctx, plan)
 
 	res.Diagnostics.Append(diags...)
 
@@ -650,7 +403,7 @@ func (iisr *incidentImpactSourceResource) Read(ctx context.Context, req resource
 	diags := req.State.Get(ctx, &state)
 	res.Diagnostics.Append(diags...)
 
-	pd, diags := parseProviderData(ctx, state)
+	pd := parseProviderData(ctx, state)
 
 	tflog.Info(ctx, "Reading IncidentImpactSource resource", map[string]any{"state": state})
 	projectSlug := state.ProjectSlug.ValueString()
@@ -690,7 +443,7 @@ func (iisr *incidentImpactSourceResource) Update(ctx context.Context, req resour
 	diags = req.Plan.Get(ctx, &plan)
 	res.Diagnostics.Append(diags...)
 
-	pd, diags := parseProviderData(ctx, plan)
+	pd := parseProviderData(ctx, plan)
 
 	tflog.Info(ctx, "Updating IncidentImpactSource resource", map[string]any{"plan": plan})
 
