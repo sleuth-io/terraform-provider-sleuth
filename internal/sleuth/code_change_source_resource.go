@@ -16,7 +16,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
@@ -34,9 +33,9 @@ type codeChangeResourceModel struct {
 	Slug        types.String `tfsdk:"slug"`
 	ID          types.String `tfsdk:"id"`
 
-	Repository          types.Object `tfsdk:"repository"`
-	EnvironmentMappings types.List   `tfsdk:"environment_mappings"`
-	BuildMappings       types.List   `tfsdk:"build_mappings"`
+	Repository          repositoryResourceModel            `tfsdk:"repository"`
+	EnvironmentMappings []environmentMappingsResourceModel `tfsdk:"environment_mappings"`
+	BuildMappings       []buildMappingsResourceModel       `tfsdk:"build_mappings"`
 
 	DeployTrackingType types.String `tfsdk:"deploy_tracking_type"`
 	CollectImpact      types.Bool   `tfsdk:"collect_impact"`
@@ -113,103 +112,103 @@ func NewCodeChangeSourceResource() resource.Resource {
 func (ccsr *codeChangeSourceResource) Schema(_ context.Context, _ resource.SchemaRequest, res *resource.SchemaResponse) {
 	res.Schema = schema.Schema{
 		MarkdownDescription: "Sleuth code change source.",
-		Blocks: map[string]schema.Block{
-			"repository": schema.SingleNestedBlock{
-				Attributes: map[string]schema.Attribute{
-					"owner": schema.StringAttribute{
-						MarkdownDescription: "The repository owner, usually the organization or user name",
-						Required:            true,
-					},
-					"name": schema.StringAttribute{
-						MarkdownDescription: "The repository name",
-						Required:            true,
-					},
-					"url": schema.StringAttribute{
-						MarkdownDescription: "The repository URL, used for links",
-						Required:            true,
-					},
-					"provider": schema.StringAttribute{
-						MarkdownDescription: "The repository provider, options: AZURE, BITBUCKET, CUSTOM_GIT, GITHUB, GITHUB_ENTERPRISE, GITLAB",
-						Required:            true,
-					},
-					"integration_slug": schema.StringAttribute{
-						MarkdownDescription: "IntegrationAuthentication slug used",
-						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
-						},
-					},
-					"repo_uid": schema.StringAttribute{
-						MarkdownDescription: "Repository UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)",
-						Optional:            true,
-					},
-					"project_uid": schema.StringAttribute{
-						MarkdownDescription: "Project UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)",
-						Optional:            true,
-					},
-				},
-			},
-			"environment_mappings": schema.ListNestedBlock{
-				MarkdownDescription: "Environment mappings of the code change source. They must be ordered by environment_slug ascending to avoid Terraform plan changes.",
-				NestedObject: schema.NestedBlockObject{
-					Attributes: map[string]schema.Attribute{
-						"environment_slug": schema.StringAttribute{
-							MarkdownDescription: "The environment slug for mapping",
-							Required:            true,
-						},
-						"branch": schema.StringAttribute{
-							MarkdownDescription: "The repository branch name for the environment",
-							Required:            true,
-						},
-						"id": schema.StringAttribute{
-							MarkdownDescription: "Computed ID",
-							Computed:            true,
-						},
-					},
-				},
-			},
-			"build_mappings": schema.ListNestedBlock{
-				MarkdownDescription: "Build mappings of the code change source. They must be ordered by environment_slug ascending to avoid Terraform plan changes.",
-				NestedObject: schema.NestedBlockObject{
-					Attributes: map[string]schema.Attribute{
-						"environment_slug": schema.StringAttribute{
-							MarkdownDescription: "The environment slug",
-							Required:            true,
-						},
-						"provider": schema.StringAttribute{
-							MarkdownDescription: "The build provider. Options: AZURE, BITBUCKET_PIPELINES, BUILDKITE, CIRCLECI, GITHUB, GITLAB, JENKINS",
-							Required:            true,
-						},
-						"integration_slug": schema.StringAttribute{
-							MarkdownDescription: "IntegrationAuthentication slug used",
-							Optional:            true,
-							Computed:            true,
-						},
-						"build_name": schema.StringAttribute{
-							MarkdownDescription: "The remote build or pipeline name",
-							Required:            true,
-						},
-						"job_name": schema.StringAttribute{
-							MarkdownDescription: "The job or stage within the build or pipeline, if supported",
-							Optional:            true,
-						},
-						"project_key": schema.StringAttribute{
-							MarkdownDescription: "The build project key",
-							Optional:            true,
-						},
-						"match_branch_to_environment": schema.BoolAttribute{
-							MarkdownDescription: "Whether only builds performed on the branch mapped from the environment are " +
-								"tracked or not. Basically if you only want Sleuth to find builds that were triggered" +
-								"by a change on the branch that is configured for the environment, set this to false. " +
-								"Defaults to true",
-							Optional: true,
-							Computed: true,
-							Default:  booldefault.StaticBool(true),
-						},
-					},
-				},
-			},
+		Blocks:              map[string]schema.Block{
+			//"repository": schema.SingleNestedBlock{
+			//	Attributes: map[string]schema.Attribute{
+			//		"owner": schema.StringAttribute{
+			//			MarkdownDescription: "The repository owner, usually the organization or user name",
+			//			Required:            true,
+			//		},
+			//		"name": schema.StringAttribute{
+			//			MarkdownDescription: "The repository name",
+			//			Required:            true,
+			//		},
+			//		"url": schema.StringAttribute{
+			//			MarkdownDescription: "The repository URL, used for links",
+			//			Required:            true,
+			//		},
+			//		"provider": schema.StringAttribute{
+			//			MarkdownDescription: "The repository provider, options: AZURE, BITBUCKET, CUSTOM_GIT, GITHUB, GITHUB_ENTERPRISE, GITLAB",
+			//			Required:            true,
+			//		},
+			//		"integration_slug": schema.StringAttribute{
+			//			MarkdownDescription: "IntegrationAuthentication slug used",
+			//			Optional:            true,
+			//			Computed:            true,
+			//			PlanModifiers: []planmodifier.String{
+			//				stringplanmodifier.UseStateForUnknown(),
+			//			},
+			//		},
+			//		"repo_uid": schema.StringAttribute{
+			//			MarkdownDescription: "Repository UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)",
+			//			Optional:            true,
+			//		},
+			//		"project_uid": schema.StringAttribute{
+			//			MarkdownDescription: "Project UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)",
+			//			Optional:            true,
+			//		},
+			//	},
+			//},
+			//"environment_mappings": schema.ListNestedBlock{
+			//	MarkdownDescription: "Environment mappings of the code change source. They must be ordered by environment_slug ascending to avoid Terraform plan changes.",
+			//	NestedObject: schema.NestedBlockObject{
+			//		Attributes: map[string]schema.Attribute{
+			//			"environment_slug": schema.StringAttribute{
+			//				MarkdownDescription: "The environment slug for mapping",
+			//				Required:            true,
+			//			},
+			//			"branch": schema.StringAttribute{
+			//				MarkdownDescription: "The repository branch name for the environment",
+			//				Required:            true,
+			//			},
+			//			"id": schema.StringAttribute{
+			//				MarkdownDescription: "Computed ID",
+			//				Computed:            true,
+			//			},
+			//		},
+			//	},
+			//},
+			//"build_mappings": schema.ListNestedBlock{
+			//	MarkdownDescription: "Build mappings of the code change source. They must be ordered by environment_slug ascending to avoid Terraform plan changes.",
+			//	NestedObject: schema.NestedBlockObject{
+			//		Attributes: map[string]schema.Attribute{
+			//			"environment_slug": schema.StringAttribute{
+			//				MarkdownDescription: "The environment slug",
+			//				Required:            true,
+			//			},
+			//			"provider": schema.StringAttribute{
+			//				MarkdownDescription: "The build provider. Options: AZURE, BITBUCKET_PIPELINES, BUILDKITE, CIRCLECI, GITHUB, GITLAB, JENKINS",
+			//				Required:            true,
+			//			},
+			//			"integration_slug": schema.StringAttribute{
+			//				MarkdownDescription: "IntegrationAuthentication slug used",
+			//				Optional:            true,
+			//				Computed:            true,
+			//			},
+			//			"build_name": schema.StringAttribute{
+			//				MarkdownDescription: "The remote build or pipeline name",
+			//				Required:            true,
+			//			},
+			//			"job_name": schema.StringAttribute{
+			//				MarkdownDescription: "The job or stage within the build or pipeline, if supported",
+			//				Optional:            true,
+			//			},
+			//			"project_key": schema.StringAttribute{
+			//				MarkdownDescription: "The build project key",
+			//				Optional:            true,
+			//			},
+			//			"match_branch_to_environment": schema.BoolAttribute{
+			//				MarkdownDescription: "Whether only builds performed on the branch mapped from the environment are " +
+			//					"tracked or not. Basically if you only want Sleuth to find builds that were triggered" +
+			//					"by a change on the branch that is configured for the environment, set this to false. " +
+			//					"Defaults to true",
+			//				Optional: true,
+			//				Computed: true,
+			//				Default:  booldefault.StaticBool(true),
+			//			},
+			//		},
+			//	},
+			//},
 		},
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
@@ -263,6 +262,106 @@ func (ccsr *codeChangeSourceResource) Schema(_ context.Context, _ resource.Schem
 				Computed:            true,
 				Default:             int64default.StaticInt64(0),
 			},
+			"repository": schema.SingleNestedAttribute{
+				Description: "Repository details",
+				Required:    true,
+				Attributes: map[string]schema.Attribute{
+					"owner": schema.StringAttribute{
+						MarkdownDescription: "The repository owner, usually the organization or user name",
+						Required:            true,
+					},
+					"name": schema.StringAttribute{
+						MarkdownDescription: "The repository name",
+						Required:            true,
+					},
+					"url": schema.StringAttribute{
+						MarkdownDescription: "The repository URL, used for links",
+						Required:            true,
+					},
+					"provider": schema.StringAttribute{
+						MarkdownDescription: "The repository provider, options: AZURE, BITBUCKET, CUSTOM_GIT, GITHUB, GITHUB_ENTERPRISE, GITLAB",
+						Required:            true,
+					},
+					"integration_slug": schema.StringAttribute{
+						MarkdownDescription: "IntegrationAuthentication slug used",
+						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
+						},
+					},
+					"repo_uid": schema.StringAttribute{
+						MarkdownDescription: "Repository UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)",
+						Optional:            true,
+					},
+					"project_uid": schema.StringAttribute{
+						MarkdownDescription: "Project UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)",
+						Optional:            true,
+					},
+				},
+			},
+			"environment_mappings": schema.ListNestedAttribute{
+				MarkdownDescription: "Environment mappings of the code change source. They must be ordered by environment_slug ascending to avoid Terraform plan changes.",
+				Optional:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"environment_slug": schema.StringAttribute{
+							MarkdownDescription: "The environment slug for mapping",
+							Required:            true,
+						},
+						"branch": schema.StringAttribute{
+							MarkdownDescription: "The repository branch name for the environment",
+							Required:            true,
+						},
+						"id": schema.StringAttribute{
+							MarkdownDescription: "Computed ID",
+							Computed:            true,
+						},
+					},
+				},
+			},
+			"build_mappings": schema.ListNestedAttribute{
+				MarkdownDescription: "Build mappings of the code change source. They must be ordered by environment_slug ascending to avoid Terraform plan changes.",
+				Optional:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"environment_slug": schema.StringAttribute{
+							MarkdownDescription: "The environment slug",
+							Required:            true,
+						},
+						"provider": schema.StringAttribute{
+							MarkdownDescription: "The build provider. Options: AZURE, BITBUCKET_PIPELINES, BUILDKITE, CIRCLECI, GITHUB, GITLAB, JENKINS",
+							Required:            true,
+						},
+						"integration_slug": schema.StringAttribute{
+							MarkdownDescription: "IntegrationAuthentication slug used",
+							Optional:            true,
+							Computed:            true,
+						},
+						"build_name": schema.StringAttribute{
+							MarkdownDescription: "The remote build or pipeline name",
+							Required:            true,
+						},
+						"job_name": schema.StringAttribute{
+							MarkdownDescription: "The job or stage within the build or pipeline, if supported",
+							Optional:            true,
+						},
+						"project_key": schema.StringAttribute{
+							MarkdownDescription: "The build project key",
+							Optional:            true,
+						},
+						"match_branch_to_environment": schema.BoolAttribute{
+							MarkdownDescription: "Whether only builds performed on the branch mapped from the environment are " +
+								"tracked or not. Basically if you only want Sleuth to find builds that were triggered" +
+								"by a change on the branch that is configured for the environment, set this to false. " +
+								"Defaults to true",
+							Optional: true,
+							Computed: true,
+							Default:  booldefault.StaticBool(true),
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -288,18 +387,14 @@ func (ccsr *codeChangeSourceResource) Create(ctx context.Context, req resource.C
 	res.Diagnostics.Append(diags...)
 
 	tflog.Info(ctx, "Creating CodeChangeSource resource", map[string]any{"name": plan.Name.ValueString(), "projectSlug": plan.ProjectSlug.ValueString()})
-	var repo repositoryResourceModel
 
-	diags = plan.Repository.As(ctx, &repo, basetypes.ObjectAsOptions{})
-	res.Diagnostics.Append(diags...)
+	//var envMappings []environmentMappingsResourceModel
+	//diags = plan.EnvironmentMappings.ElementsAs(ctx, &envMappings, false)
+	//res.Diagnostics.Append(diags...)
 
-	var envMappings []environmentMappingsResourceModel
-	diags = plan.EnvironmentMappings.ElementsAs(ctx, &envMappings, false)
-	res.Diagnostics.Append(diags...)
-
-	var buildMapping []buildMappingsResourceModel
-	diags = plan.BuildMappings.ElementsAs(ctx, &buildMapping, false)
-	res.Diagnostics.Append(diags...)
+	//var buildMapping []buildMappingsResourceModel
+	//diags = plan.BuildMappings.ElementsAs(ctx, &buildMapping, false)
+	//res.Diagnostics.Append(diags...)
 
 	if res.Diagnostics.HasError() {
 		tflog.Error(ctx, "Error getting CodeChangeSource plan", map[string]any{"diagnostics": res.Diagnostics})
@@ -307,7 +402,7 @@ func (ccsr *codeChangeSourceResource) Create(ctx context.Context, req resource.C
 	}
 
 	projectSlug := plan.ProjectSlug.ValueString()
-	inputFields, err := getMutableCodeChangeSourceStruct(plan, repo, envMappings, buildMapping)
+	inputFields, err := getMutableCodeChangeSourceStruct(plan)
 	if err != nil {
 		res.Diagnostics.AddError("Could not create input object", fmt.Sprintf("Could not create input object: %+v", err.Error()))
 	}
@@ -391,18 +486,18 @@ func (ccsr *codeChangeSourceResource) Update(ctx context.Context, req resource.U
 	res.Diagnostics.Append(diags...)
 
 	tflog.Info(ctx, "Creating CodeChangeSource resource", map[string]any{"name": plan.Name.ValueString(), "projectSlug": plan.ProjectSlug.ValueString()})
-	var repo repositoryResourceModel
+	//var repo repositoryResourceModel
 
-	diags = plan.Repository.As(ctx, &repo, basetypes.ObjectAsOptions{})
-	res.Diagnostics.Append(diags...)
+	//diags = plan.Repository.As(ctx, &repo, basetypes.ObjectAsOptions{})
+	//res.Diagnostics.Append(diags...)
 
-	var envMappings []environmentMappingsResourceModel
-	diags = plan.EnvironmentMappings.ElementsAs(ctx, &envMappings, false)
-	res.Diagnostics.Append(diags...)
+	//var envMappings []environmentMappingsResourceModel
+	//diags = plan.EnvironmentMappings.ElementsAs(ctx, &envMappings, false)
+	//res.Diagnostics.Append(diags...)
 
-	var buildMapping []buildMappingsResourceModel
-	diags = plan.BuildMappings.ElementsAs(ctx, &buildMapping, false)
-	res.Diagnostics.Append(diags...)
+	//var buildMapping []buildMappingsResourceModel
+	//diags = plan.BuildMappings.ElementsAs(ctx, &buildMapping, false)
+	//res.Diagnostics.Append(diags...)
 
 	tflog.Info(ctx, "Updating CodeChangeSource resource", map[string]any{"plan": plan})
 
@@ -412,7 +507,7 @@ func (ccsr *codeChangeSourceResource) Update(ctx context.Context, req resource.U
 	}
 
 	projectSlug := plan.ProjectSlug.ValueString()
-	inputFields, err := getMutableCodeChangeSourceStruct(plan, repo, envMappings, buildMapping)
+	inputFields, err := getMutableCodeChangeSourceStruct(plan)
 	if err != nil {
 		res.Diagnostics.AddError("Could not create input object", fmt.Sprintf("Could not create input object: %+v", err.Error()))
 	}
@@ -488,7 +583,7 @@ func validateCodeChangeInput(ccs gqlclient.MutableCodeChangeSource) error {
 }
 
 func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeChangeSource, projectSlug string) (codeChangeResourceModel, diag.Diagnostics) {
-	var environmentMappings []attr.Value
+	var environmentMappings []environmentMappingsResourceModel
 
 	diags := diag.Diagnostics{}
 
@@ -499,24 +594,24 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 			ID:              types.StringValue(fmt.Sprintf("%s/%s", projectSlug, em.EnvironmentSlug)),
 		}
 
-		envMapping, errDiag := types.ObjectValueFrom(ctx, environmentMappingsResourceTFTypes, emm)
-		diags.Append(errDiag...)
+		//envMapping, errDiag := types.ObjectValueFrom(ctx, environmentMappingsResourceTFTypes, emm)
+		//diags.Append(errDiag...)
 
-		environmentMappings = append(environmentMappings, envMapping)
+		environmentMappings = append(environmentMappings, emm)
 	}
 
-	if diags.HasError() {
-		tflog.Error(ctx, "Error creating EnvMapping object", map[string]any{"diags": diags})
-	}
+	//if diags.HasError() {
+	//	tflog.Error(ctx, "Error creating EnvMapping object", map[string]any{"diags": diags})
+	//}
 
-	environmentMappingsList, errDiag := types.ListValue(types.ObjectType{AttrTypes: environmentMappingsResourceTFTypes}, environmentMappings)
-	diags.Append(errDiag...)
+	//environmentMappingsList, errDiag := types.ListValue(types.ObjectType{AttrTypes: environmentMappingsResourceTFTypes}, environmentMappings)
+	//diags.Append(errDiag...)
+	//
+	//if diags.HasError() {
+	//	tflog.Error(ctx, "Error creating EnvMapping list %+v", map[string]any{"diags": diags})
+	//}
 
-	if diags.HasError() {
-		tflog.Error(ctx, "Error creating EnvMapping list %+v", map[string]any{"diags": diags})
-	}
-
-	var buildMappings []attr.Value
+	var buildMappings []buildMappingsResourceModel
 	for _, bm := range ccs.DeployTrackingBuildMappings {
 		buildMappingObj := buildMappingsResourceModel{
 			EnvironmentSlug:          types.StringValue(bm.Environment.Slug),
@@ -540,16 +635,16 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 			buildMappingObj.ProjectKey = types.StringNull()
 		}
 
-		bmm, errDiag := types.ObjectValueFrom(ctx, buildMappingsResourceTFTypes, buildMappingObj)
-		diags.Append(errDiag...)
+		//bmm, errDiag := types.ObjectValueFrom(ctx, buildMappingsResourceTFTypes, buildMappingObj)
+		//diags.Append(errDiag...)
 
-		tflog.Error(ctx, fmt.Sprintf("Error creating buildmapping object %+v", diags))
+		//tflog.Error(ctx, fmt.Sprintf("Error creating buildmapping object %+v", diags))
 
-		buildMappings = append(buildMappings, bmm)
+		buildMappings = append(buildMappings, buildMappingObj)
 	}
-
-	buildMappingsList, errDiag := types.ListValue(types.ObjectType{AttrTypes: buildMappingsResourceTFTypes}, buildMappings)
-	diags.Append(errDiag...)
+	//
+	//buildMappingsList, errDiag := types.ListValue(types.ObjectType{AttrTypes: buildMappingsResourceTFTypes}, buildMappings)
+	//diags.Append(errDiag...)
 
 	r := repositoryResourceModel{
 		Owner:           types.StringValue(ccs.Repository.Owner),
@@ -569,18 +664,25 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 		r.RepoUID = types.StringValue(ccs.Repository.RepoUID)
 		r.ProjectUID = types.StringValue(ccs.Repository.ProjectUID)
 	}
-
-	repo, errDiag := types.ObjectValueFrom(ctx, repositoryResourceTFTypes, r)
-	diags.Append(errDiag...)
+	//repo := repositoryResourceModel{
+	//	Owner:      types.StringValue(ccs.Repository.Owner),
+	//	Name:       types.StringValue(ccs.Repository.Name),
+	//	URL:        types.StringValue(ccs.Repository.Url),
+	//	Provider:   types.StringValue(strings.ToUpper(ccs.Repository.Provider)),
+	//	ProjectUID: types.StringValue(ccs.Repository.ProjectUID),
+	//	RepoUID:    types.StringValue(ccs.Repository.RepoUID),
+	//}
+	////repo, errDiag := types.ObjectValueFrom(ctx, repositoryResourceTFTypes, r)
+	////diags.Append(errDiag...)
 
 	return codeChangeResourceModel{
 		ProjectSlug:         types.StringValue(projectSlug),
 		Name:                types.StringValue(ccs.Name),
 		Slug:                types.StringValue(ccs.Slug),
 		ID:                  types.StringValue(ccs.Slug),
-		Repository:          repo,
-		EnvironmentMappings: environmentMappingsList,
-		BuildMappings:       buildMappingsList,
+		Repository:          r,
+		EnvironmentMappings: environmentMappings,
+		BuildMappings:       buildMappings,
 		DeployTrackingType:  types.StringValue(ccs.DeployTrackingType),
 		CollectImpact:       types.BoolValue(ccs.CollectImpact),
 		PathPrefix:          types.StringValue(ccs.PathPrefix),
@@ -590,10 +692,10 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 	}, diags
 }
 
-func getMutableCodeChangeSourceStruct(plan codeChangeResourceModel, repo repositoryResourceModel, envMappings []environmentMappingsResourceModel, buildMappings []buildMappingsResourceModel) (*gqlclient.MutableCodeChangeSource, error) {
+func getMutableCodeChangeSourceStruct(plan codeChangeResourceModel) (*gqlclient.MutableCodeChangeSource, error) {
 	var environmentMappings []gqlclient.BranchMapping
 	environmentMappingsLookup := map[string]string{}
-	for _, em := range envMappings {
+	for _, em := range plan.EnvironmentMappings {
 		environmentSlug := em.EnvironmentSlug.ValueString()
 		branch := em.Branch.ValueString()
 		environmentMappings = append(environmentMappings, gqlclient.BranchMapping{
@@ -604,7 +706,7 @@ func getMutableCodeChangeSourceStruct(plan codeChangeResourceModel, repo reposit
 	}
 
 	var buildMappingsT []gqlclient.BuildMapping
-	for _, bm := range buildMappings {
+	for _, bm := range plan.BuildMappings {
 		environmentSlug := bm.EnvironmentSlug.ValueString()
 		buildBranch, ok := environmentMappingsLookup[environmentSlug]
 		if !ok {
@@ -626,14 +728,14 @@ func getMutableCodeChangeSourceStruct(plan codeChangeResourceModel, repo reposit
 		Name: plan.Name.ValueString(),
 		Repository: gqlclient.MutableRepository{
 			RepositoryBase: gqlclient.RepositoryBase{
-				Owner:      repo.Owner.ValueString(),
-				Name:       repo.Name.ValueString(),
-				Provider:   repo.Provider.ValueString(),
-				Url:        repo.URL.ValueString(),
-				ProjectUID: repo.ProjectUID.ValueString(),
-				RepoUID:    repo.RepoUID.ValueString(),
+				Owner:      plan.Repository.Owner.ValueString(),
+				Name:       plan.Repository.Name.ValueString(),
+				Provider:   plan.Repository.Provider.ValueString(),
+				Url:        plan.Repository.URL.ValueString(),
+				ProjectUID: plan.Repository.ProjectUID.ValueString(),
+				RepoUID:    plan.Repository.RepoUID.ValueString(),
 			},
-			IntegrationSlug: repo.IntegrationSlug.ValueString(),
+			IntegrationSlug: plan.Repository.IntegrationSlug.ValueString(),
 		},
 		DeployTrackingType:  plan.DeployTrackingType.ValueString(),
 		CollectImpact:       plan.CollectImpact.ValueBool(),

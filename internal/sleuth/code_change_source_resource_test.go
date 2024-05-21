@@ -224,35 +224,39 @@ resource "sleuth_environment" "terraform_acc_test" {
 resource "sleuth_code_change_source" "terraform_acc_test" {
     project_slug = sleuth_project.terraform_acc_test.slug
     name = "Terraform code change source"
-    repository {
+    repository = {
         name = "Terraform provider sleuth"
         owner = "sleuth-io"
         provider = "GITHUB"
         url = "https://github.com/sleuth-io/terraform-provider-sleuth"
     }
-    environment_mappings {
-        environment_slug = "production"
-        branch = "main"
-    }
-    environment_mappings {
-        environment_slug = sleuth_environment.terraform_acc_test.slug
-        branch = "main"
-    }
+    environment_mappings = [
+		{
+			environment_slug = "production"
+			branch = "main"
+		}, 
+		{
+			environment_slug = sleuth_environment.terraform_acc_test.slug
+			branch = "main"
+		}
+	]
 
-	build_mappings {
-		environment_slug = "production"
-		build_name = "release"
-		project_key = "sleuth-io/terraform-provider-sleuth"
-		provider = "GITHUB"
-		match_branch_to_environment = false
-	}
-    build_mappings {
-        environment_slug = sleuth_environment.terraform_acc_test.slug
-        build_name = "Tests"
-        project_key = "sleuth-io/terraform-provider-sleuth"
-        provider = "GITHUB"
-        match_branch_to_environment = true
-    }
+	build_mappings = [
+		{
+			environment_slug = "production"
+			build_name = "release"
+			project_key = "sleuth-io/terraform-provider-sleuth"
+			provider = "GITHUB"
+			match_branch_to_environment = false
+		},
+		{
+			environment_slug = sleuth_environment.terraform_acc_test.slug
+			build_name = "Tests"
+			project_key = "sleuth-io/terraform-provider-sleuth"
+			provider = "GITHUB"
+			match_branch_to_environment = true
+		}
+	]
 
   	deploy_tracking_type = "build"
   	collect_impact = true
@@ -274,20 +278,22 @@ resource "sleuth_environment" "terraform_acc_test" {
 resource "sleuth_code_change_source" "terraform_acc_test" {
     project_slug = sleuth_project.terraform_acc_test.slug
     name = "Terraform code change source updated"
-    repository {
+    repository = {
         name = "terraform-provider-sleuth"
         owner = "sleuth-io"
         provider = "GITHUB"
         url = "https://github.com/sleuth-io/terraform-provider-sleuth"
     }
-    environment_mappings {
-        environment_slug = "production"
-        branch = "main"
-    }
-    environment_mappings {
-        environment_slug = sleuth_environment.terraform_acc_test.slug
-        branch = "main"
-    }
+    environment_mappings = [
+		{
+			environment_slug = "production"
+			branch = "main"
+		}, 
+		{
+			environment_slug = sleuth_environment.terraform_acc_test.slug
+			branch = "main"
+		}
+	]
 
   	deploy_tracking_type = "manual"
   	collect_impact = false

@@ -12,7 +12,7 @@ var (
 	// CLI command executed to create a provider server to which the CLI can
 	// reattach.
 	testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
-		"sleuth": providerserver.NewProtocol6WithError(New("dev")),
+		"sleuth": providerserver.NewProtocol6WithError(New("test")),
 	}
 	testAccProtoV5ProviderFactories = map[string]func() (tfprotov5.ProviderServer, error){
 		"sleuth": providerserver.NewProtocol5WithError(New("dev")),
