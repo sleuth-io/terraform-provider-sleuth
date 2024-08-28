@@ -206,7 +206,6 @@ func (p *projectResource) Read(ctx context.Context, req resource.ReadRequest, re
 
 	diags = res.State.Set(ctx, &newState)
 	res.Diagnostics.Append(diags...)
-	return
 }
 
 func (p *projectResource) Update(ctx context.Context, req resource.UpdateRequest, res *resource.UpdateResponse) {

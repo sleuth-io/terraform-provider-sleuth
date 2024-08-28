@@ -12,7 +12,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/meta"
 
 	"github.com/sleuth-io/terraform-provider-sleuth/internal/gqlclient"
 )
@@ -144,7 +143,7 @@ func (p *sleuthProvider) Resources(_ context.Context) []func() resource.Resource
 
 // modified from Plugin SDK (https://github.com/hashicorp/terraform-plugin-sdk/blob/ee14c4b6cb40fe4c6dc8ad2e50eda4c7f29cd291/helper/schema/provider.go#L489)
 func userAgent(terraformVersion, name, version string) string {
-	ua := fmt.Sprintf("Terraform/%s (+https://www.terraform.io) Terraform-Plugin-SDK/%s", terraformVersion, meta.SDKVersionString())
+	ua := fmt.Sprintf("Terraform/%s (+https://www.terraform.io) Terraform-Plugin-SDK", terraformVersion)
 	if name != "" {
 		ua += " " + name
 		if version != "" {

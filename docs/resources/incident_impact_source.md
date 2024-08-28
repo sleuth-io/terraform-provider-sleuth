@@ -17,8 +17,8 @@ resource "sleuth_incident_impact_source" "pd" {
   project_slug     = "project_slug"
   name             = "PagerDuty TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "PAGERDUTY"
-  pagerduty_input {
+  provider_name    = "pagerduty"
+  pagerduty_input = {
     remote_services = ""
     remote_urgency  = "ANY"
   }
@@ -28,8 +28,8 @@ resource "sleuth_incident_impact_source" "dd" {
   project_slug     = "project_slug"
   name             = "DataDog TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "DATADOG"
-  datadog_input {
+  provider_name    = "datadog"
+  datadog_input = {
     query                     = "@query=123" # use @ if you are using facets in DataDog
     remote_priority_threshold = "ALL"        # or P1 to P5
     integration_slug          = "optional_integration_slug"
@@ -40,8 +40,8 @@ resource "sleuth_incident_impact_source" "jira" {
   project_slug     = "project_slug"
   name             = "JIRA TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "JIRA"
-  jira_input {
+  provider_name    = "jira"
+  jira_input = {
     remote_jql       = "status IN (\"Incident\")"
     integration_slug = "optional_integration_slug"
   }
@@ -51,8 +51,8 @@ resource "sleuth_incident_impact_source" "blameless" {
   project_slug     = "project_slug"
   name             = "Blameless TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "BLAMELESS"
-  blameless_input {
+  provider_name    = "blameless"
+  blameless_input = {
     remote_types              = ["type1", "type2"]
     remote_severity_threshold = "SEV1"
     integration_slug          = "optional_integration_slug"
@@ -63,8 +63,8 @@ resource "sleuth_incident_impact_source" "statuspage" {
   project_slug     = "project_slug"
   name             = "Statuspage TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "STATUSPAGE"
-  statuspage_input {
+  provider_name    = "statuspage"
+  statuspage_input = {
     remote_page                  = "remote_page"
     remote_component             = "remote_component"
     remote_impact                = "remote_impact"
@@ -76,8 +76,8 @@ resource "sleuth_incident_impact_source" "opsgenie" {
   project_slug     = "project_slug"
   name             = "OpsGenie TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "OPSGENIE"
-  opsgenie_input {
+  provider_name    = "opsgeanie"
+  opsgenie_input = {
     remote_alert_tags         = "tag1"
     remote_incidents_tags     = "tag1"
     remote_priority_threshold = "P1"
@@ -90,8 +90,8 @@ resource "sleuth_incident_impact_source" "firehydrant" {
   project_slug     = "project_slug"
   name             = "FireHydrant TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "FIREHYDRANT"
-  opsgenie_input {
+  provider_name    = "firehydrant"
+  firehydrant_input = {
     remote_services             = "service_uuid"
     remote_environments         = "environment_uuid"
     remote_mitigated_is_healthy = true
@@ -102,8 +102,8 @@ resource "sleuth_incident_impact_source" "clubhouse" {
   project_slug     = "project_slug"
   name             = "Clubhouse TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "CLUBHOUSE"
-  clubhouse_input {
+  provider_name    = "clubhouse"
+  clubhouse_input = {
     remote_query     = "id:135"
     integration_slug = "optional_integration_slug"
   }
@@ -118,25 +118,25 @@ resource "sleuth_incident_impact_source" "clubhouse" {
 - `environment_name` (String) Impact source environment name
 - `name` (String) Impact source name
 - `project_slug` (String) The slug of the project that this incident impact source belongs to.
-- `provider_name` (String) Impact source provider (options: PAGERDUTY)
+- `provider_name` (String) Impact source provider in lowercase (options: pagerduty, datadog, jira, blameless, statuspage, opsgenie, firehydrant, clubhouse)
 
 ### Optional
 
-- `blameless_input` (Block, Optional) Blameless input (see [below for nested schema](#nestedblock--blameless_input))
-- `clubhouse_input` (Block, Optional) Clubhouse input (see [below for nested schema](#nestedblock--clubhouse_input))
-- `datadog_input` (Block, Optional) DataDog input (see [below for nested schema](#nestedblock--datadog_input))
-- `firehydrant_input` (Block, Optional) FireHydrant input (see [below for nested schema](#nestedblock--firehydrant_input))
-- `jira_input` (Block, Optional) JIRA input (see [below for nested schema](#nestedblock--jira_input))
-- `opsgenie_input` (Block, Optional) OpsGenie input (see [below for nested schema](#nestedblock--opsgenie_input))
-- `pagerduty_input` (Block, Optional) PagerDuty input (see [below for nested schema](#nestedblock--pagerduty_input))
-- `statuspage_input` (Block, Optional) Statuspage input (see [below for nested schema](#nestedblock--statuspage_input))
+- `blameless_input` (Attributes) Blameless input (see [below for nested schema](#nestedatt--blameless_input))
+- `clubhouse_input` (Attributes) Clubhouse input (see [below for nested schema](#nestedatt--clubhouse_input))
+- `datadog_input` (Attributes) DataDog input (see [below for nested schema](#nestedatt--datadog_input))
+- `firehydrant_input` (Attributes) FireHydrant input (see [below for nested schema](#nestedatt--firehydrant_input))
+- `jira_input` (Attributes) JIRA input (see [below for nested schema](#nestedatt--jira_input))
+- `opsgenie_input` (Attributes) OpsGenie input (see [below for nested schema](#nestedatt--opsgenie_input))
+- `pagerduty_input` (Attributes) PagerDuty input (see [below for nested schema](#nestedatt--pagerduty_input))
+- `statuspage_input` (Attributes) Statuspage input (see [below for nested schema](#nestedatt--statuspage_input))
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
 - `slug` (String)
 
-<a id="nestedblock--blameless_input"></a>
+<a id="nestedatt--blameless_input"></a>
 ### Nested Schema for `blameless_input`
 
 Optional:
@@ -146,7 +146,7 @@ Optional:
 - `remote_types` (Set of String) The types of incidents to the monitors should track
 
 
-<a id="nestedblock--clubhouse_input"></a>
+<a id="nestedatt--clubhouse_input"></a>
 ### Nested Schema for `clubhouse_input`
 
 Optional:
@@ -155,7 +155,7 @@ Optional:
 - `remote_query` (String) Need help finding query expression? See the [documentation](https://help.shortcut.com/hc/en-us/articles/360000046646-Searching-in-Shortcut-Using-Search-Operators) for more information.
 
 
-<a id="nestedblock--datadog_input"></a>
+<a id="nestedatt--datadog_input"></a>
 ### Nested Schema for `datadog_input`
 
 Optional:
@@ -167,7 +167,7 @@ See [DataDog documentation](https://docs.datadoghq.com/monitors/manage/search/) 
 Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL
 
 
-<a id="nestedblock--firehydrant_input"></a>
+<a id="nestedatt--firehydrant_input"></a>
 ### Nested Schema for `firehydrant_input`
 
 Optional:
@@ -180,7 +180,7 @@ Read-Only:
 - `remote_mitigated_is_healthy` (Boolean) If true, incident considered to have ended once reaching mitigated Milestone or it is resolved
 
 
-<a id="nestedblock--jira_input"></a>
+<a id="nestedatt--jira_input"></a>
 ### Nested Schema for `jira_input`
 
 Optional:
@@ -189,7 +189,7 @@ Optional:
 - `remote_jql` (String) JIRA active incidents issues JQL
 
 
-<a id="nestedblock--opsgenie_input"></a>
+<a id="nestedatt--opsgenie_input"></a>
 ### Nested Schema for `opsgenie_input`
 
 Optional:
@@ -202,7 +202,7 @@ Optional:
 - `remote_use_alerts` (Boolean) Use OpsGenie Alerts instead of Incidents
 
 
-<a id="nestedblock--pagerduty_input"></a>
+<a id="nestedatt--pagerduty_input"></a>
 ### Nested Schema for `pagerduty_input`
 
 Optional:
@@ -212,7 +212,7 @@ Optional:
 - `remote_urgency` (String) PagerDuty remote urgency, options: HIGH, LOW, ANY
 
 
-<a id="nestedblock--statuspage_input"></a>
+<a id="nestedatt--statuspage_input"></a>
 ### Nested Schema for `statuspage_input`
 
 Optional:

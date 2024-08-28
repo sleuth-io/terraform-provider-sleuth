@@ -2,8 +2,8 @@ resource "sleuth_incident_impact_source" "pd" {
   project_slug     = "project_slug"
   name             = "PagerDuty TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "PAGERDUTY"
-  pagerduty_input {
+  provider_name    = "pagerduty"
+  pagerduty_input = {
     remote_services = ""
     remote_urgency  = "ANY"
   }
@@ -13,8 +13,8 @@ resource "sleuth_incident_impact_source" "dd" {
   project_slug     = "project_slug"
   name             = "DataDog TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "DATADOG"
-  datadog_input {
+  provider_name    = "datadog"
+  datadog_input = {
     query                     = "@query=123" # use @ if you are using facets in DataDog
     remote_priority_threshold = "ALL"        # or P1 to P5
     integration_slug          = "optional_integration_slug"
@@ -25,8 +25,8 @@ resource "sleuth_incident_impact_source" "jira" {
   project_slug     = "project_slug"
   name             = "JIRA TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "JIRA"
-  jira_input {
+  provider_name    = "jira"
+  jira_input = {
     remote_jql       = "status IN (\"Incident\")"
     integration_slug = "optional_integration_slug"
   }
@@ -36,8 +36,8 @@ resource "sleuth_incident_impact_source" "blameless" {
   project_slug     = "project_slug"
   name             = "Blameless TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "BLAMELESS"
-  blameless_input {
+  provider_name    = "blameless"
+  blameless_input = {
     remote_types              = ["type1", "type2"]
     remote_severity_threshold = "SEV1"
     integration_slug          = "optional_integration_slug"
@@ -48,8 +48,8 @@ resource "sleuth_incident_impact_source" "statuspage" {
   project_slug     = "project_slug"
   name             = "Statuspage TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "STATUSPAGE"
-  statuspage_input {
+  provider_name    = "statuspage"
+  statuspage_input = {
     remote_page                  = "remote_page"
     remote_component             = "remote_component"
     remote_impact                = "remote_impact"
@@ -61,8 +61,8 @@ resource "sleuth_incident_impact_source" "opsgenie" {
   project_slug     = "project_slug"
   name             = "OpsGenie TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "OPSGENIE"
-  opsgenie_input {
+  provider_name    = "opsgeanie"
+  opsgenie_input = {
     remote_alert_tags         = "tag1"
     remote_incidents_tags     = "tag1"
     remote_priority_threshold = "P1"
@@ -75,8 +75,8 @@ resource "sleuth_incident_impact_source" "firehydrant" {
   project_slug     = "project_slug"
   name             = "FireHydrant TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "FIREHYDRANT"
-  opsgenie_input {
+  provider_name    = "firehydrant"
+  firehydrant_input = {
     remote_services             = "service_uuid"
     remote_environments         = "environment_uuid"
     remote_mitigated_is_healthy = true
@@ -87,8 +87,8 @@ resource "sleuth_incident_impact_source" "clubhouse" {
   project_slug     = "project_slug"
   name             = "Clubhouse TF incident impact"
   environment_name = "environment_name"
-  provider_name    = "CLUBHOUSE"
-  clubhouse_input {
+  provider_name    = "clubhouse"
+  clubhouse_input = {
     remote_query     = "id:135"
     integration_slug = "optional_integration_slug"
   }

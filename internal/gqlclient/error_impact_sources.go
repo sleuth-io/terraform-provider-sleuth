@@ -56,7 +56,7 @@ func (c *Client) CreateErrorImpactSource(input CreateErrorImpactSourceMutationIn
 	}
 
 	if len(m.CreateErrorImpactSource.Errors) > 0 {
-		return nil, errors.New(fmt.Sprintf("%s %+v", "Errors creating impact source: ", m.CreateErrorImpactSource.Errors))
+		return nil, fmt.Errorf("errors creating impact source: %+v", m.CreateErrorImpactSource.Errors)
 	}
 	return &m.CreateErrorImpactSource.ImpactSource, nil
 }

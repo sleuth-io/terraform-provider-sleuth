@@ -146,7 +146,7 @@ func (misr *metricImpactSourceResource) Create(ctx context.Context, req resource
 	res.Diagnostics.Append(diags...)
 	diags = res.State.Set(ctx, state)
 	res.Diagnostics.Append(diags...)
-	tflog.Info(ctx, fmt.Sprintf("Successfully created MetricImpactSource"), map[string]any{"diags": res.Diagnostics})
+	tflog.Info(ctx, "Successfully created MetricImpactSource", map[string]any{"diags": res.Diagnostics})
 }
 
 func (misr *metricImpactSourceResource) Read(ctx context.Context, req resource.ReadRequest, res *resource.ReadResponse) {
@@ -223,7 +223,7 @@ func (misr *metricImpactSourceResource) Update(ctx context.Context, req resource
 
 	diags = res.State.Set(ctx, newState)
 	res.Diagnostics.Append(diags...)
-	tflog.Info(ctx, fmt.Sprintf("Successfully created MetricImpactSource"), map[string]any{"diags": res.Diagnostics})
+	tflog.Info(ctx, "Successfully created MetricImpactSource", map[string]any{"diags": res.Diagnostics})
 
 }
 

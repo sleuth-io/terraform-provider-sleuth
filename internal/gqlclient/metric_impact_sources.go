@@ -56,7 +56,7 @@ func (c *Client) CreateMetricImpactSource(input CreateMetricImpactSourceMutation
 	}
 
 	if len(m.CreateMetricImpactSource.Errors) > 0 {
-		return nil, errors.New(fmt.Sprintf("%s %+v", "Errors creating impact source: ", m.CreateMetricImpactSource.Errors))
+		return nil, fmt.Errorf("errors creating impact source: %+v", m.CreateMetricImpactSource.Errors)
 	}
 	return &m.CreateMetricImpactSource.ImpactSource, nil
 }

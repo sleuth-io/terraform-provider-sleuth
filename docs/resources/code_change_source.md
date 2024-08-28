@@ -16,20 +16,22 @@ Sleuth code change source.
 resource "sleuth_code_change_source" "sleuth-terraform-provider" {
   project_slug = "example_tf_app"
   name         = "terraform-provider-sleuth"
-  repository {
+  repository = {
     name     = "terraform-provider-sleuth"
     owner    = "sleuth-io"
     provider = "GITHUB"
     url      = "https://github.com/sleuth-io/terraform-provider-sleuth"
   }
-  environment_mappings {
-    environment_slug = "prod"
-    branch           = "main"
-  }
-  environment_mappings {
-    environment_slug = "stage"
-    branch           = "dev"
-  }
+  environment_mappings = [
+    {
+      environment_slug = "prod"
+      branch           = "main"
+    },
+    {
+      environment_slug = "stage"
+      branch           = "dev"
+    }
+  ]
   deploy_tracking_type = "manual"
   collect_impact       = true
   path_prefix = jsonencode({
@@ -47,24 +49,41 @@ resource "sleuth_code_change_source" "sleuth-terraform-provider" {
 - `deploy_tracking_type` (String) How to track deploys. Valid choices are build, manual, auto_pr, auto_tag, auto_push
 - `name` (String) Code change source name
 - `project_slug` (String) The slug of the project that this code change source belongs to.
+- `repository` (Attributes) Repository details (see [below for nested schema](#nestedatt--repository))
 
 ### Optional
 
 - `auto_tracking_delay` (Number) The delay to add to a deployment event
-- `build_mappings` (Block List) Build mappings of the code change source. They must be ordered by environment_slug ascending to avoid Terraform plan changes. (see [below for nested schema](#nestedblock--build_mappings))
+- `build_mappings` (Attributes List) Build mappings of the code change source. They must be ordered by environment_slug ascending to avoid Terraform plan changes. (see [below for nested schema](#nestedatt--build_mappings))
 - `collect_impact` (Boolean) Whether to collect impact for its deploys
-- `environment_mappings` (Block List) Environment mappings of the code change source. They must be ordered by environment_slug ascending to avoid Terraform plan changes. (see [below for nested schema](#nestedblock--environment_mappings))
+- `environment_mappings` (Attributes List) Environment mappings of the code change source. They must be ordered by environment_slug ascending to avoid Terraform plan changes. (see [below for nested schema](#nestedatt--environment_mappings))
 - `include_in_dashboard` (Boolean) Whether to include deploys from this change source in the metrics dashboard
 - `notify_in_slack` (Boolean) Whether to send Slack notifications for deploys or not
 - `path_prefix` (String) What code source path to limit this deployment to. Useful for monorepos. Must be used with the [jsonencode()](https://developer.hashicorp.com/terraform/language/functions/jsonencode) function to specify the paths to include and/or exclude respectively. (see example above)
-- `repository` (Block, Optional) (see [below for nested schema](#nestedblock--repository))
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
 - `slug` (String)
 
-<a id="nestedblock--build_mappings"></a>
+<a id="nestedatt--repository"></a>
+### Nested Schema for `repository`
+
+Required:
+
+- `name` (String) The repository name
+- `owner` (String) The repository owner, usually the organization or user name
+- `provider` (String) The repository provider, options: AZURE, BITBUCKET, CUSTOM_GIT, GITHUB, GITHUB_ENTERPRISE, GITLAB
+- `url` (String) The repository URL, used for links
+
+Optional:
+
+- `integration_slug` (String) IntegrationAuthentication slug used
+- `project_uid` (String) Project UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)
+- `repo_uid` (String) Repository UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)
+
+
+<a id="nestedatt--build_mappings"></a>
 ### Nested Schema for `build_mappings`
 
 Required:
@@ -81,7 +100,7 @@ Optional:
 - `project_key` (String) The build project key
 
 
-<a id="nestedblock--environment_mappings"></a>
+<a id="nestedatt--environment_mappings"></a>
 ### Nested Schema for `environment_mappings`
 
 Required:
@@ -92,20 +111,3 @@ Required:
 Read-Only:
 
 - `id` (String) Computed ID
-
-
-<a id="nestedblock--repository"></a>
-### Nested Schema for `repository`
-
-Required:
-
-- `name` (String) The repository name
-- `owner` (String) The repository owner, usually the organization or user name
-- `provider` (String) The repository provider, options: AZURE, BITBUCKET, CUSTOM_GIT, GITHUB, GITHUB_ENTERPRISE, GITLAB
-- `url` (String) The repository URL, used for links
-
-Optional:
-
-- `integration_slug` (String) IntegrationAuthentication slug used
-- `project_uid` (String) Project UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)
-- `repo_uid` (String) Repository UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)
