@@ -55,7 +55,7 @@ func main() {
 		serveOpts = append(serveOpts, tf5server.WithManagedDebug())
 	}
 	err = tf5server.Serve(
-		"sleuth.io/core/sleuth",
+		"registry.terraform.io/sleuth-io/sleuth",
 		muxServer.ProviderServer,
 		serveOpts...,
 	)

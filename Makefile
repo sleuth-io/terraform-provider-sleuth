@@ -24,7 +24,7 @@ format: ## Format the source code with gofmt
 	@gofmt -l -w $(SRC)
 
 release: ## Releases the current version as a snapshot
-	goreleaser release --rm-dist --snapshot --skip-publish  --skip-sign
+	goreleaser release --clean --snapshot --skip=publish,sign
 
 install: ## Installs the binary into $GOPATH/bin or $GOBIN
 	go install .
