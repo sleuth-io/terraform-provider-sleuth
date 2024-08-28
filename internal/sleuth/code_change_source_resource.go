@@ -218,9 +218,9 @@ func (ccsr *codeChangeSourceResource) Schema(_ context.Context, _ resource.Schem
 			"project_slug": schema.StringAttribute{
 				MarkdownDescription: "The slug of the project that this code change source belongs to.",
 				Required:            true,
-				// PlanModifiers: []planmodifier.String{
-				// 	stringplanmodifier.RequiresReplace(), // ForceNew replacement
-				// },
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(), // ForceNew replacement
+				},
 			},
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Code change source name",
