@@ -1,3 +1,13 @@
+## 0.6.0 (Aug 28, 2024)
+ENHANCEMENTS:
+- rewrite of codebase using Terraform plugin framework
+- requires terraform 1.x+
+- requires using = instead of just blocks in configs. i.e. `repository = {}` instead of `repository {}`
+
+## 0.5.2 (Aug 28, 2024)
+FIXES:
+- fix bug that caused code_change_source_resource to be recreated when any project setting was changed. 
+
 ## 0.5.1 (May 21, 2024)
 ENHANCEMENTS:
 - [#168](https://github.com/sleuth-io/terraform-provider-sleuth/pull/168) Update tooling
