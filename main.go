@@ -33,7 +33,7 @@ func main() {
 	flag.Parse()
 
 	opts := providerserver.ServeOpts{
-		Address: "sleuth.io/core/sleuth",
+		Address: "registry.terraform.io/sleuth-io/sleuth",
 		Debug:   debug,
 	}
 
