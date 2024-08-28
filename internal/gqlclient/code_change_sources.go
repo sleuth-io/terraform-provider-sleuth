@@ -63,7 +63,7 @@ func (c *Client) CreateCodeChangeSource(input CreateCodeChangeSourceMutationInpu
 	}
 
 	if len(m.CreateCodeChangeSource.Errors) > 0 {
-		return nil, errors.New(fmt.Sprintf("%s %+v", "Errors creating change source: ", m.CreateCodeChangeSource.Errors))
+		return nil, fmt.Errorf("errors creating change source: %+v", m.CreateCodeChangeSource.Errors)
 	}
 	return &m.CreateCodeChangeSource.ChangeSource, nil
 }

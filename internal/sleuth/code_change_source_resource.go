@@ -299,7 +299,7 @@ func (ccsr *codeChangeSourceResource) Create(ctx context.Context, req resource.C
 	res.Diagnostics.Append(diags...)
 	diags = res.State.Set(ctx, state)
 	res.Diagnostics.Append(diags...)
-	tflog.Info(ctx, fmt.Sprintf("Successfully created CodeChangeSource"), map[string]any{"diags": res.Diagnostics})
+	tflog.Info(ctx, "Successfully created CodeChangeSource", map[string]any{"diags": res.Diagnostics})
 }
 
 func (ccsr *codeChangeSourceResource) Read(ctx context.Context, req resource.ReadRequest, res *resource.ReadResponse) {
@@ -392,7 +392,7 @@ func (ccsr *codeChangeSourceResource) Update(ctx context.Context, req resource.U
 
 	diags = res.State.Set(ctx, newState)
 	res.Diagnostics.Append(diags...)
-	tflog.Info(ctx, fmt.Sprintf("Successfully created CodeChangeSource"), map[string]any{"diags": res.Diagnostics})
+	tflog.Info(ctx, "Successfully created CodeChangeSource", map[string]any{"diags": res.Diagnostics})
 
 }
 

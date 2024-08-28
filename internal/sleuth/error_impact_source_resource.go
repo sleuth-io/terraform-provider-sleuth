@@ -149,7 +149,7 @@ func (eisr *errorImpactSourceResource) Create(ctx context.Context, req resource.
 	res.Diagnostics.Append(diags...)
 	diags = res.State.Set(ctx, state)
 	res.Diagnostics.Append(diags...)
-	tflog.Info(ctx, fmt.Sprintf("Successfully created ErrorImpactSource"), map[string]any{"diags": res.Diagnostics})
+	tflog.Info(ctx, "Successfully created ErrorImpactSource", map[string]any{"diags": res.Diagnostics})
 }
 
 func (eisr *errorImpactSourceResource) Read(ctx context.Context, req resource.ReadRequest, res *resource.ReadResponse) {
@@ -231,7 +231,7 @@ func (eisr *errorImpactSourceResource) Update(ctx context.Context, req resource.
 
 	diags = res.State.Set(ctx, newState)
 	res.Diagnostics.Append(diags...)
-	tflog.Info(ctx, fmt.Sprintf("Successfully created ErrorImpactSource"), map[string]any{"diags": res.Diagnostics})
+	tflog.Info(ctx, "Successfully created ErrorImpactSource", map[string]any{"diags": res.Diagnostics})
 
 }
 
