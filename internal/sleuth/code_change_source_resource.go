@@ -290,7 +290,7 @@ func (ccsr *codeChangeSourceResource) Create(ctx context.Context, req resource.C
 		tflog.Error(ctx, "Error creating CodeChangeSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
 			"Error creating CodeChangeSource",
-			fmt.Sprintf("Could not create code change soure, unexpected error: %+v", err.Error()),
+			fmt.Sprintf("Could not create code change source, unexpected error: %+v", err.Error()),
 		)
 		return
 	}
@@ -326,7 +326,7 @@ func (ccsr *codeChangeSourceResource) Read(ctx context.Context, req resource.Rea
 		tflog.Error(ctx, "Error reading CodeChangeSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
 			"Error reading CodeChangeSource",
-			fmt.Sprintf("Could not read code change soure, unexpected error: %+v", err.Error()),
+			fmt.Sprintf("Could not read code change source, unexpected error: %+v", err.Error()),
 		)
 		return
 	}
