@@ -43,11 +43,11 @@ resource "sleuth_code_change_source" "cd" {
   }
   environment_mappings = [
       {
-        environment_slug = sleuth_environment.staging.slug
+        environment_slug = sleuth_environment.prod.slug
         branch = "main"
       },
       {
-        environment_slug = sleuth_environment.prod.slug
+        environment_slug = sleuth_environment.staging.slug
         branch = "main"
       }
   ]
@@ -77,7 +77,7 @@ resource "sleuth_incident_impact_source" "pd" {
     name = "PagerDuty TF incident impact"
     environment_name = sleuth_environment.staging.name
     provider_name = "PAGERDUTY"
-    pagerduty_input {
+    pagerduty_input = {
         remote_services = ""
         remote_urgency = "ANY"
     }

@@ -270,6 +270,7 @@ func (ccsr *codeChangeSourceResource) Create(ctx context.Context, req resource.C
 	inputFields, err := getMutableCodeChangeSourceStruct(plan)
 	if err != nil {
 		res.Diagnostics.AddError("Could not create input object", fmt.Sprintf("Could not create input object: %+v", err.Error()))
+		return
 	}
 
 	input := gqlclient.CreateCodeChangeSourceMutationInput{
@@ -290,7 +291,7 @@ func (ccsr *codeChangeSourceResource) Create(ctx context.Context, req resource.C
 		tflog.Error(ctx, "Error creating CodeChangeSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
 			"Error creating CodeChangeSource",
-			fmt.Sprintf("Could not create code change soure, unexpected error: %+v", err.Error()),
+			fmt.Sprintf("Could not create code change source, unexpected error: %+v", err.Error()),
 		)
 		return
 	}
@@ -326,7 +327,7 @@ func (ccsr *codeChangeSourceResource) Read(ctx context.Context, req resource.Rea
 		tflog.Error(ctx, "Error reading CodeChangeSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
 			"Error reading CodeChangeSource",
-			fmt.Sprintf("Could not read code change soure, unexpected error: %+v", err.Error()),
+			fmt.Sprintf("Could not read code change source, unexpected error: %+v", err.Error()),
 		)
 		return
 	}
@@ -362,6 +363,7 @@ func (ccsr *codeChangeSourceResource) Update(ctx context.Context, req resource.U
 	inputFields, err := getMutableCodeChangeSourceStruct(plan)
 	if err != nil {
 		res.Diagnostics.AddError("Could not create input object", fmt.Sprintf("Could not create input object: %+v", err.Error()))
+		return
 	}
 
 	input := gqlclient.UpdateCodeChangeSourceMutationInput{
@@ -528,7 +530,7 @@ func getMutableCodeChangeSourceStruct(plan codeChangeResourceModel) (*gqlclient.
 		environmentSlug := bm.EnvironmentSlug.ValueString()
 		buildBranch, ok := environmentMappingsLookup[environmentSlug]
 		if !ok {
-			return nil, fmt.Errorf("could not find branch for build mapping for environment slug: %s", environmentSlug)
+			return nil, fmt.Errorf("could not find branch for build mapping for environment slug: %s. Did you forget to include this or all environments in the `environment_mappings` field?", environmentSlug)
 		}
 		buildMappingsT = append(buildMappingsT, gqlclient.BuildMapping{
 			EnvironmentSlug:          environmentSlug,
