@@ -93,3 +93,18 @@ resource "sleuth_incident_impact_source" "clubhouse" {
     integration_slug = "optional_integration_slug"
   }
 }
+
+resource "sleuth_incident_impact_source" "rootly" {
+  project_slug     = "project_slug"
+  name             = "Rootly TF incident impact"
+  environment_name = "environment_name"
+  provider_name    = "rootly"
+  rootly_input = {
+    remote_severity      = "ALL" # or "CRITICAL", "HIGH", "MEDIUM", "LOW"
+    remote_incident_type = "remote_incident_type_id"
+    remote_environment   = "remote_environment_id"
+    remote_service       = "remote_service_id"
+    remote_team          = "remote_team_id"
+    integration_slug     = "optional_integration_slug"
+  }
+}

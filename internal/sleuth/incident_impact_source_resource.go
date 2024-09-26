@@ -45,6 +45,7 @@ type incidentImpactResourceModel struct {
 	OpsGenieInput    *opsgenieInputResourceModel    `tfsdk:"opsgenie_input"`
 	FireHydrantInput *firehydrantInputResourceModel `tfsdk:"firehydrant_input"`
 	ClubhouseInput   *clubhouseInputResourceModel   `tfsdk:"clubhouse_input"`
+	RootlyInput      *rootlyInputResourceModel      `tfsdk:"rootly_input"`
 }
 
 type pagerDutyInputResourceModel struct {
@@ -98,6 +99,15 @@ type clubhouseInputResourceModel struct {
 	IntegrationSlug types.String `tfsdk:"integration_slug"`
 }
 
+type rootlyInputResourceModel struct {
+	RemoteSeverity     types.String `tfsdk:"remote_severity"`
+	RemoteIncidentType types.String `tfsdk:"remote_incident_type"`
+	RemoteEnvironment  types.String `tfsdk:"remote_environment"`
+	RemoteService      types.String `tfsdk:"remote_service"`
+	RemoteTeam         types.String `tfsdk:"remote_team"`
+	IntegrationSlug    types.String `tfsdk:"integration_slug"`
+}
+
 type incidentImpactSourceResource struct {
 	c *gqlclient.Client
 }
@@ -134,7 +144,7 @@ func (iisr *incidentImpactSourceResource) Schema(_ context.Context, _ resource.S
 				Required:            true,
 			},
 			"provider_name": schema.StringAttribute{
-				MarkdownDescription: "Impact source provider in lowercase (options: pagerduty, datadog, jira, blameless, statuspage, opsgenie, firehydrant, clubhouse)",
+				MarkdownDescription: "Impact source provider in lowercase (options: pagerduty, datadog, jira, blameless, statuspage, opsgenie, firehydrant, clubhouse, rootly)",
 				Required:            true,
 			},
 			"environment_name": schema.StringAttribute{
@@ -312,6 +322,36 @@ Options: ALL, P1, P2, P3, P4, P5. Defaults to ALL`,
 					},
 				},
 			},
+			"rootly_input": schema.SingleNestedAttribute{
+				Optional:            true,
+				MarkdownDescription: "Rootly input",
+				Attributes: map[string]schema.Attribute{
+					"remote_severity": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: "Rootly’s severity values are configurable, but ultimately they always map to 4 levels: ALL, CRITICAL, HIGH, MEDIUM and LOW. Check out your current [severities configuration in Rootly](https://rootly.com/account/severities).",
+					},
+					"remote_incident_type": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: "Incident type ID (incident types are defined within Rootly)",
+					},
+					"remote_environment": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: "Environment ID (environments are defined within Rootly)",
+					},
+					"remote_service": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: "Service ID (services are defined within Rootly)",
+					},
+					"remote_team": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: "Team ID (teams are defined within Rootly)",
+					},
+					"integration_slug": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: "IntegrationAuthentication slug used",
+					},
+				},
+			},
 		},
 	}
 }
@@ -337,6 +377,7 @@ type providerData struct {
 	clubhouse   *clubhouseInputResourceModel
 	firehydrant *firehydrantInputResourceModel
 	opsgenie    *opsgenieInputResourceModel
+	rootly      *rootlyInputResourceModel
 }
 
 // we have to manually parse the provider data because the TF protocol v5 doesn't support nested objects
@@ -350,6 +391,7 @@ func parseProviderData(ctx context.Context, plan incidentImpactResourceModel) pr
 		opsgenie:    plan.OpsGenieInput,
 		firehydrant: plan.FireHydrantInput,
 		clubhouse:   plan.ClubhouseInput,
+		rootly:      plan.RootlyInput,
 	}
 
 }
@@ -522,6 +564,7 @@ func getNewStateFromIncidentImpactSource(ctx context.Context, iis *gqlclient.Inc
 		OpsGenieInput:    nil,
 		FireHydrantInput: nil,
 		ClubhouseInput:   nil,
+		RootlyInput:      nil,
 	}
 
 	return getProviderSpecificStateValue(ctx, iis, iirm, data)
@@ -609,6 +652,18 @@ func getProviderSpecificStateValue(ctx context.Context, iis *gqlclient.IncidentI
 		clubhouse.IntegrationSlug = types.StringValue(iis.IntegrationAuthSlug)
 	}
 
+	rootly := &rootlyInputResourceModel{
+		RemoteSeverity:     types.StringValue(iis.ProviderData.RootlyProviderData.RemoteSeverity),
+		RemoteIncidentType: types.StringValue(iis.ProviderData.RootlyProviderData.RemoteIncidentType),
+		RemoteEnvironment:  types.StringValue(iis.ProviderData.RootlyProviderData.RemoteEnvironment),
+		RemoteService:      types.StringValue(iis.ProviderData.RootlyProviderData.RemoteService),
+		RemoteTeam:         types.StringValue(iis.ProviderData.RootlyProviderData.RemoteTeam),
+		IntegrationSlug:    types.StringNull(),
+	}
+	if iis.IntegrationAuthSlug != "" {
+		rootly.IntegrationSlug = types.StringValue(iis.IntegrationAuthSlug)
+	}
+
 	if data.pagerduty != nil {
 		stateObj.PagerDutyInput = pd
 	}
@@ -633,6 +688,9 @@ func getProviderSpecificStateValue(ctx context.Context, iis *gqlclient.IncidentI
 	if data.clubhouse != nil {
 		stateObj.ClubhouseInput = clubhouse
 	}
+	if data.rootly != nil {
+		stateObj.RootlyInput = rootly
+	}
 
 	return stateObj, diags
 
@@ -652,6 +710,7 @@ func getMutableIncidentImpactSourceStruct(ctx context.Context, plan incidentImpa
 		OpsGenieInputType:    nil,
 		FireHydrantInputType: nil,
 		ClubhouseInputType:   nil,
+		RootlyInputType:      nil,
 	}
 
 	return getProviderSpecificData(ctx, input, data)
@@ -740,6 +799,19 @@ func getProviderSpecificData(ctx context.Context, input gqlclient.IncidentImpact
 				RemoteQuery: data.clubhouse.RemoteQuery.ValueString(),
 			},
 			IntegrationSlug: data.clubhouse.IntegrationSlug.ValueString(),
+		}
+	}
+
+	if data.rootly != nil {
+		input.RootlyInputType = &gqlclient.RootlyInputType{
+			RootlyProviderData: gqlclient.RootlyProviderData{
+				RemoteSeverity:     data.rootly.RemoteSeverity.ValueString(),
+				RemoteIncidentType: data.rootly.RemoteIncidentType.ValueString(),
+				RemoteEnvironment:  data.rootly.RemoteEnvironment.ValueString(),
+				RemoteService:      data.rootly.RemoteService.ValueString(),
+				RemoteTeam:         data.rootly.RemoteTeam.ValueString(),
+			},
+			IntegrationSlug: data.rootly.IntegrationSlug.ValueString(),
 		}
 	}
 
