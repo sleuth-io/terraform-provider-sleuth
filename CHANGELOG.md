@@ -1,3 +1,7 @@
+## 0.6.2 (Sep 26, 2024)
+ENHANCEMENTS:
+- [#198](https://github.com/sleuth-io/terraform-provider-sleuth/issues/198) Add support for Rootly
+
 ## 0.6.1 (Sep 26, 2024)
 ENHANCEMENTS:
 - [#196](https://github.com/sleuth-io/terraform-provider-sleuth/pull/196) Fix crash for creating new code change source
