@@ -1,3 +1,7 @@
+## 0.6.1 (Sep 26, 2024)
+ENHANCEMENTS:
+- [#196](https://github.com/sleuth-io/terraform-provider-sleuth/pull/196) Fix crash for creating new code change source
+
 ## 0.6.0 (Aug 28, 2024)
 ENHANCEMENTS:
 - rewrite of codebase using Terraform plugin framework
@@ -6,7 +10,7 @@ ENHANCEMENTS:
 
 ## 0.5.2 (Aug 28, 2024)
 FIXES:
-- fix bug that caused code_change_source_resource to be recreated when any project setting was changed. 
+- fix bug that caused code_change_source_resource to be recreated when any project setting was changed.
 
 ## 0.5.1 (May 21, 2024)
 ENHANCEMENTS:
