@@ -288,6 +288,14 @@ type ClubhouseProviderData struct {
 	RemoteQuery string `json:"remoteQuery"`
 }
 
+type RootlyProviderData struct {
+	RemoteSeverity     string `json:"remoteSeverity"`
+	RemoteIncidentType string `json:"remoteIncidentType"`
+	RemoteEnvironment  string `json:"remoteEnvironment"`
+	RemoteService      string `json:"remoteService"`
+	RemoteTeam         string `json:"remoteTeam"`
+}
+
 type ProviderData struct {
 	PagerDutyProviderData   PagerDutyProviderData   `json:"pagerDutyProviderData" graphql:"... on PagerDutyProviderData"`
 	DataDogProviderData     DataDogProviderData     `json:"dataDogProviderData" graphql:"... on DataDogProviderData"`
@@ -297,6 +305,7 @@ type ProviderData struct {
 	OpsGenieProviderData    OpsGenieProviderData    `json:"opsgenieProviderData" graphql:"... on OpsgenieProviderData"`
 	FireHydrantProviderData FireHydrantProviderData `json:"firehydrantProviderData" graphql:"... on FireHydrantProviderData"`
 	ClubhouseProviderData   ClubhouseProviderData   `json:"ClubhouseProviderData" graphql:"... on ClubhouseProviderData"`
+	RootlyProviderData      RootlyProviderData      `json:"RootlyProviderData" graphql:"... on RootlyProviderData"`
 }
 
 type IncidentImpactSource struct {
@@ -343,6 +352,11 @@ type ClubhouseInputType struct {
 	IntegrationSlug string `json:"integrationSlug"`
 }
 
+type RootlyInputType struct {
+	RootlyProviderData
+	IntegrationSlug string `json:"integrationSlug"`
+}
+
 type OpsGenieInputType struct {
 	OpsGenieProviderData
 	IntegrationSlug string `json:"integrationSlug"`
@@ -361,6 +375,7 @@ type IncidentImpactSourceInputType struct {
 	OpsGenieInputType    *OpsGenieInputType    `json:"opsgenieInput"`
 	FireHydrantInputType *FireHydrantInputType `json:"firehydrantInput"`
 	ClubhouseInputType   *ClubhouseInputType   `json:"clubhouseInput"`
+	RootlyInputType      *RootlyInputType      `json:"rootlyInput"`
 }
 
 type IncidentImpactSourceInputUpdateType struct {
