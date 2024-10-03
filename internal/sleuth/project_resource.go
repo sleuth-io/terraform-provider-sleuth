@@ -130,6 +130,7 @@ func (p *projectResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Description: "Labels are used to categorize projects.",
 				ElementType: basetypes.StringType{},
 				Optional:    true,
+				Computed:    true,
 			},
 		},
 	}
@@ -307,13 +308,10 @@ func getNewStateFromProject(ctx context.Context, proj *gqlclient.Project) (proje
 		ChangeLeadTimeStartDefinition: types.StringValue(proj.CltStartDefinition),
 		ChangeLeadTimeIssueStates:     types.SetNull(types.Int64Type),
 		ChangeLeadTimeStrictMatching:  types.BoolValue(proj.StrictIssueMatching),
-		Labels:                        types.ListNull(types.StringType),
+		Labels:                        labelsValue,
 	}
 	if len(proj.CltStartStates) > 0 {
 		prm.ChangeLeadTimeIssueStates = setValue
-	}
-	if len(proj.LabelNames) > 0 {
-		prm.Labels = labelsValue
 	}
 
 	return prm, errDiag
