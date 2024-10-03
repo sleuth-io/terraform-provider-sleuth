@@ -41,6 +41,7 @@ type projectResourceModel struct {
 	ChangeLeadTimeStartDefinition types.String `tfsdk:"change_lead_time_start_definition"`
 	ChangeLeadTimeIssueStates     types.Set    `tfsdk:"change_lead_time_issue_states"`
 	ChangeLeadTimeStrictMatching  types.Bool   `tfsdk:"change_lead_time_strict_matching"`
+	Labels                        types.List   `tfsdk:"labels"`
 }
 
 type projectResource struct {
@@ -124,6 +125,11 @@ func (p *projectResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Optional:    true,
 				Computed:    true,
 				Default:     booldefault.StaticBool(false),
+			},
+			"labels": schema.ListAttribute{
+				Description: "Labels are used to categorize projects.",
+				ElementType: basetypes.StringType{},
+				Optional:    true,
 			},
 		},
 	}
@@ -282,6 +288,12 @@ func getNewStateFromProject(ctx context.Context, proj *gqlclient.Project) (proje
 
 	setValue, errDiag := types.SetValue(basetypes.Int64Type{}, cltStateInts)
 
+	var labels []attr.Value
+	for _, label := range proj.LabelNames {
+		labels = append(labels, types.StringValue(label))
+	}
+	labelsValue, _ := types.ListValue(basetypes.StringType{}, labels)
+
 	prm := projectResourceModel{
 		ID:                            types.StringValue(proj.Slug),
 		Name:                          types.StringValue(proj.Name),
@@ -295,9 +307,13 @@ func getNewStateFromProject(ctx context.Context, proj *gqlclient.Project) (proje
 		ChangeLeadTimeStartDefinition: types.StringValue(proj.CltStartDefinition),
 		ChangeLeadTimeIssueStates:     types.SetNull(types.Int64Type),
 		ChangeLeadTimeStrictMatching:  types.BoolValue(proj.StrictIssueMatching),
+		Labels:                        types.ListNull(types.StringType),
 	}
 	if len(proj.CltStartStates) > 0 {
 		prm.ChangeLeadTimeIssueStates = setValue
+	}
+	if len(proj.LabelNames) > 0 {
+		prm.Labels = labelsValue
 	}
 
 	return prm, errDiag
@@ -306,6 +322,8 @@ func getNewStateFromProject(ctx context.Context, proj *gqlclient.Project) (proje
 func getMutableProjectStruct(ctx context.Context, plan projectResourceModel) gqlclient.MutableProject {
 	var cltStartStates []int
 	plan.ChangeLeadTimeIssueStates.ElementsAs(ctx, &cltStartStates, false)
+	var labels []string
+	plan.Labels.ElementsAs(ctx, &labels, false)
 
 	return gqlclient.MutableProject{
 		Name:                      plan.Name.ValueString(),
@@ -318,5 +336,6 @@ func getMutableProjectStruct(ctx context.Context, plan projectResourceModel) gql
 		CltStartDefinition:        plan.ChangeLeadTimeStartDefinition.ValueString(),
 		CltStartStates:            cltStartStates,
 		StrictIssueMatching:       plan.ChangeLeadTimeStrictMatching.ValueBool(),
+		Labels:                    labels,
 	}
 }
