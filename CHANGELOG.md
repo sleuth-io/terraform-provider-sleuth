@@ -1,3 +1,7 @@
+## 0.6.3 (Oct 04, 2024)
+ENHANCEMENTS:
+- [#201](https://github.com/sleuth-io/terraform-provider-sleuth/pull/201) Add support setting labels on project creation
+
 ## 0.6.2 (Sep 26, 2024)
 ENHANCEMENTS:
 - [#198](https://github.com/sleuth-io/terraform-provider-sleuth/issues/198) Add support for Rootly
