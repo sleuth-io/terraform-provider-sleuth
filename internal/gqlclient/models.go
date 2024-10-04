@@ -16,6 +16,7 @@ type Project struct {
 	CltStartDefinition        string           `json:"cltStartDefinition,omitempty"`
 	CltStartStates            []CLTStartStates `json:"cltStartStates,omitempty"`
 	StrictIssueMatching       bool             `json:"strictIssueMatching,omitempty"`
+	LabelNames                []string         `json:"labelNames"`
 }
 
 type Environment struct {
@@ -91,16 +92,17 @@ type CodeChangeSource struct {
 }
 
 type MutableProject struct {
-	Name                      string `json:"name"`
-	Description               string `json:"description,omitempty"`
-	IssueTrackerProvider      string `json:"issueTrackerProvider,omitempty"`
-	BuildProvider             string `json:"buildProvider,omitempty"`
-	ChangeFailureRateBoundary string `json:"changeFailureRateBoundary,omitempty"`
-	ImpactSensitivity         string `json:"impactSensitivity,omitempty"`
-	FailureSensitivity        int    `json:"failureSensitivity,omitempty"`
-	CltStartDefinition        string `json:"cltStartDefinition,omitempty"`
-	CltStartStates            []int  `json:"cltStartStates,omitempty"`
-	StrictIssueMatching       bool   `json:"strictIssueMatching,omitempty"`
+	Name                      string   `json:"name"`
+	Description               string   `json:"description,omitempty"`
+	IssueTrackerProvider      string   `json:"issueTrackerProvider,omitempty"`
+	BuildProvider             string   `json:"buildProvider,omitempty"`
+	ChangeFailureRateBoundary string   `json:"changeFailureRateBoundary,omitempty"`
+	ImpactSensitivity         string   `json:"impactSensitivity,omitempty"`
+	FailureSensitivity        int      `json:"failureSensitivity,omitempty"`
+	CltStartDefinition        string   `json:"cltStartDefinition,omitempty"`
+	CltStartStates            []int    `json:"cltStartStates,omitempty"`
+	StrictIssueMatching       bool     `json:"strictIssueMatching,omitempty"`
+	Labels                    []string `json:"labels"`
 }
 
 type CreateProjectMutationInput struct {
