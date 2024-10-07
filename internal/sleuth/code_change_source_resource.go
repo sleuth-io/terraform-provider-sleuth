@@ -32,7 +32,7 @@ type codeChangeResourceModel struct {
 	Slug        types.String `tfsdk:"slug"`
 	ID          types.String `tfsdk:"id"`
 
-	Repository          repositoryResourceModel            `tfsdk:"repository"`
+	Repository          *repositoryResourceModel           `tfsdk:"repository"`
 	EnvironmentMappings []environmentMappingsResourceModel `tfsdk:"environment_mappings"`
 	BuildMappings       []buildMappingsResourceModel       `tfsdk:"build_mappings"`
 
@@ -311,6 +311,11 @@ func (ccsr *codeChangeSourceResource) Read(ctx context.Context, req resource.Rea
 	diags := req.State.Get(ctx, &state)
 	res.Diagnostics.Append(diags...)
 
+	if res.Diagnostics.HasError() {
+		tflog.Error(ctx, "Error reading CodeChangeSource", map[string]any{"diagnostics": res.Diagnostics})
+		return
+	}
+
 	tflog.Info(ctx, "Reading CodeChangeSource resource", map[string]any{"state": state})
 	projectSlug := state.ProjectSlug.ValueString()
 	slug := state.Slug.ValueString()
@@ -318,6 +323,11 @@ func (ccsr *codeChangeSourceResource) Read(ctx context.Context, req resource.Rea
 	if projectSlug == "" {
 		id := state.ID.ValueString()
 		splits := strings.Split(id, "/")
+		if len(splits) != 2 {
+			res.Diagnostics.AddError("Error importing CodeChangeSource", "Imported code change source must have an ID of the form 'project_slug/change_source_slug'")
+			return
+		}
+
 		projectSlug = splits[0]
 		slug = splits[1]
 	}
@@ -500,7 +510,7 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 		Name:                types.StringValue(ccs.Name),
 		Slug:                types.StringValue(ccs.Slug),
 		ID:                  types.StringValue(ccs.Slug),
-		Repository:          r,
+		Repository:          &r,
 		EnvironmentMappings: environmentMappings,
 		BuildMappings:       buildMappings,
 		DeployTrackingType:  types.StringValue(ccs.DeployTrackingType),
