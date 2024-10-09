@@ -1,3 +1,7 @@
+## 0.6.4 (Oct 09, 2024)
+ENHANCEMENTS:
+- [#203](https://github.com/sleuth-io/terraform-provider-sleuth/pull/203) Improved error and null handling
+
 ## 0.6.3 (Oct 04, 2024)
 ENHANCEMENTS:
 - [#201](https://github.com/sleuth-io/terraform-provider-sleuth/pull/201) Add support setting labels on project creation
