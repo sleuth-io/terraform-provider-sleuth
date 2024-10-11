@@ -159,9 +159,6 @@ func (ccsr *codeChangeSourceResource) Schema(_ context.Context, _ resource.Schem
 						MarkdownDescription: "IntegrationAuthentication slug used",
 						Optional:            true,
 						Computed:            true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
-						},
 					},
 					"repo_uid": schema.StringAttribute{
 						MarkdownDescription: "Repository UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)",
