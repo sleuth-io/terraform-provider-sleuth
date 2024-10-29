@@ -294,7 +294,14 @@ func (ccsr *codeChangeSourceResource) Create(ctx context.Context, req resource.C
 	}
 
 	state, diags := getNewStateFromCodeChangeSource(ctx, ccs, projectSlug)
+
+	// if they are both empty, make sure they match (could be [] or nil)
+	if len(plan.BuildMappings) < 1 && len(state.BuildMappings) < 1 {
+		state.BuildMappings = plan.BuildMappings
+	}
+
 	res.Diagnostics.Append(diags...)
+
 	diags = res.State.Set(ctx, state)
 	res.Diagnostics.Append(diags...)
 	tflog.Info(ctx, "Successfully created CodeChangeSource", map[string]any{"diags": res.Diagnostics})
@@ -352,6 +359,7 @@ func (ccsr *codeChangeSourceResource) Update(ctx context.Context, req resource.U
 
 	var state codeChangeResourceModel
 	diags := req.State.Get(ctx, &state)
+
 	res.Diagnostics.Append(diags...)
 
 	var plan codeChangeResourceModel
@@ -397,6 +405,11 @@ func (ccsr *codeChangeSourceResource) Update(ctx context.Context, req resource.U
 	}
 
 	newState, diags := getNewStateFromCodeChangeSource(ctx, ccs, projectSlug)
+	// if they are both empty, make sure they match (could be [] or nil)
+	if len(plan.BuildMappings) < 1 && len(newState.BuildMappings) < 1 {
+		newState.BuildMappings = plan.BuildMappings
+	}
+
 	res.Diagnostics.Append(diags...)
 
 	diags = res.State.Set(ctx, newState)
@@ -457,7 +470,7 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 		environmentMappings = append(environmentMappings, emm)
 	}
 
-	var buildMappings []buildMappingsResourceModel
+	var buildMappings []buildMappingsResourceModel = []buildMappingsResourceModel{}
 	for _, bm := range ccs.DeployTrackingBuildMappings {
 		buildMappingObj := buildMappingsResourceModel{
 			EnvironmentSlug:          types.StringValue(bm.Environment.Slug),
