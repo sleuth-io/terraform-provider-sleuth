@@ -1,6 +1,6 @@
 ## 0.6.6 (Oct 29, 2024)
 ENHANCEMENTS:
-- [#206](https://github.com/sleuth-io/terraform-provider-sleuth/pull/206)
+- [#210](https://github.com/sleuth-io/terraform-provider-sleuth/pull/210)
   - Now accepts [] and nil for build mappings
 
 ## 0.6.5 (Oct 11, 2024)
