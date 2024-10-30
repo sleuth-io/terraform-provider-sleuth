@@ -293,8 +293,15 @@ func (ccsr *codeChangeSourceResource) Create(ctx context.Context, req resource.C
 		return
 	}
 
-	state, diags := getNewStateFromCodeChangeSource(ctx, ccs, projectSlug)
+	state, diags := getNewStateFromCodeChangeSource(ctx, ccs, projectSlug, plan)
+
+	// if they are both empty, make sure they match (could be [] or nil)
+	// if len(plan.BuildMappings) < 1 && len(state.BuildMappings) < 1 {
+	// 	state.BuildMappings = plan.BuildMappings
+	// }
+
 	res.Diagnostics.Append(diags...)
+
 	diags = res.State.Set(ctx, state)
 	res.Diagnostics.Append(diags...)
 	tflog.Info(ctx, "Successfully created CodeChangeSource", map[string]any{"diags": res.Diagnostics})
@@ -338,7 +345,7 @@ func (ccsr *codeChangeSourceResource) Read(ctx context.Context, req resource.Rea
 		)
 		return
 	}
-	newState, diags := getNewStateFromCodeChangeSource(ctx, ccs, projectSlug)
+	newState, diags := getNewStateFromCodeChangeSource(ctx, ccs, projectSlug, state)
 	res.Diagnostics.Append(diags...)
 
 	diags = res.State.Set(ctx, newState)
@@ -352,6 +359,7 @@ func (ccsr *codeChangeSourceResource) Update(ctx context.Context, req resource.U
 
 	var state codeChangeResourceModel
 	diags := req.State.Get(ctx, &state)
+
 	res.Diagnostics.Append(diags...)
 
 	var plan codeChangeResourceModel
@@ -396,7 +404,8 @@ func (ccsr *codeChangeSourceResource) Update(ctx context.Context, req resource.U
 		return
 	}
 
-	newState, diags := getNewStateFromCodeChangeSource(ctx, ccs, projectSlug)
+	newState, diags := getNewStateFromCodeChangeSource(ctx, ccs, projectSlug, plan)
+
 	res.Diagnostics.Append(diags...)
 
 	diags = res.State.Set(ctx, newState)
@@ -443,7 +452,7 @@ func validateCodeChangeInput(ccs gqlclient.MutableCodeChangeSource) error {
 	return nil
 }
 
-func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeChangeSource, projectSlug string) (codeChangeResourceModel, diag.Diagnostics) {
+func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeChangeSource, projectSlug string, plan codeChangeResourceModel) (codeChangeResourceModel, diag.Diagnostics) {
 	var environmentMappings []environmentMappingsResourceModel
 
 	diags := diag.Diagnostics{}
@@ -457,7 +466,7 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 		environmentMappings = append(environmentMappings, emm)
 	}
 
-	var buildMappings []buildMappingsResourceModel
+	var buildMappings []buildMappingsResourceModel = []buildMappingsResourceModel{}
 	for _, bm := range ccs.DeployTrackingBuildMappings {
 		buildMappingObj := buildMappingsResourceModel{
 			EnvironmentSlug:          types.StringValue(bm.Environment.Slug),
@@ -481,6 +490,10 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 			buildMappingObj.ProjectKey = types.StringNull()
 		}
 		buildMappings = append(buildMappings, buildMappingObj)
+	}
+
+	if len(buildMappings) < 1 && len(plan.BuildMappings) < 1 {
+		buildMappings = plan.BuildMappings
 	}
 
 	r := repositoryResourceModel{
