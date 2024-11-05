@@ -5,7 +5,6 @@ import (
 	// 	"encoding/json"
 	"fmt"
 	"net/http"
-
 	// 	"strings"
 	"time"
 
@@ -34,8 +33,8 @@ func (transport *AuthenticatedTransport) RoundTrip(req *http.Request) (*http.Res
 }
 
 // NewClient -
-func NewClient(baseurl, apiKey *string, ua string) (*Client, error) {
-	httpClient := http.Client{Timeout: 20 * time.Second,
+func NewClient(baseurl, apiKey *string, ua string, timeout time.Duration) (*Client, error) {
+	httpClient := http.Client{Timeout: timeout,
 		Transport: &AuthenticatedTransport{http.DefaultTransport, *apiKey, ua}}
 	c := Client{
 		GQLClient:  graphql.NewClient(*baseurl+"/graphql", &httpClient),

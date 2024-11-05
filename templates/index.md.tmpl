@@ -76,3 +76,7 @@ This can cause issues when you will try to create `code_change_source` and other
 ### Required
 
 - **api_key** (String) The Sleuth organization's Api key
+
+### Optional
+
+- **timeout** (Integer) Timeout for Sleuth API calls in seconds
