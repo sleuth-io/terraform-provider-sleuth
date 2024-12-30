@@ -45,13 +45,19 @@ type codeChangeResourceModel struct {
 }
 
 type repositoryResourceModel struct {
-	Owner           types.String `tfsdk:"owner"`
-	Name            types.String `tfsdk:"name"`
-	URL             types.String `tfsdk:"url"`
-	Provider        types.String `tfsdk:"provider"`
-	IntegrationSlug types.String `tfsdk:"integration_slug"`
-	RepoUID         types.String `tfsdk:"repo_uid"`
-	ProjectUID      types.String `tfsdk:"project_uid"`
+	Owner           types.String          `tfsdk:"owner"`
+	Name            types.String          `tfsdk:"name"`
+	URL             types.String          `tfsdk:"url"`
+	Provider        types.String          `tfsdk:"provider"`
+	IntegrationSlug types.String          `tfsdk:"integration_slug"`
+	RepoUID         types.String          `tfsdk:"repo_uid"`
+	ProjectUID      types.String          `tfsdk:"project_uid"`
+	Webhook         *webhookResourceModel `tfsdk:"webhook"`
+}
+
+type webhookResourceModel struct {
+	URL    types.String `tfsdk:"url"`
+	Secret types.String `tfsdk:"secret"`
 }
 
 type environmentMappingsResourceModel struct {
@@ -167,6 +173,21 @@ func (ccsr *codeChangeSourceResource) Schema(_ context.Context, _ resource.Schem
 					"project_uid": schema.StringAttribute{
 						MarkdownDescription: "Project UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)",
 						Optional:            true,
+					},
+					"webhook": schema.SingleNestedAttribute{
+						MarkdownDescription: "Webhook configuration for registering deploys from code integrations in read-only mode",
+						Computed:            true,
+						Attributes: map[string]schema.Attribute{
+							"url": schema.StringAttribute{
+								MarkdownDescription: "Webhook URL",
+								Computed:            true,
+							},
+							"secret": schema.StringAttribute{
+								MarkdownDescription: "Webhook secret to present in payloads sent to the webhook URL",
+								Computed:            true,
+								Sensitive:           true,
+							},
+						},
 					},
 				},
 			},
@@ -504,10 +525,18 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 		IntegrationSlug: types.StringNull(),
 		RepoUID:         types.StringNull(),
 		ProjectUID:      types.StringNull(),
+		Webhook:         nil,
 	}
 
 	if ccs.Repository.IntegrationAuth != nil {
 		r.IntegrationSlug = types.StringValue(ccs.Repository.IntegrationAuth.Slug)
+	}
+
+	if ccs.Repository.Webhook != nil {
+		r.Webhook = &webhookResourceModel{
+			URL:    types.StringValue(ccs.Repository.Webhook.Url),
+			Secret: types.StringValue(ccs.Repository.Webhook.Secret),
+		}
 	}
 
 	if strings.ToLower(ccs.Repository.Provider) == azureProvider {

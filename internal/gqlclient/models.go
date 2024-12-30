@@ -61,6 +61,12 @@ type RepositoryBase struct {
 type Repository struct {
 	RepositoryBase
 	IntegrationAuth *IntegrationAuth `json:"integrationAuth,omitempty"`
+	Webhook         *Webhook         `json:"webhook,omitempty"`
+}
+
+type Webhook struct {
+	Url    string `json:"url"`
+	Secret string `json:"secret,omitempty"`
 }
 
 type IntegrationAuth struct {
