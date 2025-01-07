@@ -3,6 +3,9 @@
 .DS_Store
 example.tf
 main.tf
+main.tf.*
+variables.tf
+variables.tf.*
 terraform.tfplan
 terraform.tfstate
 bin/
