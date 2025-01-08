@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -35,6 +36,7 @@ type sleuthProvider struct {
 type sleuthProviderModel struct {
 	APIKey  types.String `tfsdk:"api_key"`
 	BaseURL types.String `tfsdk:"baseurl"`
+	Timeout types.Int32  `tfsdk:"timeout"`
 }
 
 // Metadata returns the provider type name.
@@ -54,6 +56,10 @@ func (p *sleuthProvider) Schema(_ context.Context, _ provider.SchemaRequest, res
 			},
 			"baseurl": schema.StringAttribute{
 				MarkdownDescription: "Ignore this, as it is only used by Sleuth developers",
+				Optional:            true,
+			},
+			"timeout": schema.Int32Attribute{
+				MarkdownDescription: "Timeout in seconds of Sleuth API responses",
 				Optional:            true,
 			},
 		},
@@ -105,9 +111,14 @@ func (p *sleuthProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
+	timeout := config.Timeout
+	if timeout.IsNull() {
+		timeout = types.Int32Value(20)
+	}
+
 	ctx = tflog.SetField(ctx, "sleuth_base_url", baseURL)
 	ua := userAgent(req.TerraformVersion, "terraform-provider-sleuth", p.v)
-	c, err := gqlclient.NewClient(baseURL.ValueStringPointer(), apiKey.ValueStringPointer(), ua)
+	c, err := gqlclient.NewClient(baseURL.ValueStringPointer(), apiKey.ValueStringPointer(), ua, time.Duration(timeout.ValueInt32())*time.Second)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating new client",
