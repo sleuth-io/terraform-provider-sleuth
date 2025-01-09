@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -52,6 +53,19 @@ type repositoryResourceModel struct {
 	IntegrationSlug types.String `tfsdk:"integration_slug"`
 	RepoUID         types.String `tfsdk:"repo_uid"`
 	ProjectUID      types.String `tfsdk:"project_uid"`
+	Webhook         types.Object `tfsdk:"webhook"`
+}
+
+type webhookResourceModel struct {
+	URL    types.String `tfsdk:"url"`
+	Secret types.String `tfsdk:"secret"`
+}
+
+func (w webhookResourceModel) AttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"url":    types.StringType,
+		"secret": types.StringType,
+	}
 }
 
 type environmentMappingsResourceModel struct {
@@ -167,6 +181,21 @@ func (ccsr *codeChangeSourceResource) Schema(_ context.Context, _ resource.Schem
 					"project_uid": schema.StringAttribute{
 						MarkdownDescription: "Project UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)",
 						Optional:            true,
+					},
+					"webhook": schema.SingleNestedAttribute{
+						MarkdownDescription: "Webhook configuration for registering deploys from code integrations in read-only mode",
+						Computed:            true,
+						Attributes: map[string]schema.Attribute{
+							"url": schema.StringAttribute{
+								MarkdownDescription: "Webhook URL",
+								Computed:            true,
+							},
+							"secret": schema.StringAttribute{
+								MarkdownDescription: "Webhook secret to present in payloads sent to the webhook URL",
+								Computed:            true,
+								Sensitive:           true,
+							},
+						},
 					},
 				},
 			},
@@ -504,10 +533,22 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 		IntegrationSlug: types.StringNull(),
 		RepoUID:         types.StringNull(),
 		ProjectUID:      types.StringNull(),
+		Webhook:         types.ObjectNull(webhookResourceModel{}.AttributeTypes()),
 	}
 
 	if ccs.Repository.IntegrationAuth != nil {
 		r.IntegrationSlug = types.StringValue(ccs.Repository.IntegrationAuth.Slug)
+	}
+
+	if ccs.Repository.Webhook != nil {
+		webhook := webhookResourceModel{
+			URL:    types.StringValue(ccs.Repository.Webhook.Url),
+			Secret: types.StringValue(ccs.Repository.Webhook.Secret),
+		}
+
+		var webhookDiags diag.Diagnostics
+		r.Webhook, webhookDiags = types.ObjectValueFrom(ctx, webhook.AttributeTypes(), webhook)
+		diags.Append(webhookDiags...)
 	}
 
 	if strings.ToLower(ccs.Repository.Provider) == azureProvider {
