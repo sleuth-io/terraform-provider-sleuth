@@ -82,6 +82,19 @@ Optional:
 - `project_uid` (String) Project UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)
 - `repo_uid` (String) Repository UID, required only for AZURE provider. You can obtain data from [API](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0&tabs=HTTP)
 
+Read-Only:
+
+- `webhook` (Attributes) Webhook configuration for registering deploys from code integrations in read-only mode (see [below for nested schema](#nestedatt--repository--webhook))
+
+<a id="nestedatt--repository--webhook"></a>
+### Nested Schema for `repository.webhook`
+
+Read-Only:
+
+- `secret` (String, Sensitive) Webhook secret to present in payloads sent to the webhook URL
+- `url` (String) Webhook URL
+
+
 
 <a id="nestedatt--build_mappings"></a>
 ### Nested Schema for `build_mappings`
