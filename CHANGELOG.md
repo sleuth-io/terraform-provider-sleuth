@@ -1,3 +1,13 @@
+## 0.6.7 (Jan 10, 2025)
+ENHANCEMENTS:
+- [#219](https://github.com/sleuth-io/terraform-provider-sleuth/pull/219)
+  - Expose repository webhook as computed attribute
+
+- [#213](https://github.com/sleuth-io/terraform-provider-sleuth/pull/213)
+  - Add timeout field to provider
+
+- lots of go dependency updates
+
 ## 0.6.6 (Oct 29, 2024)
 ENHANCEMENTS:
 - [#210](https://github.com/sleuth-io/terraform-provider-sleuth/pull/210)
