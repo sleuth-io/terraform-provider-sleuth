@@ -260,8 +260,8 @@ func (ccsr *codeChangeSourceResource) Schema(_ context.Context, _ resource.Schem
 							Default:  booldefault.StaticBool(true),
 						},
 						"is_custom": schema.BoolAttribute{
-							MarkdownDescription: "Whether this is a custom build name mapping or not. This needs to be set to true if a build or job or build " +
-								"name isn't visible in Sleuth. Defaults to false",
+							MarkdownDescription: "Whether this is a custom build mapping or not. This needs to be set to true " +
+								"if a build name or job name isn't visible in Sleuth. Defaults to false",
 							Optional: true,
 							Computed: true,
 							Default:  booldefault.StaticBool(false),
