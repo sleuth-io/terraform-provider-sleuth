@@ -1,3 +1,8 @@
+## 0.6.8 (Mar 10, 2025)
+ENHANCEMENTS:
+- [#234](https://github.com/sleuth-io/terraform-provider-sleuth/pull/234)
+  - Add support for isCustom attribute on build mappings
+
 ## 0.6.7 (Jan 10, 2025)
 ENHANCEMENTS:
 - [#219](https://github.com/sleuth-io/terraform-provider-sleuth/pull/219)

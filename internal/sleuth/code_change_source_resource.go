@@ -82,6 +82,7 @@ type buildMappingsResourceModel struct {
 	JobName                  types.String `tfsdk:"job_name"`
 	ProjectKey               types.String `tfsdk:"project_key"`
 	MatchBranchToEnvironment types.Bool   `tfsdk:"match_branch_to_environment"`
+	IsCustom                 types.Bool   `tfsdk:"is_custom"`
 }
 
 const azureProvider = "azure"
@@ -257,6 +258,13 @@ func (ccsr *codeChangeSourceResource) Schema(_ context.Context, _ resource.Schem
 							Optional: true,
 							Computed: true,
 							Default:  booldefault.StaticBool(true),
+						},
+						"is_custom": schema.BoolAttribute{
+							MarkdownDescription: "Whether this is a custom build mapping or not. This needs to be set to true " +
+								"if a build name or job name isn't visible in Sleuth. Defaults to false",
+							Optional: true,
+							Computed: true,
+							Default:  booldefault.StaticBool(false),
 						},
 					},
 				},
@@ -505,6 +513,7 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 			JobName:                  types.StringValue(bm.JobName),
 			ProjectKey:               types.StringValue(bm.BuildProjectKey),
 			MatchBranchToEnvironment: types.BoolValue(bm.MatchBranchToEnvironment),
+			IsCustom:                 types.BoolValue(bm.IsCustom),
 		}
 
 		if bm.IntegrationSlug == "" {
@@ -602,6 +611,7 @@ func getMutableCodeChangeSourceStruct(plan codeChangeResourceModel) (*gqlclient.
 			IntegrationSlug:          bm.IntegrationSlug.ValueString(),
 			BuildBranch:              buildBranch,
 			MatchBranchToEnvironment: bm.MatchBranchToEnvironment.ValueBool(),
+			IsCustom:                 bm.IsCustom.ValueBool(),
 		})
 	}
 
