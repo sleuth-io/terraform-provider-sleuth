@@ -1,3 +1,8 @@
+## 0.6.9 (Apr 25, 2025)
+FIXES:
+- [#242](https://github.com/sleuth-io/terraform-provider-sleuth/pull/242)
+  - Handle a missing code source
+
 ## 0.6.8 (Mar 10, 2025)
 ENHANCEMENTS:
 - [#234](https://github.com/sleuth-io/terraform-provider-sleuth/pull/234)
