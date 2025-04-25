@@ -9,10 +9,6 @@ import (
 	"github.com/shurcooL/graphql"
 )
 
-// ErrNoCodeChangeSourceFound indicates that a code change source with the given
-// project slug & slug does not exist.
-var ErrNoCodeChangeSourceFound = errors.New("code change source not found")
-
 func (c *Client) GetCodeChangeSource(ctx context.Context, projectSlug *string, slug *string) (*CodeChangeSource, error) {
 	var query struct {
 		Project struct {
@@ -44,7 +40,7 @@ func (c *Client) GetCodeChangeSource(ctx context.Context, projectSlug *string, s
 			}
 		}
 	}
-	return nil, ErrNoCodeChangeSourceFound
+	return nil, nil
 }
 
 func (c *Client) CreateCodeChangeSource(input CreateCodeChangeSourceMutationInput) (*CodeChangeSource, error) {
