@@ -40,13 +40,32 @@ Run `make docs`. This will read files in `/templates` and `examples` folder and 
 Run `make fmt`.
 
 ## Testing
-In order to run the full suite of Acceptance tests, run `make testacc`.
 
-*Note:* Acceptance tests create real resources, and often cost money to run.
+Tests are run as GitHub actions. Tests are defined in the folder `./internal/`.
 
-```sh
-$ make testacc
+The tests literally create projects and code deployments and impact sources etc. on sleuth staging. So, if the tests don't pass, there is a good chance that the problem isn't on the side of this code but on the side of Sleuth.
+
+Since the tests contact Sleuth staging directly, they also depend on various objects to exist there, ie. there must be precisely 1 PagerDuty integration, the API key for the org must be correct, ... .
+
+The tests are also run as 1 group, they are always run all together, but they are also **run for various terraform versions**, that is why it appears that there are multiple tests:
+
+![img.png](tests.png)
+
+Originally, the idea was to run `make testacc` to run the tests locally, but this does not work for me at all, maybe it will work for you.
+
+What did work for me is to call (but I had to have Sleuth running locally on http://dev.sleuth.io/):
+
+```shell
+TF_ACC=1 SLEUTH_BASEURL="http://dev.sleuth.io" SLEUTH_API_KEY="f4d4c4******" go test -v -cover ./internal/...
 ```
+
+You can also point the url to staging, to get the true results.
+
+After the tests are run, they **do delete the object they've created.** This is great because they clean up after themselves, but also not so great, because you can't inspect what truly went wrong since the objects don't exist anymore.
+
+
+**Note:** Tests create real resources, and often cost money to run.
+**Note:** Sometimes you might need to call `go build -v .`.
 
 ## Running against a local instance of Sleuth
 To run against a local instance of Sleuth, do the following:
