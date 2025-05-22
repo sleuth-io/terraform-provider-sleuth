@@ -201,6 +201,7 @@ type BuildMapping struct {
 	BuildName                string `json:"buildName"`
 	JobName                  string `json:"jobName,omitempty"`
 	BuildProjectKey          string `json:"buildProjectKey,omitempty"`
+	BuildProjectName         string `json:"buildProjectName,omitempty"`
 	IntegrationSlug          string `json:"integrationSlug"`
 	BuildBranch              string `json:"buildBranch"`
 	MatchBranchToEnvironment bool   `json:"matchBranchToEnvironment,omitempty"`

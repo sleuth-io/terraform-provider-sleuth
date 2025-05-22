@@ -92,7 +92,7 @@ func (c *Client) UpdateCodeChangeSource(input UpdateCodeChangeSourceMutationInpu
 	}
 
 	if len(m.UpdateCodeChangeSource.Errors) > 0 {
-		return nil, errors.New("Errors updating code change source")
+		return nil, fmt.Errorf("Errors updating code change source: %+v", m.UpdateCodeChangeSource.Errors)
 	}
 	return &m.UpdateCodeChangeSource.ChangeSource, nil
 }
