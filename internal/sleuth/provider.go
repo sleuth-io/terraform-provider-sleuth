@@ -149,6 +149,7 @@ func (p *sleuthProvider) Resources(_ context.Context) []func() resource.Resource
 		NewMetricImpactSourceResource,
 		NewErrorImpactSourceResource,
 		NewIncidentImpactSourceResource,
+		NewTeamResource,
 	}
 }
 

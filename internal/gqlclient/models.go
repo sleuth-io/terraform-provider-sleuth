@@ -398,3 +398,80 @@ type IncidentImpactSourceDeleteInputType struct {
 	Slug        string `json:"slug"`
 	ProjectSlug string `json:"projectSlug"`
 }
+
+// Team models and mutation inputs/outputs
+
+type Team struct {
+	ID     string `json:"id"`
+	Slug   string `json:"slug"`
+	Name   string `json:"name"`
+	Parent *struct {
+		Slug string `json:"slug"`
+	} `json:"parent"`
+}
+
+type MutableTeam struct {
+	Name   string  `json:"name"`
+	Parent *string `json:"parent,omitempty"`
+}
+
+type CreateTeamMutationInput struct {
+	Name   string  `json:"name" graphql:"name"`
+	Parent *string `json:"parent,omitempty" graphql:"parent"`
+}
+
+type UpdateTeamMutationInput struct {
+	Slug   string  `json:"slug" graphql:"slug"`
+	Name   *string `json:"name,omitempty" graphql:"name"`
+	Parent *string `json:"parent,omitempty" graphql:"parent"`
+}
+
+type DeleteTeamMutationInput struct {
+	Slug string `json:"slug" graphql:"slug"`
+}
+
+type AddTeamMembersMutationInput struct {
+	Slug    string   `json:"slug"`
+	Members []string `json:"members"`
+}
+
+type RemoveTeamMembersMutationInput struct {
+	Slug    string   `json:"slug"`
+	Members []string `json:"members"`
+}
+
+// Payloads for mutation responses
+
+type CreateTeamMutationPayload struct {
+	Errors ErrorsType `json:"errors"`
+	Team   *Team      `json:"team"`
+}
+
+type UpdateTeamMutationPayload struct {
+	Errors ErrorsType `json:"errors"`
+	Team   *Team      `json:"team"`
+}
+
+type DeleteTeamMutationPayload struct {
+	Errors  ErrorsType `json:"errors"`
+	Success bool       `json:"success"`
+}
+
+type AddTeamMembersMutationPayload struct {
+	Errors  ErrorsType `json:"errors"`
+	Success bool       `json:"success"`
+}
+
+type RemoveTeamMembersMutationPayload struct {
+	Errors  ErrorsType `json:"errors"`
+	Success bool       `json:"success"`
+}
+
+type User struct {
+	ID        string `json:"id"`
+	Username  string `json:"username"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Email     string `json:"email"`
+	IsActive  bool   `json:"isActive"`
+}
