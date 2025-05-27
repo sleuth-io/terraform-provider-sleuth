@@ -111,7 +111,8 @@ Optional:
 - `is_custom` (Boolean) Whether this is a custom build mapping or not. This needs to be set to true if a build name or job name isn't visible in Sleuth. Defaults to false
 - `job_name` (String) The job or stage within the build or pipeline, if supported
 - `match_branch_to_environment` (Boolean) Whether only builds performed on the branch mapped from the environment are tracked or not. Basically if you only want Sleuth to find builds that were triggeredby a change on the branch that is configured for the environment, set this to false. Defaults to true
-- `project_key` (String) The build project key
+- `project_key` (String) The build project key. If both project_key and project_name are provided, project_key takes precedence.
+- `project_name` (String) The build project name. If both project_key and project_name are provided, project_key takes precedence.
 
 
 <a id="nestedatt--environment_mappings"></a>

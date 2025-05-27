@@ -81,6 +81,7 @@ type buildMappingsResourceModel struct {
 	BuildName                types.String `tfsdk:"build_name"`
 	JobName                  types.String `tfsdk:"job_name"`
 	ProjectKey               types.String `tfsdk:"project_key"`
+	ProjectName              types.String `tfsdk:"project_name"`
 	MatchBranchToEnvironment types.Bool   `tfsdk:"match_branch_to_environment"`
 	IsCustom                 types.Bool   `tfsdk:"is_custom"`
 }
@@ -247,7 +248,11 @@ func (ccsr *codeChangeSourceResource) Schema(_ context.Context, _ resource.Schem
 							Optional:            true,
 						},
 						"project_key": schema.StringAttribute{
-							MarkdownDescription: "The build project key",
+							MarkdownDescription: "The build project key. If both project_key and project_name are provided, project_key takes precedence.",
+							Optional:            true,
+						},
+						"project_name": schema.StringAttribute{
+							MarkdownDescription: "The build project name. If both project_key and project_name are provided, project_key takes precedence.",
 							Optional:            true,
 						},
 						"match_branch_to_environment": schema.BoolAttribute{
@@ -504,16 +509,33 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 	}
 
 	var buildMappings []buildMappingsResourceModel = []buildMappingsResourceModel{}
+	// Build a lookup from plan for project_name preservation
+	planBuildMappingLookup := map[string]buildMappingsResourceModel{}
+	for _, pbm := range plan.BuildMappings {
+		key := pbm.EnvironmentSlug.ValueString() + ":" + pbm.BuildName.ValueString()
+		planBuildMappingLookup[key] = pbm
+	}
 	for _, bm := range ccs.DeployTrackingBuildMappings {
+		key := bm.Environment.Slug + ":" + bm.BuildName
+		planBM, hasPlan := planBuildMappingLookup[key]
+		projectName := ""
+		if hasPlan {
+			projectName = planBM.ProjectName.ValueString()
+		}
 		buildMappingObj := buildMappingsResourceModel{
 			EnvironmentSlug:          types.StringValue(bm.Environment.Slug),
 			Provider:                 types.StringValue(strings.ToUpper(bm.Provider)),
 			IntegrationSlug:          types.StringValue(bm.IntegrationSlug),
 			BuildName:                types.StringValue(bm.BuildName),
 			JobName:                  types.StringValue(bm.JobName),
-			ProjectKey:               types.StringValue(bm.BuildProjectKey),
+			ProjectKey:               types.StringNull(),
+			ProjectName:              types.StringNull(),
 			MatchBranchToEnvironment: types.BoolValue(bm.MatchBranchToEnvironment),
 			IsCustom:                 types.BoolValue(bm.IsCustom),
+		}
+
+		if projectName != "" {
+			buildMappingObj.ProjectName = types.StringValue(projectName)
 		}
 
 		if bm.IntegrationSlug == "" {
@@ -524,9 +546,10 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 			buildMappingObj.JobName = types.StringNull()
 		}
 
-		if bm.BuildProjectKey == "" {
-			buildMappingObj.ProjectKey = types.StringNull()
+		if hasPlan && !planBM.ProjectKey.IsNull() && bm.BuildProjectKey != "" {
+			buildMappingObj.ProjectKey = types.StringValue(bm.BuildProjectKey)
 		}
+
 		buildMappings = append(buildMappings, buildMappingObj)
 	}
 
@@ -602,17 +625,29 @@ func getMutableCodeChangeSourceStruct(plan codeChangeResourceModel) (*gqlclient.
 		if !ok {
 			return nil, fmt.Errorf("could not find branch for build mapping for environment slug: %s. Did you forget to include this or all environments in the `environment_mappings` field?", environmentSlug)
 		}
-		buildMappingsT = append(buildMappingsT, gqlclient.BuildMapping{
+
+		projectKey := bm.ProjectKey.ValueString()
+		projectName := bm.ProjectName.ValueString()
+
+		buildMapping := gqlclient.BuildMapping{
 			EnvironmentSlug:          environmentSlug,
 			Provider:                 bm.Provider.ValueString(),
 			BuildName:                bm.BuildName.ValueString(),
 			JobName:                  bm.JobName.ValueString(),
-			BuildProjectKey:          bm.ProjectKey.ValueString(),
 			IntegrationSlug:          bm.IntegrationSlug.ValueString(),
 			BuildBranch:              buildBranch,
 			MatchBranchToEnvironment: bm.MatchBranchToEnvironment.ValueBool(),
 			IsCustom:                 bm.IsCustom.ValueBool(),
-		})
+		}
+
+		if projectKey != "" {
+			buildMapping.BuildProjectKey = projectKey
+		}
+		if projectName != "" {
+			buildMapping.BuildProjectName = projectName
+		}
+
+		buildMappingsT = append(buildMappingsT, buildMapping)
 	}
 
 	return &gqlclient.MutableCodeChangeSource{

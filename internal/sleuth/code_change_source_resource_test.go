@@ -105,6 +105,38 @@ func TestAccChangeSourceResource_v6(t *testing.T) {
 					resource.TestCheckNoResourceAttr("sleuth_code_change_source.terraform_acc_test", "build_mappings.#"),
 				),
 			},
+			// Test: Only project_name
+			{
+				Config: createCodeChangeConfigWithProjectName(projectString),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("sleuth_code_change_source.terraform_acc_test", "build_mappings.0.project_name", "sleuth-io/terraform-provider-sleuth"),
+					resource.TestCheckNoResourceAttr("sleuth_code_change_source.terraform_acc_test", "build_mappings.0.project_key"),
+				),
+			},
+			// Test: Only project_key
+			{
+				Config: createCodeChangeConfigWithProjectKey(projectString),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("sleuth_code_change_source.terraform_acc_test", "build_mappings.0.project_key", "sleuth-io/terraform-provider-sleuth"),
+					resource.TestCheckNoResourceAttr("sleuth_code_change_source.terraform_acc_test", "build_mappings.0.project_name"),
+				),
+			},
+			// Test: Both project_key and project_name (project_key takes precedence)
+			{
+				Config: createCodeChangeConfigWithBoth(projectString),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("sleuth_code_change_source.terraform_acc_test", "build_mappings.0.project_key", "sleuth-io/terraform-provider-sleuth"),
+					resource.TestCheckResourceAttr("sleuth_code_change_source.terraform_acc_test", "build_mappings.0.project_name", "should-be-ignored"),
+				),
+			},
+			// Test: Neither project_key nor project_name
+			{
+				Config: createCodeChangeConfigWithNeither(projectString),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckNoResourceAttr("sleuth_code_change_source.terraform_acc_test", "build_mappings.0.project_key"),
+					resource.TestCheckNoResourceAttr("sleuth_code_change_source.terraform_acc_test", "build_mappings.0.project_name"),
+				),
+			},
 			// Delete testing automatically occurs in TestCase
 		},
 	})
@@ -198,6 +230,203 @@ resource "sleuth_code_change_source" "terraform_acc_test" {
 
   	deploy_tracking_type = "manual"
   	collect_impact = false
+}
+`, name)
+}
+
+// Helper configs for test cases
+func createCodeChangeConfigWithProjectName(name string) string {
+	return fmt.Sprintf(`
+resource "sleuth_project" "terraform_acc_test" {
+	name = "%s"
+}
+
+resource "sleuth_environment" "terraform_acc_test" {
+	project_slug = sleuth_project.terraform_acc_test.slug
+	name = "staging"
+}
+
+resource "sleuth_code_change_source" "terraform_acc_test" {
+    project_slug = sleuth_project.terraform_acc_test.slug
+    name = "Terraform code change source"
+    repository = {
+        name = "Terraform provider sleuth"
+        owner = "sleuth-io"
+        provider = "GITHUB"
+        url = "https://github.com/sleuth-io/terraform-provider-sleuth"
+    }
+    environment_mappings = [
+		{
+			environment_slug = "production"
+			branch = "main"
+		},
+		{
+			environment_slug = sleuth_environment.terraform_acc_test.slug
+			branch = "main"
+		}
+	]
+	build_mappings = [
+		{
+			environment_slug = "production"
+			build_name = "release"
+			project_name = "sleuth-io/terraform-provider-sleuth"
+			provider = "GITHUB"
+		},
+		{
+			environment_slug = sleuth_environment.terraform_acc_test.slug
+			build_name = "dummy"
+			provider = "GITHUB"
+		}
+	]
+   	deploy_tracking_type = "build"
+   	collect_impact = true
+}
+`, name)
+}
+
+func createCodeChangeConfigWithProjectKey(name string) string {
+	return fmt.Sprintf(`
+resource "sleuth_project" "terraform_acc_test" {
+	name = "%s"
+}
+
+resource "sleuth_environment" "terraform_acc_test" {
+	project_slug = sleuth_project.terraform_acc_test.slug
+	name = "staging"
+}
+
+resource "sleuth_code_change_source" "terraform_acc_test" {
+    project_slug = sleuth_project.terraform_acc_test.slug
+    name = "Terraform code change source"
+    repository = {
+        name = "Terraform provider sleuth"
+        owner = "sleuth-io"
+        provider = "GITHUB"
+        url = "https://github.com/sleuth-io/terraform-provider-sleuth"
+    }
+    environment_mappings = [
+		{
+			environment_slug = "production"
+			branch = "main"
+		},
+		{
+			environment_slug = sleuth_environment.terraform_acc_test.slug
+			branch = "main"
+		}
+	]
+	build_mappings = [
+		{
+			environment_slug = "production"
+			build_name = "release"
+			project_key = "sleuth-io/terraform-provider-sleuth"
+			provider = "GITHUB"
+		},
+		{
+			environment_slug = sleuth_environment.terraform_acc_test.slug
+			build_name = "dummy"
+			provider = "GITHUB"
+		}
+	]
+   	deploy_tracking_type = "build"
+   	collect_impact = true
+}
+`, name)
+}
+
+func createCodeChangeConfigWithBoth(name string) string {
+	return fmt.Sprintf(`
+resource "sleuth_project" "terraform_acc_test" {
+	name = "%s"
+}
+
+resource "sleuth_environment" "terraform_acc_test" {
+	project_slug = sleuth_project.terraform_acc_test.slug
+	name = "staging"
+}
+
+resource "sleuth_code_change_source" "terraform_acc_test" {
+    project_slug = sleuth_project.terraform_acc_test.slug
+    name = "Terraform code change source"
+    repository = {
+        name = "Terraform provider sleuth"
+        owner = "sleuth-io"
+        provider = "GITHUB"
+        url = "https://github.com/sleuth-io/terraform-provider-sleuth"
+    }
+    environment_mappings = [
+		{
+			environment_slug = "production"
+			branch = "main"
+		},
+		{
+			environment_slug = sleuth_environment.terraform_acc_test.slug
+			branch = "main"
+		}
+	]
+	build_mappings = [
+		{
+			environment_slug = "production"
+			build_name = "release"
+			project_key = "sleuth-io/terraform-provider-sleuth"
+			project_name = "should-be-ignored"
+			provider = "GITHUB"
+		},
+		{
+			environment_slug = sleuth_environment.terraform_acc_test.slug
+			build_name = "dummy"
+			provider = "GITHUB"
+		}
+	]
+   	deploy_tracking_type = "build"
+   	collect_impact = true
+}
+`, name)
+}
+
+func createCodeChangeConfigWithNeither(name string) string {
+	return fmt.Sprintf(`
+resource "sleuth_project" "terraform_acc_test" {
+	name = "%s"
+}
+
+resource "sleuth_environment" "terraform_acc_test" {
+	project_slug = sleuth_project.terraform_acc_test.slug
+	name = "staging"
+}
+
+resource "sleuth_code_change_source" "terraform_acc_test" {
+    project_slug = sleuth_project.terraform_acc_test.slug
+    name = "Terraform code change source"
+    repository = {
+        name = "Terraform provider sleuth"
+        owner = "sleuth-io"
+        provider = "GITHUB"
+        url = "https://github.com/sleuth-io/terraform-provider-sleuth"
+    }
+    environment_mappings = [
+		{
+			environment_slug = "production"
+			branch = "main"
+		},
+		{
+			environment_slug = sleuth_environment.terraform_acc_test.slug
+			branch = "main"
+		}
+	]
+	build_mappings = [
+		{
+			environment_slug = "production"
+			build_name = "release"
+			provider = "GITHUB"
+		},
+		{
+			environment_slug = sleuth_environment.terraform_acc_test.slug
+			build_name = "dummy"
+			provider = "GITHUB"
+		}
+	]
+   	deploy_tracking_type = "build"
+   	collect_impact = true
 }
 `, name)
 }
