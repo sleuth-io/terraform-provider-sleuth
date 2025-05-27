@@ -2,10 +2,8 @@ package gqlclient
 
 import (
 	"context"
-	// 	"encoding/json"
 	"fmt"
 	"net/http"
-	// 	"strings"
 	"time"
 
 	"github.com/shurcooL/graphql"
@@ -46,27 +44,7 @@ func NewClient(baseurl, apiKey *string, ua string, timeout time.Duration) (*Clie
 	return &c, nil
 }
 
-// func (c *Client) doRequest(req *http.Request) ([]byte, error) {
-// 	res, err := c.HTTPClient.Do(req)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer res.Body.Close()
-
-// 	body, err := ioutil.ReadAll(res.Body)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	if res.StatusCode != http.StatusOK {
-// 		return nil, fmt.Errorf("status: %d, body: %s", res.StatusCode, body)
-// 	}
-
-// 	return body, err
-// }
-
 func (c *Client) doQuery(query interface{}, variables map[string]interface{}) error {
-
 	err := c.GQLClient.Query(context.Background(), query, variables)
 	if err != nil {
 		return err
@@ -75,7 +53,6 @@ func (c *Client) doQuery(query interface{}, variables map[string]interface{}) er
 }
 
 func (c *Client) doMutate(query interface{}, variables map[string]interface{}) error {
-
 	err := c.GQLClient.Mutate(context.Background(), query, variables)
 	if err != nil {
 		return err
