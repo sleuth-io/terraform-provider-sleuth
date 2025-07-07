@@ -1,3 +1,8 @@
+## 0.7.0 (July 7, 2025)
+ENHANCEMENTS:
+- New teams resource for setting groups of users
+- Build projects now take a name or a key
+
 ## 0.6.9 (Apr 25, 2025)
 FIXES:
 - [#242](https://github.com/sleuth-io/terraform-provider-sleuth/pull/242)
