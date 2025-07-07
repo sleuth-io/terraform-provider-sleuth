@@ -37,7 +37,7 @@ You have 2 options to run the provider locally:
 Run `make docs`. This will read files in `/templates` and `examples` folder and generate documentation in `/docs` folder. Note that changes done directly in `/docs` folder will be overwritten.
 
 ## Formatting
-Run `make fmt`.
+Run `make format`.
 
 ## Testing
 
