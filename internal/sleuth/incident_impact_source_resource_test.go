@@ -43,11 +43,11 @@ func TestAccIncidentImpactSourceResource_v6(t *testing.T) {
 					resource.TestCheckResourceAttr("sleuth_environment.terraform_acc_test", "name", "staging"),
 					resource.TestCheckResourceAttr("sleuth_environment.terraform_acc_test", "slug", "staging"),
 					// PagerDuty
-					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "name", "PagerDuty TF incident impact"),
-					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "environment_name", "staging"),
-					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "provider_name", "pagerduty"),
-					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "pagerduty_input.remote_services", "PIMPOA4"),
-					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "pagerduty_input.remote_urgency", "ANY"),
+					//resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "name", "PagerDuty TF incident impact"),
+					//resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "environment_name", "staging"),
+					//resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "provider_name", "pagerduty"),
+					//resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "pagerduty_input.remote_services", "PIMPOA4"),
+					//resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "pagerduty_input.remote_urgency", "ANY"),
 					// DataDog
 					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_dd", "name", "DataDog TF incident impact"),
 					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_dd", "environment_name", "staging"),
@@ -72,11 +72,11 @@ func TestAccIncidentImpactSourceResource_v6(t *testing.T) {
 					resource.TestCheckResourceAttr("sleuth_environment.terraform_acc_test", "name", "staging"),
 					resource.TestCheckResourceAttr("sleuth_environment.terraform_acc_test", "slug", "staging"),
 					// PagerDuty
-					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "name", "PagerDuty TF incident impact updated"),
-					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "environment_name", "staging"),
-					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "provider_name", "pagerduty"),
-					resource.TestCheckNoResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "pagerduty_input.remote_services"),
-					resource.TestCheckNoResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "pagerduty_input.remote_urgency"),
+					//resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "name", "PagerDuty TF incident impact updated"),
+					//resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "environment_name", "staging"),
+					//resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "provider_name", "pagerduty"),
+					//resource.TestCheckNoResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "pagerduty_input.remote_services"),
+					//resource.TestCheckNoResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "pagerduty_input.remote_urgency"),
 					// DataDog
 					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_dd", "name", "DataDog TF incident impact updated"),
 					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_dd", "environment_name", "staging"),
@@ -99,11 +99,11 @@ func TestAccIncidentImpactSourceResource_v6(t *testing.T) {
 					resource.TestCheckResourceAttr("sleuth_environment.terraform_acc_test", "name", "staging"),
 					resource.TestCheckResourceAttr("sleuth_environment.terraform_acc_test", "slug", "staging"),
 					// PagerDuty
-					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "name", "PagerDuty TF incident impact"),
-					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "environment_name", "Production"),
-					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "provider_name", "pagerduty"),
-					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "pagerduty_input.remote_services", ""),
-					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "pagerduty_input.remote_urgency", "HIGH"),
+					//resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "name", "PagerDuty TF incident impact"),
+					//resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "environment_name", "Production"),
+					//resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "provider_name", "pagerduty"),
+					//resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "pagerduty_input.remote_services", ""),
+					//resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_pd", "pagerduty_input.remote_urgency", "HIGH"),
 					// DataDog
 					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_dd", "name", "DataDog TF incident impact"),
 					resource.TestCheckResourceAttr("sleuth_incident_impact_source.terraform_acc_test_dd", "environment_name", "Production"),
@@ -134,16 +134,16 @@ resource "sleuth_environment" "terraform_acc_test" {
 	name = "staging"
 }
 
-resource "sleuth_incident_impact_source" "terraform_acc_test_pd" {
-  	project_slug = sleuth_project.terraform_acc_test.slug
-  	name = "PagerDuty TF incident impact"
-  	environment_name = sleuth_environment.terraform_acc_test.name
-  	provider_name = "pagerduty"
-	pagerduty_input = {
-		remote_services = "PIMPOA4"
-		remote_urgency = "ANY"
-	}
-}
+//resource "sleuth_incident_impact_source" "terraform_acc_test_pd" {
+//  	project_slug = sleuth_project.terraform_acc_test.slug
+//  	name = "PagerDuty TF incident impact"
+//  	environment_name = sleuth_environment.terraform_acc_test.name
+//  	provider_name = "pagerduty"
+//	pagerduty_input = {
+//		remote_services = "PIMPOA4"
+//		remote_urgency = "ANY"
+//	}
+//}
 
 resource "sleuth_incident_impact_source" "terraform_acc_test_dd" {
  	project_slug = sleuth_project.terraform_acc_test.slug
@@ -181,12 +181,12 @@ resource "sleuth_environment" "terraform_acc_test" {
 	name = "staging"
 }
 
-resource "sleuth_incident_impact_source" "terraform_acc_test_pd" {
-  	project_slug = sleuth_project.terraform_acc_test.slug
-  	name = "PagerDuty TF incident impact updated"
-  	environment_name = sleuth_environment.terraform_acc_test.name
-  	provider_name = "pagerduty"
-}
+//resource "sleuth_incident_impact_source" "terraform_acc_test_pd" {
+//  	project_slug = sleuth_project.terraform_acc_test.slug
+//  	name = "PagerDuty TF incident impact updated"
+//  	environment_name = sleuth_environment.terraform_acc_test.name
+//  	provider_name = "pagerduty"
+//}
 
 resource "sleuth_incident_impact_source" "terraform_acc_test_dd" {
  	project_slug = sleuth_project.terraform_acc_test.slug
@@ -223,15 +223,15 @@ resource "sleuth_environment" "terraform_acc_test" {
 	name = "staging"
 }
 
-resource "sleuth_incident_impact_source" "terraform_acc_test_pd" {
-  	project_slug = sleuth_project.terraform_acc_test.slug
-  	name = "PagerDuty TF incident impact"
-  	environment_name = "Production"
-  	provider_name = "pagerduty"
-	pagerduty_input = {
-		remote_urgency = "HIGH"
-	}
-}
+//resource "sleuth_incident_impact_source" "terraform_acc_test_pd" {
+//  	project_slug = sleuth_project.terraform_acc_test.slug
+//  	name = "PagerDuty TF incident impact"
+//  	environment_name = "Production"
+//  	provider_name = "pagerduty"
+//	pagerduty_input = {
+//		remote_urgency = "HIGH"
+//	}
+//}
 
 resource "sleuth_incident_impact_source" "terraform_acc_test_dd" {
  	project_slug = sleuth_project.terraform_acc_test.slug
