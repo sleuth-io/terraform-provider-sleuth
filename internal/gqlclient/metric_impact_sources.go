@@ -1,6 +1,7 @@
 package gqlclient
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -8,7 +9,7 @@ import (
 )
 
 // GetMetricImpactSource - Returns error impact source
-func (c *Client) GetMetricImpactSource(projectSlug *string, slug *string) (*MetricImpactSource, error) {
+func (c *Client) GetMetricImpactSource(ctx context.Context, projectSlug *string, slug *string) (*MetricImpactSource, error) {
 	var query struct {
 		Project struct {
 			ImpactSources []struct {
@@ -22,7 +23,7 @@ func (c *Client) GetMetricImpactSource(projectSlug *string, slug *string) (*Metr
 		"impactSourceSlug": graphql.ID(*slug),
 	}
 
-	err := c.doQuery(&query, variables)
+	err := c.doQuery(ctx, &query, variables)
 
 	if err != nil {
 		return nil, err
@@ -37,7 +38,7 @@ func (c *Client) GetMetricImpactSource(projectSlug *string, slug *string) (*Metr
 }
 
 // CreateMetricImpactSource - Creates a environment
-func (c *Client) CreateMetricImpactSource(input CreateMetricImpactSourceMutationInput) (*MetricImpactSource, error) {
+func (c *Client) CreateMetricImpactSource(ctx context.Context, input CreateMetricImpactSourceMutationInput) (*MetricImpactSource, error) {
 
 	var m struct {
 		CreateMetricImpactSource struct {
@@ -49,7 +50,7 @@ func (c *Client) CreateMetricImpactSource(input CreateMetricImpactSourceMutation
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return nil, err
@@ -62,7 +63,7 @@ func (c *Client) CreateMetricImpactSource(input CreateMetricImpactSourceMutation
 }
 
 // UpdateMetricImpactSource - Updates a environment
-func (c *Client) UpdateMetricImpactSource(input UpdateMetricImpactSourceMutationInput) (*MetricImpactSource, error) {
+func (c *Client) UpdateMetricImpactSource(ctx context.Context, input UpdateMetricImpactSourceMutationInput) (*MetricImpactSource, error) {
 
 	var m struct {
 		UpdateMetricImpactSource struct {
@@ -74,7 +75,7 @@ func (c *Client) UpdateMetricImpactSource(input UpdateMetricImpactSourceMutation
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return nil, err

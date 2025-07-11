@@ -1,13 +1,14 @@
 package gqlclient
 
 import (
+	"context"
 	"errors"
 
 	"github.com/shurcooL/graphql"
 )
 
 // DeleteChangeSource - Deletes a change source
-func (c *Client) DeleteChangeSource(projectSlug *string, slug *string) error {
+func (c *Client) DeleteChangeSource(ctx context.Context, projectSlug *string, slug *string) error {
 
 	var m struct {
 		DeleteChangeSource struct {
@@ -18,7 +19,7 @@ func (c *Client) DeleteChangeSource(projectSlug *string, slug *string) error {
 		"input": DeleteChangeSourceMutationInput{ProjectSlug: *projectSlug, Slug: *slug},
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return err

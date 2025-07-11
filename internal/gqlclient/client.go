@@ -44,16 +44,16 @@ func NewClient(baseurl, apiKey *string, ua string, timeout time.Duration) (*Clie
 	return &c, nil
 }
 
-func (c *Client) doQuery(query interface{}, variables map[string]interface{}) error {
-	err := c.GQLClient.Query(context.Background(), query, variables)
+func (c *Client) doQuery(ctx context.Context, query interface{}, variables map[string]interface{}) error {
+	err := c.GQLClient.Query(ctx, query, variables)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) doMutate(query interface{}, variables map[string]interface{}) error {
-	err := c.GQLClient.Mutate(context.Background(), query, variables)
+func (c *Client) doMutate(ctx context.Context, query interface{}, variables map[string]interface{}) error {
+	err := c.GQLClient.Mutate(ctx, query, variables)
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,7 @@
 package gqlclient
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -8,14 +9,14 @@ import (
 )
 
 // GetTeam - Returns team
-func (c *Client) GetTeam(slug *string) (*Team, error) {
+func (c *Client) GetTeam(ctx context.Context, slug *string) (*Team, error) {
 	var query struct {
 		Team Team `graphql:"team(teamSlug: $teamSlug)"`
 	}
 	variables := map[string]interface{}{
 		"teamSlug": graphql.ID(*slug),
 	}
-	err := c.doQuery(&query, variables)
+	err := c.doQuery(ctx, &query, variables)
 	if err != nil {
 		if strings.HasSuffix(err.Error(), "not found") {
 			return nil, nil
@@ -26,7 +27,7 @@ func (c *Client) GetTeam(slug *string) (*Team, error) {
 }
 
 // CreateTeam - Creates a team
-func (c *Client) CreateTeam(input CreateTeamMutationInput) (*Team, error) {
+func (c *Client) CreateTeam(ctx context.Context, input CreateTeamMutationInput) (*Team, error) {
 	var m struct {
 		CreateTeam struct {
 			Team   Team
@@ -37,7 +38,7 @@ func (c *Client) CreateTeam(input CreateTeamMutationInput) (*Team, error) {
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +50,7 @@ func (c *Client) CreateTeam(input CreateTeamMutationInput) (*Team, error) {
 }
 
 // UpdateTeam - Updates a team
-func (c *Client) UpdateTeam(slug *string, input UpdateTeamMutationInput) (*Team, error) {
+func (c *Client) UpdateTeam(ctx context.Context, slug *string, input UpdateTeamMutationInput) (*Team, error) {
 	var m struct {
 		UpdateTeam struct {
 			Team   Team
@@ -60,7 +61,7 @@ func (c *Client) UpdateTeam(slug *string, input UpdateTeamMutationInput) (*Team,
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +73,7 @@ func (c *Client) UpdateTeam(slug *string, input UpdateTeamMutationInput) (*Team,
 }
 
 // DeleteTeam - Deletes a team
-func (c *Client) DeleteTeam(slug *string) error {
+func (c *Client) DeleteTeam(ctx context.Context, slug *string) error {
 	var m struct {
 		DeleteTeam struct {
 			Success graphql.Boolean
@@ -82,7 +83,7 @@ func (c *Client) DeleteTeam(slug *string) error {
 		"input": DeleteTeamMutationInput{Slug: *slug},
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 	if err != nil {
 		return err
 	}
@@ -95,7 +96,7 @@ func (c *Client) DeleteTeam(slug *string) error {
 }
 
 // AddTeamMembers - Adds members to a team
-func (c *Client) AddTeamMembers(input AddTeamMembersMutationInput) error {
+func (c *Client) AddTeamMembers(ctx context.Context, input AddTeamMembersMutationInput) error {
 	var m struct {
 		AddTeamMembers struct {
 			Success bool
@@ -106,7 +107,7 @@ func (c *Client) AddTeamMembers(input AddTeamMembersMutationInput) error {
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 	if err != nil {
 		return err
 	}
@@ -117,7 +118,7 @@ func (c *Client) AddTeamMembers(input AddTeamMembersMutationInput) error {
 }
 
 // RemoveTeamMembers - Removes members from a team
-func (c *Client) RemoveTeamMembers(input RemoveTeamMembersMutationInput) error {
+func (c *Client) RemoveTeamMembers(ctx context.Context, input RemoveTeamMembersMutationInput) error {
 	var m struct {
 		RemoveTeamMembers struct {
 			Success bool
@@ -128,7 +129,7 @@ func (c *Client) RemoveTeamMembers(input RemoveTeamMembersMutationInput) error {
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 	if err != nil {
 		return err
 	}

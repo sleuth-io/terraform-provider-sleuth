@@ -99,7 +99,7 @@ func (t *teamResource) Create(ctx context.Context, req resource.CreateRequest, r
 		Parent: parent,
 	}
 
-	team, err := t.c.CreateTeam(input)
+	team, err := t.c.CreateTeam(ctx, input)
 	if err != nil {
 		res.Diagnostics.AddError(
 			"Error creating team",
@@ -129,7 +129,7 @@ func (t *teamResource) Create(ctx context.Context, req resource.CreateRequest, r
 				Slug:    team.Slug,
 				Members: userIDs,
 			}
-			err = t.c.AddTeamMembers(addInput)
+			err = t.c.AddTeamMembers(ctx, addInput)
 			if err != nil {
 				res.Diagnostics.AddError("Error adding team members", err.Error())
 				return
@@ -157,7 +157,7 @@ func (t *teamResource) Read(ctx context.Context, req resource.ReadRequest, res *
 	}
 
 	slug := state.Slug.ValueString()
-	team, err := t.c.GetTeam(&slug)
+	team, err := t.c.GetTeam(ctx, &slug)
 	if err != nil {
 		res.Diagnostics.AddError("Error reading team", err.Error())
 		return
@@ -208,7 +208,7 @@ func (t *teamResource) Update(ctx context.Context, req resource.UpdateRequest, r
 			Name:   name,
 			Parent: parent,
 		}
-		updatedTeam, err = t.c.UpdateTeam(&slug, input)
+		updatedTeam, err = t.c.UpdateTeam(ctx, &slug, input)
 		if err != nil {
 			res.Diagnostics.AddError("Error updating team", err.Error())
 			return
@@ -264,7 +264,7 @@ func (t *teamResource) Update(ctx context.Context, req resource.UpdateRequest, r
 				Slug:    state.Slug.ValueString(),
 				Members: userIDs,
 			}
-			err = t.c.AddTeamMembers(addInput)
+			err = t.c.AddTeamMembers(ctx, addInput)
 			if err != nil {
 				res.Diagnostics.AddError("Error adding team members", err.Error())
 				return
@@ -286,7 +286,7 @@ func (t *teamResource) Update(ctx context.Context, req resource.UpdateRequest, r
 				Slug:    state.Slug.ValueString(),
 				Members: userIDs,
 			}
-			err = t.c.RemoveTeamMembers(removeInput)
+			err = t.c.RemoveTeamMembers(ctx, removeInput)
 			if err != nil {
 				res.Diagnostics.AddError("Error removing team members", err.Error())
 				return
@@ -296,7 +296,7 @@ func (t *teamResource) Update(ctx context.Context, req resource.UpdateRequest, r
 
 	// Set the new state
 	if updatedTeam == nil {
-		updatedTeam, err = t.c.GetTeam(&slug)
+		updatedTeam, err = t.c.GetTeam(ctx, &slug)
 		if err != nil {
 			res.Diagnostics.AddError("Error reading team after update", err.Error())
 			return
@@ -326,7 +326,7 @@ func (t *teamResource) Delete(ctx context.Context, req resource.DeleteRequest, r
 	}
 
 	slug := state.Slug.ValueString()
-	err := t.c.DeleteTeam(&slug)
+	err := t.c.DeleteTeam(ctx, &slug)
 	if err != nil {
 		res.Diagnostics.AddError("Error deleting team", err.Error())
 		return

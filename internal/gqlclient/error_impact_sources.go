@@ -1,6 +1,7 @@
 package gqlclient
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -8,7 +9,7 @@ import (
 )
 
 // GetErrorImpactSource - Returns error impact source
-func (c *Client) GetErrorImpactSource(projectSlug *string, slug *string) (*ErrorImpactSource, error) {
+func (c *Client) GetErrorImpactSource(ctx context.Context, projectSlug *string, slug *string) (*ErrorImpactSource, error) {
 	var query struct {
 		Project struct {
 			ImpactSources []struct {
@@ -22,7 +23,7 @@ func (c *Client) GetErrorImpactSource(projectSlug *string, slug *string) (*Error
 		"impactSourceSlug": graphql.ID(*slug),
 	}
 
-	err := c.doQuery(&query, variables)
+	err := c.doQuery(ctx, &query, variables)
 
 	if err != nil {
 		return nil, err
@@ -37,7 +38,7 @@ func (c *Client) GetErrorImpactSource(projectSlug *string, slug *string) (*Error
 }
 
 // CreateErrorImpactSource - Creates a environment
-func (c *Client) CreateErrorImpactSource(input CreateErrorImpactSourceMutationInput) (*ErrorImpactSource, error) {
+func (c *Client) CreateErrorImpactSource(ctx context.Context, input CreateErrorImpactSourceMutationInput) (*ErrorImpactSource, error) {
 
 	var m struct {
 		CreateErrorImpactSource struct {
@@ -49,7 +50,7 @@ func (c *Client) CreateErrorImpactSource(input CreateErrorImpactSourceMutationIn
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return nil, err
@@ -62,7 +63,7 @@ func (c *Client) CreateErrorImpactSource(input CreateErrorImpactSourceMutationIn
 }
 
 // UpdateErrorImpactSource - Updates a environment
-func (c *Client) UpdateErrorImpactSource(input UpdateErrorImpactSourceMutationInput) (*ErrorImpactSource, error) {
+func (c *Client) UpdateErrorImpactSource(ctx context.Context, input UpdateErrorImpactSourceMutationInput) (*ErrorImpactSource, error) {
 
 	var m struct {
 		UpdateErrorImpactSource struct {
@@ -74,7 +75,7 @@ func (c *Client) UpdateErrorImpactSource(input UpdateErrorImpactSourceMutationIn
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return nil, err

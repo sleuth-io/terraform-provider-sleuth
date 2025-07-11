@@ -11,7 +11,7 @@ import (
 
 var ErrNotFound = errors.New("Resource was not found")
 
-func (c *Client) GetEnvironmentByName(projectSlug *string, name *string) (*Environment, error) {
+func (c *Client) GetEnvironmentByName(ctx context.Context, projectSlug *string, name *string) (*Environment, error) {
 	var query struct {
 		Project struct {
 			Environments []Environment
@@ -21,7 +21,7 @@ func (c *Client) GetEnvironmentByName(projectSlug *string, name *string) (*Envir
 		"projectSlug": graphql.ID(*projectSlug),
 	}
 
-	err := c.doQuery(&query, variables)
+	err := c.doQuery(ctx, &query, variables)
 
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (c *Client) GetEnvironmentByName(projectSlug *string, name *string) (*Envir
 }
 
 // GetEnvironment - Returns environment
-func (c *Client) GetEnvironment(projectSlug *string, slug *string) (*Environment, error) {
+func (c *Client) GetEnvironment(ctx context.Context, projectSlug *string, slug *string) (*Environment, error) {
 	var query struct {
 		Project struct {
 			Environments []Environment
@@ -46,7 +46,7 @@ func (c *Client) GetEnvironment(projectSlug *string, slug *string) (*Environment
 		"projectSlug": graphql.ID(*projectSlug),
 	}
 
-	err := c.doQuery(&query, variables)
+	err := c.doQuery(ctx, &query, variables)
 
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (c *Client) GetEnvironment(projectSlug *string, slug *string) (*Environment
 }
 
 // CreateEnvironment - Creates a environment
-func (c *Client) CreateEnvironment(input CreateEnvironmentMutationInput) (*Environment, error) {
+func (c *Client) CreateEnvironment(ctx context.Context, input CreateEnvironmentMutationInput) (*Environment, error) {
 
 	var m struct {
 		CreateEnvironment struct {
@@ -73,7 +73,7 @@ func (c *Client) CreateEnvironment(input CreateEnvironmentMutationInput) (*Envir
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return nil, err
@@ -86,7 +86,7 @@ func (c *Client) CreateEnvironment(input CreateEnvironmentMutationInput) (*Envir
 }
 
 // UpdateEnvironment - Updates a environment
-func (c *Client) UpdateEnvironment(input UpdateEnvironmentMutationInput) (*Environment, error) {
+func (c *Client) UpdateEnvironment(ctx context.Context, input UpdateEnvironmentMutationInput) (*Environment, error) {
 
 	var m struct {
 		UpdateEnvironment struct {
@@ -98,7 +98,7 @@ func (c *Client) UpdateEnvironment(input UpdateEnvironmentMutationInput) (*Envir
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return nil, err
@@ -123,7 +123,7 @@ func (c *Client) DeleteEnvironment(ctx context.Context, projectSlug *string, slu
 		"input": DeleteEnvironmentMutationInput{ProjectSlug: *projectSlug, Slug: *slug},
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return err

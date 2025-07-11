@@ -162,7 +162,7 @@ func (p *projectResource) Create(ctx context.Context, req resource.CreateRequest
 
 	input := gqlclient.CreateProjectMutationInput{MutableProject: &inputFields}
 
-	proj, err := p.c.CreateProject(input)
+	proj, err := p.c.CreateProject(ctx, input)
 	if err != nil {
 		tflog.Error(ctx, "Error creating Project", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
@@ -195,7 +195,7 @@ func (p *projectResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	proj, err := p.c.GetProject(state.Slug.ValueStringPointer())
+	proj, err := p.c.GetProject(ctx, state.Slug.ValueStringPointer())
 	if err != nil {
 		tflog.Error(ctx, fmt.Sprintf("Error obtaining project: %+v", err))
 		res.Diagnostics.AddError(
@@ -233,7 +233,7 @@ func (p *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 
 	input := gqlclient.UpdateProjectMutationInput{Slug: state.Slug.ValueString(), MutableProject: &inputFields}
 
-	proj, err := p.c.UpdateProject(state.Slug.ValueStringPointer(), input)
+	proj, err := p.c.UpdateProject(ctx, state.Slug.ValueStringPointer(), input)
 	tflog.Error(ctx, fmt.Sprintf("PRoj: %+v %+v", proj, err))
 	if err != nil {
 		diags.AddError("Error updating project", err.Error())
@@ -258,7 +258,7 @@ func (p *projectResource) Delete(ctx context.Context, req resource.DeleteRequest
 
 	tflog.Info(ctx, "Deleting Project resource", map[string]any{"state": fmt.Sprintf("%+v", state)})
 
-	err := p.c.DeleteProject(state.Slug.ValueStringPointer())
+	err := p.c.DeleteProject(ctx, state.Slug.ValueStringPointer())
 	if err != nil {
 		// Ignore missing as the project gets deleted when the last env gets deleted
 		if err.Error() != "Missing" {
