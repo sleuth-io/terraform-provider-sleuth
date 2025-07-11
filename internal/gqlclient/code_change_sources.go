@@ -26,7 +26,7 @@ func (c *Client) GetCodeChangeSource(ctx context.Context, projectSlug *string, s
 		"projectSlug": graphql.ID(*projectSlug),
 	}
 
-	err := c.doQuery(&query, variables)
+	err := c.doQuery(ctx, &query, variables)
 
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (c *Client) GetCodeChangeSource(ctx context.Context, projectSlug *string, s
 	return nil, ErrNoCodeChangeSourceFound
 }
 
-func (c *Client) CreateCodeChangeSource(input CreateCodeChangeSourceMutationInput) (*CodeChangeSource, error) {
+func (c *Client) CreateCodeChangeSource(ctx context.Context, input CreateCodeChangeSourceMutationInput) (*CodeChangeSource, error) {
 
 	var m struct {
 		CreateCodeChangeSource struct {
@@ -60,7 +60,7 @@ func (c *Client) CreateCodeChangeSource(input CreateCodeChangeSourceMutationInpu
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func (c *Client) CreateCodeChangeSource(input CreateCodeChangeSourceMutationInpu
 	return &m.CreateCodeChangeSource.ChangeSource, nil
 }
 
-func (c *Client) UpdateCodeChangeSource(input UpdateCodeChangeSourceMutationInput) (*CodeChangeSource, error) {
+func (c *Client) UpdateCodeChangeSource(ctx context.Context, input UpdateCodeChangeSourceMutationInput) (*CodeChangeSource, error) {
 
 	var m struct {
 		UpdateCodeChangeSource struct {
@@ -85,7 +85,7 @@ func (c *Client) UpdateCodeChangeSource(input UpdateCodeChangeSourceMutationInpu
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return nil, err

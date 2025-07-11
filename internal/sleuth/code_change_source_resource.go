@@ -325,7 +325,7 @@ func (ccsr *codeChangeSourceResource) Create(ctx context.Context, req resource.C
 		return
 	}
 
-	ccs, err := ccsr.c.CreateCodeChangeSource(input)
+	ccs, err := ccsr.c.CreateCodeChangeSource(ctx, input)
 	if err != nil {
 		tflog.Error(ctx, "Error creating CodeChangeSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
@@ -436,7 +436,7 @@ func (ccsr *codeChangeSourceResource) Update(ctx context.Context, req resource.U
 		return
 	}
 
-	ccs, err := ccsr.c.UpdateCodeChangeSource(input)
+	ccs, err := ccsr.c.UpdateCodeChangeSource(ctx, input)
 	if err != nil {
 		tflog.Error(ctx, "Error updating CodeChangeSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
@@ -468,7 +468,7 @@ func (ccsr *codeChangeSourceResource) Delete(ctx context.Context, req resource.D
 	projectSlug := state.ProjectSlug.ValueStringPointer()
 	slug := state.Slug.ValueStringPointer()
 
-	err := ccsr.c.DeleteChangeSource(projectSlug, slug)
+	err := ccsr.c.DeleteChangeSource(ctx, projectSlug, slug)
 	if err != nil {
 		tflog.Error(ctx, "Error deleting CodeChangeSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
