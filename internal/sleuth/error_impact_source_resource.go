@@ -135,7 +135,7 @@ func (eisr *errorImpactSourceResource) Create(ctx context.Context, req resource.
 		MutableErrorImpactSource: inputFields,
 	}
 
-	eis, err := eisr.c.CreateErrorImpactSource(input)
+	eis, err := eisr.c.CreateErrorImpactSource(ctx, input)
 	if err != nil {
 		tflog.Error(ctx, "Error creating ErrorImpactSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
@@ -172,7 +172,7 @@ func (eisr *errorImpactSourceResource) Read(ctx context.Context, req resource.Re
 		slug = splits[1]
 	}
 
-	eis, err := eisr.c.GetErrorImpactSource(&projectSlug, &slug)
+	eis, err := eisr.c.GetErrorImpactSource(ctx, &projectSlug, &slug)
 	if err != nil {
 		tflog.Error(ctx, "Error reading ErrorImpactSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
@@ -216,7 +216,7 @@ func (eisr *errorImpactSourceResource) Update(ctx context.Context, req resource.
 		MutableErrorImpactSource: inputFields,
 	}
 
-	eis, err := eisr.c.UpdateErrorImpactSource(input)
+	eis, err := eisr.c.UpdateErrorImpactSource(ctx, input)
 	if err != nil {
 		tflog.Error(ctx, "Error updating ErrorImpactSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
@@ -247,7 +247,7 @@ func (eisr *errorImpactSourceResource) Delete(ctx context.Context, req resource.
 	projectSlug := state.ProjectSlug.ValueStringPointer()
 	slug := state.Slug.ValueStringPointer()
 
-	err := eisr.c.DeleteImpactSource(projectSlug, slug)
+	err := eisr.c.DeleteImpactSource(ctx, projectSlug, slug)
 	if err != nil {
 		tflog.Error(ctx, "Error deleting ErrorImpactSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(

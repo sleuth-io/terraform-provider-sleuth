@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "sleuth" {
-  api_key = "some-key-here"
+  api_key = "51426e575b30d3e004963b377da2701047e0730d"
   baseurl = "http://dev.sleuth.io"
 }
 

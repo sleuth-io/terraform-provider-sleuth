@@ -59,6 +59,9 @@ func (c *Client) GetProject(ctx context.Context, slug *string) (*Project, error)
 // CreateProject - Creates a project
 func (c *Client) CreateProject(ctx context.Context, input CreateProjectMutationInput) (*Project, error) {
 
+	// Debug: Print the input structure
+	fmt.Printf("DEBUG: CreateProject input: %+v\n", input)
+
 	var m struct {
 		CreateProject struct {
 			Project Project
@@ -68,6 +71,9 @@ func (c *Client) CreateProject(ctx context.Context, input CreateProjectMutationI
 	variables := map[string]interface{}{
 		"input": input,
 	}
+
+	// Debug: Print the variables
+	fmt.Printf("DEBUG: GraphQL variables: %+v\n", variables)
 
 	err := c.doMutate(ctx, &m, variables)
 

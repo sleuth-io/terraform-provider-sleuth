@@ -430,7 +430,7 @@ func (iisr *incidentImpactSourceResource) Create(ctx context.Context, req resour
 		return
 	}
 
-	state, diags := getNewStateFromIncidentImpactSource(ctx, iis, projectSlug, pd)
+	state, diags := getNewStateFromIncidentImpactSource(ctx, iis, projectSlug, plan.ProviderName.ValueString(), pd)
 	res.Diagnostics.Append(diags...)
 	diags = res.State.Set(ctx, state)
 	res.Diagnostics.Append(diags...)
@@ -466,7 +466,7 @@ func (iisr *incidentImpactSourceResource) Read(ctx context.Context, req resource
 		)
 		return
 	}
-	newState, diags := getNewStateFromIncidentImpactSource(ctx, ccs, projectSlug, pd)
+	newState, diags := getNewStateFromIncidentImpactSource(ctx, ccs, projectSlug, state.ProviderName.ValueString(), pd)
 	res.Diagnostics.Append(diags...)
 
 	diags = res.State.Set(ctx, newState)
@@ -512,7 +512,7 @@ func (iisr *incidentImpactSourceResource) Update(ctx context.Context, req resour
 		return
 	}
 
-	newState, diags := getNewStateFromIncidentImpactSource(ctx, ccs, projectSlug, pd)
+	newState, diags := getNewStateFromIncidentImpactSource(ctx, ccs, projectSlug, plan.ProviderName.ValueString(), pd)
 	res.Diagnostics.Append(diags...)
 
 	diags = res.State.Set(ctx, newState)
@@ -533,7 +533,7 @@ func (iisr *incidentImpactSourceResource) Delete(ctx context.Context, req resour
 	projectSlug := state.ProjectSlug.ValueStringPointer()
 	slug := state.Slug.ValueStringPointer()
 
-	err := iisr.c.DeleteImpactSource(projectSlug, slug)
+	err := iisr.c.DeleteImpactSource(ctx, projectSlug, slug)
 	if err != nil {
 		tflog.Error(ctx, "Error deleting IncidentImpactSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
@@ -548,14 +548,14 @@ func (iisr *incidentImpactSourceResource) ImportState(ctx context.Context, req r
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, res)
 }
 
-func getNewStateFromIncidentImpactSource(ctx context.Context, iis *gqlclient.IncidentImpactSource, projectSlug string, data providerData) (incidentImpactResourceModel, diag.Diagnostics) {
+func getNewStateFromIncidentImpactSource(ctx context.Context, iis *gqlclient.IncidentImpactSource, projectSlug string, originalProviderName string, data providerData) (incidentImpactResourceModel, diag.Diagnostics) {
 	iirm := incidentImpactResourceModel{
 		ID:               types.StringValue(iis.Slug),
 		Slug:             types.StringValue(iis.Slug),
 		ProjectSlug:      types.StringValue(projectSlug),
 		EnvironmentName:  types.StringValue(iis.Environment.Name),
 		Name:             types.StringValue(iis.Name),
-		ProviderName:     types.StringValue(strings.ToLower(iis.Provider)),
+		ProviderName:     types.StringValue(originalProviderName),
 		PagerDutyInput:   nil,
 		DataDogInput:     nil,
 		JiraInput:        nil,
