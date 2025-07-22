@@ -101,7 +101,7 @@ func (p *environmentResource) Create(ctx context.Context, req resource.CreateReq
 	input := gqlclient.CreateEnvironmentMutationInput{ProjectSlug: projectSlug, MutableEnvironment: &inputFields}
 
 	// We create the environment automatically when Project is created, so we need to check if it already exists
-	existingEnv, err := p.c.GetEnvironmentByName(&projectSlug, &envName)
+	existingEnv, err := p.c.GetEnvironmentByName(ctx, &projectSlug, &envName)
 
 	if err != nil && err != gqlclient.ErrNotFound {
 		res.Diagnostics.AddError("Error obtaining environment", fmt.Sprintf("Could not obtain environment, unexpected error: %+v", err.Error()))
@@ -111,7 +111,7 @@ func (p *environmentResource) Create(ctx context.Context, req resource.CreateReq
 	var env *gqlclient.Environment
 	if existingEnv != nil {
 		input := gqlclient.UpdateEnvironmentMutationInput{ProjectSlug: projectSlug, Slug: existingEnv.Slug, MutableEnvironment: &inputFields}
-		env, err = p.c.UpdateEnvironment(input)
+		env, err = p.c.UpdateEnvironment(ctx, input)
 		if err != nil {
 			tflog.Error(ctx, "Error updating Environment", map[string]any{"error": err.Error()})
 			res.Diagnostics.AddError(
@@ -121,7 +121,7 @@ func (p *environmentResource) Create(ctx context.Context, req resource.CreateReq
 			return
 		}
 	} else {
-		env, err = p.c.CreateEnvironment(input)
+		env, err = p.c.CreateEnvironment(ctx, input)
 		if err != nil {
 			tflog.Error(ctx, "Error creating Environment", map[string]any{"error": err.Error()})
 			res.Diagnostics.AddError(
@@ -164,7 +164,7 @@ func (p *environmentResource) Read(ctx context.Context, req resource.ReadRequest
 		return
 	}
 
-	env, err := p.c.GetEnvironment(&projectSlug, &slug)
+	env, err := p.c.GetEnvironment(ctx, &projectSlug, &slug)
 	if err != nil {
 		tflog.Error(ctx, fmt.Sprintf("Error obtaining environment: %+v", err))
 		res.Diagnostics.AddError(
@@ -207,7 +207,7 @@ func (p *environmentResource) Update(ctx context.Context, req resource.UpdateReq
 		MutableEnvironment: &inputFields,
 	}
 
-	env, err := p.c.UpdateEnvironment(input)
+	env, err := p.c.UpdateEnvironment(ctx, input)
 	if err != nil {
 		diags.AddError("Error updating environment", err.Error())
 		return

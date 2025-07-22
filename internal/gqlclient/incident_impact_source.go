@@ -22,7 +22,7 @@ func (c *Client) GetIncidentImpactSource(ctx context.Context, projectSlug, slug 
 		"impactSourceSlug": graphql.ID(slug),
 	}
 
-	err := c.doQuery(&query, variables)
+	err := c.doQuery(ctx, &query, variables)
 	tflog.Error(ctx, fmt.Sprintf("Error when calling GraphQL, %+v", err))
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (c *Client) CreateIncidentImpactSource(ctx context.Context, input IncidentI
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func (c *Client) UpdateIncidentImpactSource(ctx context.Context, input IncidentI
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func (c *Client) DeleteIncidentImpactSource(ctx context.Context, input IncidentI
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return false, err

@@ -325,7 +325,7 @@ func (ccsr *codeChangeSourceResource) Create(ctx context.Context, req resource.C
 		return
 	}
 
-	ccs, err := ccsr.c.CreateCodeChangeSource(input)
+	ccs, err := ccsr.c.CreateCodeChangeSource(ctx, input)
 	if err != nil {
 		tflog.Error(ctx, "Error creating CodeChangeSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
@@ -436,7 +436,7 @@ func (ccsr *codeChangeSourceResource) Update(ctx context.Context, req resource.U
 		return
 	}
 
-	ccs, err := ccsr.c.UpdateCodeChangeSource(input)
+	ccs, err := ccsr.c.UpdateCodeChangeSource(ctx, input)
 	if err != nil {
 		tflog.Error(ctx, "Error updating CodeChangeSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
@@ -468,7 +468,7 @@ func (ccsr *codeChangeSourceResource) Delete(ctx context.Context, req resource.D
 	projectSlug := state.ProjectSlug.ValueStringPointer()
 	slug := state.Slug.ValueStringPointer()
 
-	err := ccsr.c.DeleteChangeSource(projectSlug, slug)
+	err := ccsr.c.DeleteChangeSource(ctx, projectSlug, slug)
 	if err != nil {
 		tflog.Error(ctx, "Error deleting CodeChangeSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
@@ -522,9 +522,17 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 		if hasPlan {
 			projectName = planBM.ProjectName.ValueString()
 		}
+		// Find the original provider from the plan for this build mapping
+		originalProvider := strings.ToUpper(bm.Provider) // fallback to uppercase API response
+		for _, planBM := range plan.BuildMappings {
+			if planBM.EnvironmentSlug.ValueString() == bm.Environment.Slug && planBM.BuildName.ValueString() == bm.BuildName {
+				originalProvider = planBM.Provider.ValueString()
+				break
+			}
+		}
 		buildMappingObj := buildMappingsResourceModel{
 			EnvironmentSlug:          types.StringValue(bm.Environment.Slug),
-			Provider:                 types.StringValue(strings.ToUpper(bm.Provider)),
+			Provider:                 types.StringValue(originalProvider),
 			IntegrationSlug:          types.StringValue(bm.IntegrationSlug),
 			BuildName:                types.StringValue(bm.BuildName),
 			JobName:                  types.StringValue(bm.JobName),
@@ -561,7 +569,7 @@ func getNewStateFromCodeChangeSource(ctx context.Context, ccs *gqlclient.CodeCha
 		Owner:           types.StringValue(ccs.Repository.Owner),
 		Name:            types.StringValue(ccs.Repository.Name),
 		URL:             types.StringValue(ccs.Repository.Url),
-		Provider:        types.StringValue(strings.ToUpper(ccs.Repository.Provider)),
+		Provider:        types.StringValue(plan.Repository.Provider.ValueString()), // preserve original case
 		IntegrationSlug: types.StringNull(),
 		RepoUID:         types.StringNull(),
 		ProjectUID:      types.StringNull(),
@@ -631,7 +639,7 @@ func getMutableCodeChangeSourceStruct(plan codeChangeResourceModel) (*gqlclient.
 
 		buildMapping := gqlclient.BuildMapping{
 			EnvironmentSlug:          environmentSlug,
-			Provider:                 bm.Provider.ValueString(),
+			Provider:                 strings.ToUpper(bm.Provider.ValueString()),
 			BuildName:                bm.BuildName.ValueString(),
 			JobName:                  bm.JobName.ValueString(),
 			IntegrationSlug:          bm.IntegrationSlug.ValueString(),
@@ -656,7 +664,7 @@ func getMutableCodeChangeSourceStruct(plan codeChangeResourceModel) (*gqlclient.
 			RepositoryBase: gqlclient.RepositoryBase{
 				Owner:      plan.Repository.Owner.ValueString(),
 				Name:       plan.Repository.Name.ValueString(),
-				Provider:   plan.Repository.Provider.ValueString(),
+				Provider:   strings.ToUpper(plan.Repository.Provider.ValueString()),
 				Url:        plan.Repository.URL.ValueString(),
 				ProjectUID: plan.Repository.ProjectUID.ValueString(),
 				RepoUID:    plan.Repository.RepoUID.ValueString(),

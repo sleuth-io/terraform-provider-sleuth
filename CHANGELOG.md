@@ -1,3 +1,8 @@
+## 0.7.1 (July 22, 2025)
+ENHANCEMENTS:
+- [#258](https://github.com/sleuth-io/terraform-provider-sleuth/pull/258)
+  - Improve context passing from TF to GQL
+
 ## 0.7.0 (July 7, 2025)
 ENHANCEMENTS:
 - New teams resource for setting groups of users

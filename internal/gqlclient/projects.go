@@ -1,6 +1,7 @@
 package gqlclient
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -20,7 +21,7 @@ import (
 //		"orgSlug":   graphql.ID(c.OrgSlug),
 //	}
 //
-//	err := c.doQuery(&query, variables)
+//	err := c.doQuery(ctx, &query, variables)
 //
 //	if err != nil {
 //		return nil, err
@@ -36,14 +37,14 @@ import (
 //}
 
 // GetProject - Returns project
-func (c *Client) GetProject(slug *string) (*Project, error) {
+func (c *Client) GetProject(ctx context.Context, slug *string) (*Project, error) {
 	var query struct {
 		Project Project `graphql:"project(projectSlug: $projectSlug)"`
 	}
 	variables := map[string]interface{}{
 		"projectSlug": graphql.ID(*slug),
 	}
-	err := c.doQuery(&query, variables)
+	err := c.doQuery(ctx, &query, variables)
 
 	if err != nil {
 		if strings.HasSuffix(err.Error(), "not found") {
@@ -56,7 +57,10 @@ func (c *Client) GetProject(slug *string) (*Project, error) {
 }
 
 // CreateProject - Creates a project
-func (c *Client) CreateProject(input CreateProjectMutationInput) (*Project, error) {
+func (c *Client) CreateProject(ctx context.Context, input CreateProjectMutationInput) (*Project, error) {
+
+	// Debug: Print the input structure
+	fmt.Printf("DEBUG: CreateProject input: %+v\n", input)
 
 	var m struct {
 		CreateProject struct {
@@ -68,7 +72,10 @@ func (c *Client) CreateProject(input CreateProjectMutationInput) (*Project, erro
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	// Debug: Print the variables
+	fmt.Printf("DEBUG: GraphQL variables: %+v\n", variables)
+
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return nil, err
@@ -81,7 +88,7 @@ func (c *Client) CreateProject(input CreateProjectMutationInput) (*Project, erro
 }
 
 // UpdateProject - Updates a project
-func (c *Client) UpdateProject(slug *string, input UpdateProjectMutationInput) (*Project, error) {
+func (c *Client) UpdateProject(ctx context.Context, slug *string, input UpdateProjectMutationInput) (*Project, error) {
 
 	var m struct {
 		UpdateProject struct {
@@ -93,7 +100,7 @@ func (c *Client) UpdateProject(slug *string, input UpdateProjectMutationInput) (
 		"input": input,
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return nil, err
@@ -107,7 +114,7 @@ func (c *Client) UpdateProject(slug *string, input UpdateProjectMutationInput) (
 }
 
 // DeleteProject - Deletes a project
-func (c *Client) DeleteProject(slug *string) error {
+func (c *Client) DeleteProject(ctx context.Context, slug *string) error {
 
 	var m struct {
 		DeleteProject struct {
@@ -118,7 +125,7 @@ func (c *Client) DeleteProject(slug *string) error {
 		"input": DeleteProjectMutationInput{Slug: *slug},
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return err

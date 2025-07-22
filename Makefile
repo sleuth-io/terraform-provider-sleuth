@@ -31,7 +31,7 @@ install: ## Installs the binary into $GOPATH/bin or $GOBIN
 
 install_deprecated: build ## DEPRECATED: Builds and installs locally
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
-	rm .terraform.lock.hcl
+	rm .terraform.lock.hcl || true
 	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
 	terraform init
 

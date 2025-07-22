@@ -1,12 +1,13 @@
 package gqlclient
 
 import (
+	"context"
 	"errors"
 	"github.com/shurcooL/graphql"
 )
 
 // DeleteImpactSource - Deletes a impact source
-func (c *Client) DeleteImpactSource(projectSlug *string, slug *string) error {
+func (c *Client) DeleteImpactSource(ctx context.Context, projectSlug *string, slug *string) error {
 
 	var m struct {
 		DeleteImpactSource struct {
@@ -17,7 +18,7 @@ func (c *Client) DeleteImpactSource(projectSlug *string, slug *string) error {
 		"input": DeleteImpactSourceMutationInput{ProjectSlug: *projectSlug, Slug: *slug},
 	}
 
-	err := c.doMutate(&m, variables)
+	err := c.doMutate(ctx, &m, variables)
 
 	if err != nil {
 		return err

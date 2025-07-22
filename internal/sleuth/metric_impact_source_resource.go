@@ -132,7 +132,7 @@ func (misr *metricImpactSourceResource) Create(ctx context.Context, req resource
 		MutableMetricImpactSource: inputFields,
 	}
 
-	mis, err := misr.c.CreateMetricImpactSource(input)
+	mis, err := misr.c.CreateMetricImpactSource(ctx, input)
 	if err != nil {
 		tflog.Error(ctx, "Error creating MetricImpactSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
@@ -169,7 +169,7 @@ func (misr *metricImpactSourceResource) Read(ctx context.Context, req resource.R
 		slug = splits[1]
 	}
 
-	ccs, err := misr.c.GetMetricImpactSource(&projectSlug, &slug)
+	ccs, err := misr.c.GetMetricImpactSource(ctx, &projectSlug, &slug)
 	if err != nil {
 		tflog.Error(ctx, "Error reading MetricImpactSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
@@ -209,7 +209,7 @@ func (misr *metricImpactSourceResource) Update(ctx context.Context, req resource
 		MutableMetricImpactSource: inputFields,
 	}
 
-	ccs, err := misr.c.UpdateMetricImpactSource(input)
+	ccs, err := misr.c.UpdateMetricImpactSource(ctx, input)
 	if err != nil {
 		tflog.Error(ctx, "Error updating MetricImpactSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
@@ -239,7 +239,7 @@ func (misr *metricImpactSourceResource) Delete(ctx context.Context, req resource
 	projectSlug := state.ProjectSlug.ValueStringPointer()
 	slug := state.Slug.ValueStringPointer()
 
-	err := misr.c.DeleteImpactSource(projectSlug, slug)
+	err := misr.c.DeleteImpactSource(ctx, projectSlug, slug)
 	if err != nil {
 		tflog.Error(ctx, "Error deleting MetricImpactSource", map[string]any{"error": err.Error()})
 		res.Diagnostics.AddError(
